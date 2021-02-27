@@ -91,7 +91,7 @@ export default class QuestionDetail extends React.Component {
             <Text style={styles.choice}>○　{choice.choice_text}</Text>
           ))}
           {answered && (
-            <TouchableOpacity style={styles.vote}>
+            <TouchableOpacity style={styles.vote} onPress={() => navigate('QuestionResult')}>
               <Text style={styles.vote_text}>
                 Vote!
               </Text>

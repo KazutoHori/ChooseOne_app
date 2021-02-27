@@ -1,70 +1,21 @@
 import { Image, StyleSheet, FlatList, View, ActivityIndicator,
-    Text, TouchableOpacity, SafeAreaView,
+    Text, TouchableOpacity, SafeAreaView, ScrollView
   } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { PieChart } from 'react-native-chart-kit';
+import { PieChart, BarChart } from 'react-native-chart-kit';
 import { Dimensions } from "react-native";
 import * as Font from 'expo-font';
 
 const screenWidth = Dimensions.get("window").width;
-const chartConfig = {
-  backgroundGradientFrom: colors.blue,
-  backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: colors.grey,
-  backgroundGradientToOpacity: 0.5,
-  color: (opacity = 1) => `rgba(26, 25, 16, ${opacity})`,
-  strokeWidth: 2, // optional, default 3
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false // optional
-};
-
-// Table
-// import Table from '@material-ui/core/Table';
-// import TableBody from '@material-ui/core/TableBody';
-// import TableCell from '@material-ui/core/TableCell';
-// import TableContainer from '@material-ui/core/TableContainer';
-// import TableHead from '@material-ui/core/TableHead';
-// import TableRow from '@material-ui/core/TableRow';
-// import Paper from '@material-ui/core/Paper';
 
 import colors from '../utils/colors';
 
-const data = [
-  {
-    name: "basketball",
-    population: 19551,
-    color: "#d88eeb",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 10
-  },
-  {
-    name: "soccer",
-    population: 1857,
-    color: "#d88e9d",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 10
-  },
-  {
-    name: "hockey",
-    population: 1591,
-    color: "#e6ce91",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 10
-  },
-  {
-    name: "tennis",
-    population: 660,
-    color: "#cdef94",
-    legendFontColor: "#7F7F7F",
-    legendFontSize: 10
-  },
-];
-
 let customFonts  = {
   'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
+  'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
 
 export default class QuestionDetail extends React.Component {
@@ -122,17 +73,49 @@ export default class QuestionDetail extends React.Component {
     this._loadFontsAsync();
   }
 
-  static navigationOptions = () => ({
-
-  });
-
   render() {
     const { question: {author, id, title, created, choices} } = this.state;
     const { navigation: { navigate }} = this.props;
     const { answered, madeit } = this.state;
 
+    var pie_data = Array.from(choices);
+    const aaa = created.slice(17, 19);
+
+    let bar_data = {
+      labels: [],
+      colors: [],
+      datasets: [
+        {
+          data: [],
+          colors: [],
+          // backgroundColor: [],
+        },
+      ]
+    };
+
+    for(var i=0; i<choices.length; i++){
+      pie_data[i]['name']=pie_data[i].choice_text;
+      // delete pie_data[i].choice_text;
+      // pie_data[i]['name']='basketball';
+      pie_data[i]['legendFontSize']=12;
+      pie_data[i]['color']='hsla('+((i+aaa)*70)+',75%,75%, 1)';
+      pie_data[i]['legendFontColor']='hsla('+((i+aaa)*70)+', 75%, 75%, 1)';
+      // pie_data[i]['legend']=10;
+      bar_data.labels.push(pie_data[i].choice_text);
+      bar_data.datasets[0].data.push(pie_data[i].votes);
+      // bar_data.colors.push((opacity: 1) => 'hsla('+((i+aaa)*70)+', 75%, 75%, 1)');
+    }
+
+    const table = (index) => ({
+      backgroundColor: 'hsla('+((index+aaa)*70)+',75%,75%,1)',
+      height: 50,
+      flexDirection: 'row',
+      borderTopColor: 'white',
+      borderTopWidth: 0.4,
+    });
+
     return (
-      <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.container}>
         <View style={styles.back}>
           <TouchableOpacity onPress={() => navigate('Top')}>
             <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
@@ -150,25 +133,76 @@ export default class QuestionDetail extends React.Component {
 
         {choices.map((choice, index) => {
           return (
-            <View style={styles.table}>
+            <View style={table(index)}>
               <Text style={styles.index}>{index+1}</Text>
-              <Text style={styles.cc}>{choice.choice_text}</Text>
-              <Text style={styles.vv}>{choice.votes}</Text>
+              <Text style={styles.cc}>{choice['name']}</Text>
+              <Text style={styles.vv}>{choice['votes']}</Text>
             </View>
           );
         })}
 
         <PieChart
-          style={styles.piechart}
-          data={data}
+          style={{
+            marginTop: 10,
+          }}
+          data={pie_data}
           width={screenWidth}
           height={300}
-          chartConfig={chartConfig}
-          accessor={"population"}
+          chartConfig={{
+            backgroundGradientFromOpacity: 0,
+            backgroundGradientTo: colors.white,
+            backgroundGradientToOpacity: 0,
+            color: (opacity = 1) => `rgba(${opacity*0}, 122, 205, 1)`,
+            useShadowColorFromDataset: false // optional
+          }}
+          accessor={"votes"}
           backgroundColor={colors.white}
-          // paddingLeft={"15"}
-          center={[10, 50]}
-          absolute
+          paddingLeft={20}
+          center={[10, 0]}
+          bgColor={'transparent'}
+          avoidFalseZero
+        />
+
+        <BarChart
+          style={styles.barchart}
+          data={bar_data}
+          width={screenWidth}
+          height={300}
+          yAxisLabel=""
+          verticalLabelRotation={30}
+          backgroundColor={colors.white}
+          fromZero
+          withInnerLines={true}
+          segments={3}
+          showBarTops={false}
+          verticalLabelRotation={0}
+          showValuesOnTopOfBars
+          chartConfig={{
+            backgroundGradientFromOpacity: 0,
+            backgroundGradientTo: colors.white,
+            backgroundGradientToOpacity: 0,
+            // backgroundColor: 'red',
+            // fillShadowGradient: 'blue',
+            fillShadowGradientOpacity: 100,
+            color: (opacity = 1) => `rgba(${opacity*0}, 122, 205, 1)`,
+            labelColor: (index) => colors.black,
+            propsForBackgroundLines: {
+              strokeWidth: 0.8,
+              stroke: '#efefef',
+              strokeDasharray: '0',
+            },
+            propsForLabels: {
+              // fontFamily: 'Bogle-Regular',
+              fontSize: 11,
+            },
+            barPercentage: 0.9,
+            decimalPlaces: 0,
+            useShadowColorFromDataset: false // optional
+          }}
+          style={{
+            marginTop: 10,
+            backgroundColor: colors.white,
+          }}
         />
 
         {madeit && (
@@ -181,38 +215,36 @@ export default class QuestionDetail extends React.Component {
             </TouchableOpacity>
           </View>
         )}
-      </SafeAreaView>
+
+        <View style={{ marginTop: 40}} />
+        <View style={styles.back }>
+          <TouchableOpacity onPress={() => navigate('Top')}>
+            <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
+          </TouchableOpacity>
+        </View>
+        <View style={{ marginBottom: 40}} />
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  piechart: {
-    marginTop: 30,
-  },
   tables: {
     backgroundColor: 'grey',
-  },
-  table: {
-    backgroundColor: '#d88eec',
-    height: 50,
-    flexDirection: 'row',
-    borderTopColor: 'white',
-    borderTopWidth: 0.5,
   },
   cc: {
     position: 'absolute',
     left: screenWidth/4,
     top: 10,
     fontSize: 20,
-    fontFamily: 'PlayfairDisplay-Medium',
+    fontFamily: 'PlayfairDisplay-Regular',
   },
   vv: {
     position: 'absolute',
     left: screenWidth/3*2,
     top: 10,
     fontSize: 20,
-    fontFamily: 'PlayfairDisplay-Medium',
+    fontFamily: 'PlayfairDisplay-Regular',
   },
   index: {
     position: 'absolute',
@@ -281,12 +313,16 @@ const styles = StyleSheet.create({
   back: {
     padding: 10,
     alignItems: 'center',
+    // zIndex: 2,
+    // left: screenWidth/2-20,
+    // position: 'absolute',
   },
   center: {
     alignItems: 'center',
     marginBottom: 30,
   },
   title: {
+    // marginTop: 40,
     fontSize: 30,
     fontFamily: 'PlayfairDisplay-Medium',
   },

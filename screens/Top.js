@@ -6,101 +6,20 @@ import {
   FlatList,
   ActivityIndicator,
   Linking,
-  SafeAreaView,
+  SafeAreaView, TouchableWithoutFeedback, Image, TouchableOpacity
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import {fetchQuestions} from '../utils/api';
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
-import * as Font from 'expo-font';
-
-let customFonts  = {
-  'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
-}
+import Questions from '../utils/questions';
 
 const options = {
   method: 'POST',
 }
 
 export default class Top extends React.Component {
-  state = {
-    questions: [
-      {
-        id: 1,
-        title: 'What sports do you like?',
-        author: 'Kazuto',
-        created: "2021-02-23T07:51:42.275101Z",
-        choices: [
-          {
-            choice_text: 'basketball',
-            votes: 19551,
-          },
-          {
-            choice_text: 'soccer',
-            votes: 1857,
-          },
-          {
-            choice_text: 'hockey' ,
-            votes: 1591,
-          },
-          {
-            choice_text: 'tennis',
-            votes: 660,
-          }
-        ],
-        comments: [
-          {
-            author: 'Kazuto',
-            comment: 'This is so true!!',
-            created: "2021-02-23T07:51:42.275101Z",
-          },
-          {
-            author: 'Kazuto',
-            comment: 'That is no true!',
-            created: "2021-02-23T07:51:42.275101Z",
-          }
-        ],
-      },
-      {
-        id: 2,
-        title: 'Where are you from?',
-        author: 'Kazuto',
-        created: "2021-02-23T07:51:42.275101Z",
-        choices: [
-          {
-            choice_text: 'America',
-            votes: 1515,
-          },
-          {
-            choice_text: 'Europe',
-            votes: 1515,
-          },
-          {
-            choice_text: 'Japan' ,
-            votes: 1414,
-          },
-          {
-            choice_text: 'Africa',
-            votes: 355,
-          }
-        ],
-        comments: [
-          {
-            author: 'Kazuto',
-            comment: 'This is so true!!',
-            created: "2021-02-23T07:51:42.275101Z",
-          },
-          {
-            author: 'Kazuto',
-            comment: 'That is no true!',
-            created: "2021-02-23T07:51:42.275101Z",
-          }
-        ],
-      }
-    ],
-    loading: true,
-    error: false,
-  };
 
   // renderPushView () {
   //   const { navigation: { navigate } } = this.props;
@@ -143,6 +62,18 @@ export default class Top extends React.Component {
 
   });
 
+  state = {
+    questions: Questions,
+    loading: true,
+    error: false,
+  };
+
+  handleLoad = () => {
+    this.setState({
+      loading: false,
+    });
+  };
+
   render() {
     // const { style, commentsForItem, onPressComments } = this.props;
     const { loading, error, questions } = this.state;
@@ -150,9 +81,20 @@ export default class Top extends React.Component {
 
     return (
       <SafeAreaView style={styles.container}>
+        <View style={styles.topbar}>
+          {loading && (
+            <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
+          )}
+          <TouchableWithoutFeedback>
+            <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 10, left: 20}}/>
+          </TouchableWithoutFeedback>
+          <TouchableOpacity style={{ position: 'absolute', right: 30, top: 7}}>
+            <Icon name={'search'} size={30} style={{ color: colors.grey }} />
+          </TouchableOpacity>
+        </View>
         <QuestionList
           questions={questions}
-          onPress={() => navigate('QuestionResult', { id: 1 } )}
+          onPress={() => navigate('QuestionDetail', { id: 1 } )}
         />
       </SafeAreaView>
       // <View style={styles.test}>
@@ -166,6 +108,13 @@ export default class Top extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  topbar: {
+    flexDirection: 'row',
+    height: 50,
+    backgroundColor: 'red',
+    borderTopWidth: 0.3,
+    borderColor: 'white',
+  },
   container: {
     backgroundColor: colors.grey,
     justifyContent: 'center',
