@@ -33,6 +33,7 @@ import AccountSetting from './screens/AccountSetting';
 import About from './screens/About';
 import Drawer from './screens/Drawer';
 import CustomTabBar from './CustomTabBar';
+import { HomeScreens } from './HomeScreens';
 
 const getTabBarIcon = icon => ({ tintColor }) => (
   <MaterialIcons name={icon} size={30} style={{ color: tintColor }} />
@@ -40,90 +41,6 @@ const getTabBarIcon = icon => ({ tintColor }) => (
 
 const getDrawerItemIcon = icon => ({ tintColor }) => (
   <MaterialIcons name={icon} size={22} style={{ color: tintColor }} />
-);
-
-const TopScreen = createStackNavigator (
-  {
-    Top,
-    QuestionDetail,
-    QuestionResult,
-  },
-  {
-    initialRouteName: 'Top',
-    headerMode: 'none',
-    mode: 'modal',
-  }
-);
-
-const HomeScreens = createMaterialTopTabNavigator(
-  {
-    Top: {
-      screen: TopScreen,
-      navigationOptions: {
-        tabBarLabel: 'Top',
-      }
-    },
-    Love: {
-      screen: Love,
-    },
-    News: {
-      screen: News,
-    },
-    Sports: {
-      screen: Sports,
-    },
-    Entertainment: {
-      screen: Entertainment,
-    },
-    Health: {
-      screen: Health,
-    },
-    Living: {
-      screen: Living,
-    },
-    Career: {
-      screen: Career,
-    },
-    Academics: {
-      screen: Academics,
-    },
-    IT: {
-      screen: IT,
-    },
-    Quiz: {
-      screen: Quiz,
-    },
-    Other: {
-      screen: Other,
-    },
-  },
-  {
-    initialRouteName: 'Top',
-    navigationOptions: {
-      tabBarIcon: getTabBarIcon('home'),
-      paddingTop: 40,
-    },
-    // tabBarComponent: AppTabNavigation
-    style: {
-      paddingTop: 40,
-    },
-    tabBarComponent: CustomTabBar,
-    pagerComponent: ViewPagerAdapter,
-    tabBarOptions: {
-      paddingTop: 40,
-      labelStyle: {
-        fontSize: 12,
-      },
-      tabStyle: {
-        width: 100,
-        // backgroundColor: colors.grey,
-      },
-      style: {
-        // backgroundColor: colors.red,
-      },
-      scrollEnabled: true,
-    },
-  }
 );
 
 const CreateScreens = createStackNavigator(
@@ -219,41 +136,6 @@ const SettingDrawer = createDrawerNavigator(
       tabBarIcon: getTabBarIcon('storage'),
     },
   },
-);
-
-const AnsweredScreens = createStackNavigator (
-  {
-    QuestionAnswered: QuestionAnswered,
-    About: About,
-    AccountSetting: AccountSetting,
-    ContactUs: ContactUs,
-  },
-  {
-    initialRouteName: 'QuestionAnswered',
-    navigationOptions: {
-      tabBarIcon: getTabBarIcon('storage'),
-
-      // drawerIcon: getDrawerItemIcon('list'),
-    },
-    headerMode: 'none',
-    mode: 'modal',
-    tabBarOptions: {
-      labelStyle: {
-        fontSize: 12,
-      },
-      tabStyle: {
-        width: 100,
-        backgroundColor: colors.greyDark,
-      },
-      style: {
-        backgroundColor: 'white',
-      },
-      scrollEnabled: true,
-    },
-    style: {
-      marginTop: 40,
-    }
-  }
 );
 
 const TabNavigator = createBottomTabNavigator(
