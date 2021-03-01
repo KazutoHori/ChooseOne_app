@@ -70,7 +70,7 @@ export default class QuestionAnswered extends React.Component {
               {loading && (
                 <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
               )}
-              <TouchableWithoutFeedback onPress={() => navigate('QuestionCreate')}>
+              <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswered')}>
                 <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
               </TouchableWithoutFeedback>
               <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>
@@ -78,7 +78,7 @@ export default class QuestionAnswered extends React.Component {
               </TouchableOpacity>
             </View>
             <View style={styles.ttext}>
-              <Text style={styles.text}>Questions You Already Answered</Text>
+              <Text style={styles.text}>Answered Questions</Text>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   ttext: {
+    paddingTop: 30,
     alignItems: 'center',
   },
 });

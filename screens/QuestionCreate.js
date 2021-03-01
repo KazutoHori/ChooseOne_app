@@ -11,7 +11,7 @@ import * as Font from 'expo-font'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
-import { Button } from 'galio-framework';
+import { Button, Checkbox,  } from 'galio-framework';
 
 import colors from '../utils/colors';
 
@@ -41,6 +41,18 @@ export default class QuestionCreate extends React.Component {
     fontsLoaded: false,
     loading: true,
     text: '',
+    onNews: false,
+    onSports: false,
+    onEntertainment: false,
+    onHealth: false,
+    onQuiz: false,
+    onCareer: false,
+    onLiving: false,
+    onLove: false,
+    onAcademics: false,
+    onOther: false,
+    onIT: false,
+    add_choice: 0,
   };
 
   handleLoad = () => {
@@ -71,8 +83,25 @@ export default class QuestionCreate extends React.Component {
   };
 
   render() {
-    const { loading, text, fontsLoaded } = this.state;
+    const { loading, text, fontsLoaded, add_choice } = this.state;
     const { navigation: { navigate }} = this.props;
+
+    var added=[];
+    for (let i=0; i<add_choice; i++){
+      added.push(
+        <View>
+          <View style={styles.semiTitle} />
+          <TextInput
+            style={[styles.input]}
+            value={text}
+            underlineColorAndroid="transparent"
+            onChangeText={this.handleChangeText}
+            onSubmitEditing={this.handleSubmitEditing}
+            placeholder={'Choice '+(3+i)}
+          />
+        </View>
+      );
+    }
 
     if (fontsLoaded) {
       return (
@@ -90,46 +119,67 @@ export default class QuestionCreate extends React.Component {
           </View>
           <ScrollView style={styles.container}>
             <View style={styles.form}>
-              <Text style={styles.text}>Let's Create Your Own Question!</Text>
+              <Text style={styles.text}>Let's Create Your {'\n'}  Own Question!</Text>
               <Text style={styles.title}>Question</Text>
-              <Text style={styles.semiTitle}>TItle</Text>
+              <View style={styles.semiTitle} />
               <TextInput
                 style={styles.input}
                 value={text}
                 underlineColorAndroid="transparent"
                 onChangeText={this.handleChangeText}
                 onSubmitEditing={this.handleSubmitEditing}
+                placeholder={'Title'}
               />
-              <Text style={styles.semiTitle}>Category</Text>
-              <TextInput
-                style={styles.input}
-                value={text}
-                underlineColorAndroid="transparent"
-                onChangeText={this.handleChangeText}
-                onSubmitEditing={this.handleSubmitEditing}
-              />
+              <Text style={styles.title}>Category</Text>
+              <View style={{ width: screenWidth*4/5, alignItems: 'center'}} >
+                <View style={[styles.block, {flexDirection: 'row'}]}>
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox onChange={() => this.setState({onNews:!this.state.onNews})} color={colors.blue} label="News" />
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox onChange={() => this.setState({onSports:!this.state.onSports})} color="success" label="Sports" />
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="primary" onChange={() => this.setState({onEntertainment:!this.state.onEntertainment})} label="Entertainment" />
+                </View>
+                <View style={[styles.block, {flexDirection: 'row'}]}>
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="info" onChange={() => this.setState({onHealth:!this.state.onHealth})} label="Health" />
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="success" onChange={() => this.setState({onLiving:!this.state.onLiving})} label="Living" />
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="primary" onChange={() => this.setState({onCareer:!this.state.Career})} label="Career" />
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="success" onChange={() => this.setState({onIT:!this.state.onIT})} label="IT" />
+                </View>
+                <View style={[styles.block, {flexDirection: 'row'}]}>
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="info" onChange={() => this.setState({onAcademics:!this.state.onAcademics})} label="Academics" />
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="primary" onChange={() => this.setState({onLove:!this.state.onLove})} label="Love" />
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="primary" onChange={() => this.setState({onQuiz:!this.state.onQuiz})} label="Quiz" />
+                  <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="info" onChange={() => this.setState({onOther:!this.state.onOther})} label="Other" />
+                </View>
+              </View>
+
               <Text style={styles.title}>Choices</Text>
-              <Text style={styles.semiTitle}>Choice 1</Text>
+              <View style={styles.semiTitle} />
               <TextInput
                 style={styles.input}
                 value={text}
                 underlineColorAndroid="transparent"
                 onChangeText={this.handleChangeText}
                 onSubmitEditing={this.handleSubmitEditing}
+                placeholder={'Choice 1'}
               />
-              <Text style={styles.semiTitle}>Choice 2</Text>
+              <View style={styles.semiTitle} />
               <TextInput
                 style={styles.input}
                 value={text}
                 underlineColorAndroid="transparent"
                 onChangeText={this.handleChangeText}
                 onSubmitEditing={this.handleSubmitEditing}
+                placeholder={'Choice 2'}
               />
-              <Button style={{ width: screenWidth*2/3, marginTop: 20,}} color='info'>Add New Choice</Button>
-              <Button style={{ width: screenWidth*2/3, marginTop: 10, marginBottom: 40,}} color="theme" disabled={true}>Remove Last Choice</Button>
+              {add_choice !== 0 && (
+                [added]
+              )}
+              <Button style={{ width: screenWidth*3/4, marginTop: 20,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color='info'>Add New Choice</Button>
+              {add_choice !==0 && (
+                <Button style={{ width: screenWidth*3/4, marginTop: 10, marginBottom: 40,}} onPress={() => this.setState({ add_choice: add_choice-1 })} color="theme" disabled={true}>Remove Last Choice</Button>
+              )}
 
               <Text>You can edit after you make one.</Text>
-              <Button style={{ width: screenWidth*2/3, marginTop: 10, marginBottom: 70, }} color='success'>Add Question</Button>
+              <Button style={{ width: screenWidth*3/4, marginTop: 10, marginBottom: 70, }} color='success'>Add Question</Button>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -141,6 +191,9 @@ export default class QuestionCreate extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  block: {
+    marginTop: 20,
+  },
   button: {
 
   },
@@ -159,9 +212,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.darkGrey,
     height: 40,
-    width: screenWidth*4/6,
+    width: screenWidth*6/8,
     borderRadius: 5,
     marginTop: 7,
+    paddingLeft: 10,
+    paddingRight: 0,
     // fontFamily: 'PlayfairDisplay-Regular',
   },
   form: {

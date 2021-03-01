@@ -23,7 +23,6 @@ import Living from './screens/Living';
 import Health from './screens/Health';
 import News from './screens/News';
 import Career from './screens/Career';
-import Trip from './screens/Trip';
 import Quiz from './screens/Quiz';
 import Other from './screens/Other';
 import Academics from './screens/Academics';
@@ -74,9 +73,6 @@ const HomeScreens = createMaterialTopTabNavigator(
     },
     Entertainment: {
       screen: Entertainment,
-    },
-    Trip: {
-      screen: Trip,
     },
     Health: {
       screen: Health,

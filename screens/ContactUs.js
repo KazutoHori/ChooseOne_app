@@ -58,6 +58,18 @@ export default class QuestionAnswered extends React.Component {
     this._loadFontsAsync();
   }
 
+  handleChangeText = text => {
+    this.setState({ text });
+  };
+
+  handleSubmitEditing = () => {
+    // const { onSubmit } = this.props;
+    const { text } = this.state;
+
+    // onSubmit(text);
+    this.setState({ text: '' });
+  };
+
   render() {
     const { loading, text, fontsLoaded } = this.state;
     const { navigation: { openDrawer, navigate }} = this.props;
@@ -65,20 +77,44 @@ export default class QuestionAnswered extends React.Component {
     if (fontsLoaded) {
       return (
         <SafeAreaView>
-          <ScrollView style={styles.container}>
+          <View style={styles.container}>
             <View style={styles.topbar}>
               {loading && (
                 <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
               )}
-              <TouchableWithoutFeedback onPress={() => navigate('QuestionCreate')}>
+              <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswered')}>
                 <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
               </TouchableWithoutFeedback>
               <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>
                 <Icon name={'cogs'} size={30} style={{ color: colors.grey }} />
               </TouchableOpacity>
             </View>
-            <Text style={styles.text}>Questions You Already Answered</Text>
-          </ScrollView>
+            <TouchableOpacity style={styles.back} onPress={() => navigate('QuestionAnswered')}>
+              <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
+            </TouchableOpacity>
+            <View style={{ alignItems: 'center'}}>
+              <Text style={styles.text}>Contact Us</Text>
+              <Text style={{ padding: 30, fontSize: 15,}}>If you have any questions or comments {'\n'}    about this app, please e-mail us!!!</Text>
+            </View>
+            <View style={styles.form}>
+              <Text>Name</Text>
+              <TextInput
+                style={styles.input}
+                value={text}
+                underlineColorAndroid="transparent"
+                onChangeText={this.handleChangeText}
+                onSubmitEditing={this.handleSubmitEditing}
+              />
+              <Text>Comments</Text>
+              <TextInput
+                style={[styles.input, { height: 300,}]}
+                value={text}
+                underlineColorAndroid="transparent"
+                onChangeText={this.handleChangeText}
+                onSubmitEditing={this.handleSubmitEditing}
+              />
+            </View>
+          </View>
         </SafeAreaView>
       );
     }else{
@@ -88,6 +124,17 @@ export default class QuestionAnswered extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  form: {
+    // marginTop: 10,
+    padding: 10,
+    backgroundColor: colors.white,
+    width: screenWidth,
+    alignItems: 'center',
+  },
+  back: {
+    padding: 10,
+    alignItems: 'center',
+  },
   button: {
 
   },
@@ -107,5 +154,15 @@ const styles = StyleSheet.create({
     fontSize: 40,
     alignItems: 'center',
     paddingLeft: 20,
+  },
+  input: {
+    borderColor: colors.black,
+    borderWidth: 2,
+    borderColor: colors.darkGrey,
+    height: 40,
+    width: screenWidth*5/7,
+    borderRadius: 5,
+    marginTop: 7,
+    // fontFamily: 'PlayfairDisplay-Regular',
   },
 });
