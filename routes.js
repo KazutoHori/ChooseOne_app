@@ -32,6 +32,7 @@ import ContactUs from './screens/ContactUs';
 import AccountSetting from './screens/AccountSetting';
 import About from './screens/About';
 import Drawer from './screens/Drawer';
+import CustomTabBar from './CustomTabBar';
 
 const getTabBarIcon = icon => ({ tintColor }) => (
   <MaterialIcons name={icon} size={30} style={{ color: tintColor }} />
@@ -98,7 +99,6 @@ const HomeScreens = createMaterialTopTabNavigator(
   },
   {
     initialRouteName: 'Top',
-    pagerComponent: ViewPagerAdapter,
     navigationOptions: {
       tabBarIcon: getTabBarIcon('home'),
       paddingTop: 40,
@@ -107,6 +107,8 @@ const HomeScreens = createMaterialTopTabNavigator(
     style: {
       paddingTop: 40,
     },
+    tabBarComponent: CustomTabBar,
+    pagerComponent: ViewPagerAdapter,
     tabBarOptions: {
       paddingTop: 40,
       labelStyle: {
@@ -120,7 +122,7 @@ const HomeScreens = createMaterialTopTabNavigator(
         // backgroundColor: colors.red,
       },
       scrollEnabled: true,
-    }
+    },
   }
 );
 

@@ -26,11 +26,12 @@ export default class QuestionList extends React.Component {
   };
 
   render() {
-    const { questions  } = this.props;
+    const { questions, passRef  } = this.props;
 
     return (
       <FlatList
         data={questions}
+        ref={passRef}
         renderItem={this.renderItem}
         keyExtractor={keyExtractor}
         // extraData={commentsForItem}

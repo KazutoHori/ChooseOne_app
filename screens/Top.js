@@ -76,11 +76,15 @@ export default class Top extends React.Component {
 
   });
 
-  state = {
-    questions: Questions,
-    loading: true,
-    error: false,
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+      questions: Questions,
+      loading: true,
+      error: false,
+    };
+    this.scrollRef = React.createRef();
+  }
 
   handleLoad = () => {
     this.setState({
@@ -99,7 +103,7 @@ export default class Top extends React.Component {
           {loading && (
             <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
           )}
-          <TouchableWithoutFeedback onPress={() => navigate('Top')}>
+          <TouchableWithoutFeedback onPress={() => this.scrollRef.current.scrollToOffset({ animated: true, offset: 0}) }>
             <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 10, left: 20}}/>
           </TouchableWithoutFeedback>
           <TouchableOpacity style={{ position: 'absolute', right: 30, top: 7}}>
@@ -108,6 +112,7 @@ export default class Top extends React.Component {
         </View>
         <QuestionList
           questions={questions}
+          passRef={this.scrollRef}
           onPress={() => navigate('QuestionDetail', { id: 1 } )}
         />
       </SafeAreaView>
@@ -126,7 +131,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 50,
     backgroundColor: 'red',
-    borderTopWidth: 0.3,
+    borderTopWidth: 0,
     borderColor: 'white',
   },
   container: {

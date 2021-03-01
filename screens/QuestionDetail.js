@@ -1,4 +1,6 @@
-import { Image, StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, View, Text, ActivityIndicator,
+    TouchableOpacity, Alert, Modal, }
+  from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -59,6 +61,7 @@ export default class QuestionDetail extends React.Component {
       },
       value: 0,
       value3Index: null,
+      modalVisible: false,
     };
   }
 
@@ -76,7 +79,7 @@ export default class QuestionDetail extends React.Component {
   });
 
   render() {
-    const { question: {author, id, title, created, choices} } = this.state;
+    const { question: {author, id, title, created, choices}, modalVisible } = this.state;
     const { navigation: { navigate }} = this.props;
     const { answered, madeit } = this.state;
 
@@ -87,14 +90,37 @@ export default class QuestionDetail extends React.Component {
 
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.back} onPress={() => navigate('Top')}>
+        <TouchableOpacity style={[styles.back,]} onPress={() => navigate('Top')}>
           <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
         </TouchableOpacity>
         <View style={styles.center}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.date}>created: {created.slice(0,10)}</Text>
         </View>
-        <View style={styles.choices}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            this.setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Are you sure you want to delete this question?</Text>
+              <View style={{ flexDirection: 'row'}}>
+                <Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
+                  No
+                </Button>
+                <Button style={{width: 100,}} color='theme' onPress={() => this.setState({ modalVisible: false})}>
+                  Delete
+                </Button>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <View>
           <View>
             <RadioForm>
               {choices.map((obj, i) => (
@@ -123,62 +149,68 @@ export default class QuestionDetail extends React.Component {
             </RadioForm>
           </View>
           {answered && (
-            <TouchableOpacity style={styles.vote} onPress={() => navigate('QuestionResult')}>
-              <Text style={styles.vote_text}>
-                Vote!
-              </Text>
-            </TouchableOpacity>
+            <Button color={colors.blue} style={styles.vote} onPress={() => navigate('QuestionResult')}>
+              Vote!
+            </Button>
+          )}
+
+          {madeit && (
+            <View>
+              <View style={styles.edit}>
+                <Button color='success' onPress={() => navigate('QuestionResult')}>
+                  Edit
+                </Button>
+              </View>
+              <View style={styles.delete}>
+                <Button color='theme' onPress={() => this.setState({ modalVisible: true})}>
+                  Delete
+                </Button>
+              </View>
+            </View>
           )}
         </View>
-        {madeit && (
-          <View style={styles.choice}>
-            <TouchableOpacity style={styles.edit}>
-              <Text style={styles.edit_text}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.delete}>
-              <Text style={styles.delete_text}>Delete</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  // buttons: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'center',
-  //   marginTop: 10,
-  // },
+  modalText: {
+    marginBottom: 15,
+    fontSize: 20,
+    fontFamily: 'PlayfairDisplay-Medium',
+    textAlign: "center"
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    height: 200,
+    width: 300,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 4,
+      height: 4
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
   edit: {
-    padding: 8,
-    width: 70,
-    height: 45,
-    backgroundColor: colors.green,
-    borderRadius: 6,
-    marginRight: 30,
     marginTop: 100,
+    marginLeft: 90,
   },
   delete: {
-    padding: 8,
-    width: 85,
-    height: 45,
-    backgroundColor: colors.red,
-    borderRadius: 6,
     marginTop: 15,
-  },
-  delete_text: {
-    paddingLeft: 6,
-    fontSize: 20,
-    color: colors.white,
-    fontFamily: 'PlayfairDisplay-Medium',
-  },
-  edit_text: {
-    paddingLeft: 9,
-    fontSize: 20,
-    color: colors.white,
-    fontFamily: 'PlayfairDisplay-Medium',
+    marginLeft: 90,
   },
   container: {
     flex: 1,
@@ -204,26 +236,15 @@ const styles = StyleSheet.create({
     color: '#457AFB',
   },
   choice: {
+    // alignItems: 'flex-start',
     fontFamily: 'PlayfairDisplay-Medium',
     fontSize: 15,
     marginBottom: 15,
     left: 100,
-    alignItems: 'flex-start',
   },
   vote: {
-    alignItems: 'flex-start',
-    left: 100,
+    // alignItems: 'flex-start',
+    marginLeft: 100,
     marginTop: 10,
-    padding: 8,
-    width: 70,
-    height: 45,
-    backgroundColor: colors.green,
-    borderRadius: 6,
-  },
-  vote_text: {
-    paddingLeft: 6,
-    fontSize: 20,
-    color: colors.white,
-    fontFamily: 'PlayfairDisplay-Medium',
   },
 });

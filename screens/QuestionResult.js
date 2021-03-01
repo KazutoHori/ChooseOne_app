@@ -1,5 +1,5 @@
 import { Image, StyleSheet, FlatList, View, ActivityIndicator,
-    Text, TouchableOpacity, SafeAreaView, ScrollView
+    Text, TouchableOpacity, SafeAreaView, ScrollView, Modal
   } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { PieChart, BarChart } from 'react-native-chart-kit';
 import { Dimensions } from "react-native";
 import * as Font from 'expo-font';
+import { Button, Radio } from 'galio-framework';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -60,7 +61,8 @@ export default class QuestionDetail extends React.Component {
             created: "2021-02-23T07:51:42.275101Z",
           }
         ],
-      }
+      },
+      modalVisible: false,
     };
   }
 
@@ -74,7 +76,7 @@ export default class QuestionDetail extends React.Component {
   }
 
   render() {
-    const { question: {author, id, title, created, choices} } = this.state;
+    const { question: {author, id, title, created, choices}, modalVisible } = this.state;
     const { navigation: { navigate }} = this.props;
     const { answered, madeit } = this.state;
 
@@ -125,6 +127,29 @@ export default class QuestionDetail extends React.Component {
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.date}>created: {created.slice(0,10)}</Text>
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+            this.setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Are you sure you want to delete this question?</Text>
+              <View style={{ flexDirection: 'row'}}>
+                <Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
+                  No
+                </Button>
+                <Button style={{width: 100,}} color='theme' onPress={() => this.setState({ modalVisible: false})}>
+                  Delete
+                </Button>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
         <View style={styles.first}>
           <Text style={styles.c_text}>Choice</Text>
@@ -207,12 +232,16 @@ export default class QuestionDetail extends React.Component {
 
         {madeit && (
           <View style={styles.buttons}>
-            <TouchableOpacity style={styles.edit}>
-              <Text style={styles.edit_text}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.delete}>
-              <Text style={styles.delete_text}>Delete</Text>
-            </TouchableOpacity>
+            <View>
+              <Button color='success' onPress={() => this.setState({ modalVisible: true})}>
+                Edit
+              </Button>
+            </View>
+            <View>
+              <Button color='theme' onPress={() => this.setState({modalVisible:true})}>
+                Delete
+              </Button>
+            </View>
           </View>
         )}
 
@@ -229,6 +258,35 @@ export default class QuestionDetail extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  modalText: {
+    marginBottom: 15,
+    fontSize: 20,
+    fontFamily: 'PlayfairDisplay-Medium',
+    textAlign: "center"
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    height: 200,
+    width: 300,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 4,
+      height: 4
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
   tables: {
     backgroundColor: 'grey',
   },
