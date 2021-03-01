@@ -3,36 +3,70 @@ import {
   Text,
   View, TouchableOpacity, ScrollView,
 } from 'react-native';
+import { Dimensions } from "react-native";
+const screenWidth = Dimensions.get("window").width;
 
 import colors from './utils/colors';
+import tabColors from './utils/tabColors';
 
 export default class AppTabNavigation extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.scrollRef=React.createRef();
+  }
+
+  componentDidUpdate() {
+    const { routes, index } = this.props.navigation.state
+    if (1<index && index<10){
+      this.scrollRef.current.scrollTo({ animated: false, x: 95*(index-2)+40, y:0})
+    }else if(index>=10){
+      this.scrollRef.current.scrollToEnd({ animated: false });
+    }else{
+      this.scrollRef.current.scrollTo({ animated:false, offset: 0});
+    }
+  }
+
   render() {
     const { navigation } = this.props;
     const { routes, index } = this.props.navigation.state;
     const {
-      containerStyle,
       tabStyle,
       selectedTabStyle,
       textStyle,
       selectedTextStyle,
     } = styles;
-    const color=[]
+
+    const containerStyle = (index) => ({
+      padding: 0,
+      borderBottomWidth: 3,
+      borderBottomColor: tabColors[index],
+      flexDirection: 'row',
+      // justifyContent: 'space-between',
+      // backgroundColor: colors.grey,
+    });
 
     return (
       <View>
-        <ScrollView contentInsetAdjustmentBehavior='scrollableAxes' automaticallyAdjustContentInsets={false} showsHorizontalScrollIndicator={false} horizontal style={containerStyle}>
+        <ScrollView
+          contentInsetAdjustmentBehavior='scrollableAxes'
+          automaticallyAdjustContentInsets={false}
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          style={containerStyle(index)}
+          ref={this.scrollRef}
+        >
           {routes.map((route, idx) => {
             if (index === idx) {
               return (
-                <View key={idx} style={[tabStyle, selectedTabStyle, {backgroundColor: colors.blue}]}>
+                <View key={idx} style={[tabStyle, selectedTabStyle, {backgroundColor: tabColors[idx]}]}>
                   <Text style={[textStyle, selectedTextStyle]}>{route.routeName}</Text>
                 </View>
               );
             }
             return (
               <TouchableOpacity
-                style={[tabStyle, {backgroundColor: color[idx] }]}
+                style={[tabStyle, {backgroundColor: tabColors[idx] }]}
                 key={idx}
                 onPress={() => { navigation.navigate(route.routeName); }}
               >
@@ -47,34 +81,30 @@ export default class AppTabNavigation extends React.Component {
 }
 
 const styles = {
-  containerStyle: {
-    padding: 0,
-    borderBottomWidth: 3,
-    borderBottomColor: colors.blue,
-    flexDirection: 'row',
-    // justifyContent: 'space-between',
-    // backgroundColor: colors.grey,
-  },
   tabStyle: {
     flex: 1,
     marginRight: 1,
     marginLeft: 1,
     height: 30,
     width: 95,
+    marginTop: 8,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     backgroundColor: '#ffffff',
   },
   selectedTabStyle: {
-    backgroundColor: colors.blue,
+    // height:
+    marginTop: 0,
+    height: 38,
   },
   textStyle: {
     fontWeight: 'bold',
     textAlign: 'center',
     paddingTop: 10,
     fontSize: 13,
+    color: colors.white,
   },
   selectedTextStyle: {
-    color: '#ffffff',
+    // color: '#ffffff',
   },
 }

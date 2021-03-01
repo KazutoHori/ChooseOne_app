@@ -14,6 +14,7 @@ const screenWidth = Dimensions.get("window").width;
 import { Button, Checkbox,  } from 'galio-framework';
 
 import colors from '../utils/colors';
+import tabColors from '../utils/tabColors';
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -137,21 +138,21 @@ export default class QuestionCreate extends React.Component {
                 <Text style={styles.title}>Category</Text>
                 <View style={{ width: screenWidth*4/5, alignItems: 'center'}} >
                   <View style={[styles.block, {flexDirection: 'row'}]}>
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox onChange={() => this.setState({onNews:!this.state.onNews})} color={colors.blue} label="News" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox onChange={() => this.setState({onSports:!this.state.onSports})} color="success" label="Sports" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="primary" onChange={() => this.setState({onEntertainment:!this.state.onEntertainment})} label="Entertainment" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox onChange={() => this.setState({onNews:!this.state.onNews})} color={tabColors[2]} label="News" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox onChange={() => this.setState({onSports:!this.state.onSports})} color={tabColors[3]} label="Sports" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[4]} onChange={() => this.setState({onEntertainment:!this.state.onEntertainment})} label="Entertainment" />
                   </View>
                   <View style={[styles.block, {flexDirection: 'row'}]}>
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="info" onChange={() => this.setState({onHealth:!this.state.onHealth})} label="Health" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="success" onChange={() => this.setState({onLiving:!this.state.onLiving})} label="Living" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="primary" onChange={() => this.setState({onCareer:!this.state.Career})} label="Career" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="success" onChange={() => this.setState({onIT:!this.state.onIT})} label="IT" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[5]} onChange={() => this.setState({onHealth:!this.state.onHealth})} label="Health" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[6]} onChange={() => this.setState({onLiving:!this.state.onLiving})} label="Living" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[7]} onChange={() => this.setState({onCareer:!this.state.Career})} label="Career" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[9]} onChange={() => this.setState({onIT:!this.state.onIT})} label="IT" />
                   </View>
                   <View style={[styles.block, {flexDirection: 'row'}]}>
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="info" onChange={() => this.setState({onAcademics:!this.state.onAcademics})} label="Academics" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="primary" onChange={() => this.setState({onLove:!this.state.onLove})} label="Love" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="primary" onChange={() => this.setState({onQuiz:!this.state.onQuiz})} label="Quiz" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color="info" onChange={() => this.setState({onOther:!this.state.onOther})} label="Other" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[8]} onChange={() => this.setState({onAcademics:!this.state.onAcademics})} label="Academics" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[1]} onChange={() => this.setState({onLove:!this.state.onLove})} label="Love" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[10]} onChange={() => this.setState({onQuiz:!this.state.onQuiz})} label="Quiz" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[11]} onChange={() => this.setState({onOther:!this.state.onOther})} label="Other" />
                   </View>
                 </View>
 
