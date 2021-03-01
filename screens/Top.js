@@ -5,7 +5,7 @@ import {
   View,
   FlatList,
   ActivityIndicator,
-  Linking,
+  Linking, StatusBar,
   SafeAreaView, TouchableWithoutFeedback, Image, TouchableOpacity
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -30,6 +30,20 @@ export default class Top extends React.Component {
   //     navigate('QuestionDetail', { id });
   //   }
   // }
+
+  static navigationOptions = () => {
+    return {
+      headerStyle: {
+        backgroundColor: colors.red,
+      },
+      tabBarOptions: {
+        tabStyle: {
+          width: 100,
+          backgroundColor: colors.red,
+        },
+      },
+    };
+  };
 
   async _loadFontsAsync() {
     await Font.loadAsync(customFonts);
@@ -85,7 +99,7 @@ export default class Top extends React.Component {
           {loading && (
             <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
           )}
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => navigate('Top')}>
             <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 10, left: 20}}/>
           </TouchableWithoutFeedback>
           <TouchableOpacity style={{ position: 'absolute', right: 30, top: 7}}>

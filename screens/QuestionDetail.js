@@ -1,15 +1,18 @@
-import { Image, StyleSheet, View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Font from 'expo-font';
+import { Button, Radio } from 'galio-framework';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel}
+  from 'react-native-simple-radio-button';
 
 import colors from '../utils/colors';
 
 let customFonts  = {
   'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
-}
+};
 
 export default class QuestionDetail extends React.Component {
 
@@ -53,7 +56,9 @@ export default class QuestionDetail extends React.Component {
             created: "2021-02-23T07:51:42.275101Z",
           }
         ],
-      }
+      },
+      value: 0,
+      value3Index: null,
     };
   }
 
@@ -75,6 +80,11 @@ export default class QuestionDetail extends React.Component {
     const { navigation: { navigate }} = this.props;
     const { answered, madeit } = this.state;
 
+    for(let i=0; i<choices.length; i++){
+      choices[i]['label']=choices[i]['choice_text'];
+      choices[i]['value']=i;
+    }
+
     return (
       <View style={styles.container}>
         <View style={styles.back}>
@@ -84,12 +94,36 @@ export default class QuestionDetail extends React.Component {
         </View>
         <View style={styles.center}>
           <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>by {author} {created.slice(0,10)}</Text>
+          <Text style={styles.date}>created: {created.slice(0,10)}</Text>
         </View>
         <View style={styles.choices}>
-          {choices.map(choice => (
-            <Text style={styles.choice}>○　{choice.choice_text}</Text>
-          ))}
+          <View>
+            <RadioForm>
+              {choices.map((obj, i) => (
+                  <RadioButton　key={i}>
+                    <RadioButtonInput
+                      obj={obj}
+                      index={i}
+                      isSelected={this.state.value3Index === i}
+                      onPress={((value) => this.setState({ value3Index: value }))}
+                      borderWidth={2}
+                      // buttonOuterColor={this.state.value3Index === i ? '#2196f3' : '#000'}
+                      buttonSize={15}
+                      buttonWrapStyle={styles.choice}
+                    />
+                    <RadioButtonLabel
+                      obj={obj}
+                      index={i}
+                      labelHorizontal={true}
+                      onPress={((value) => this.setState({ value3Index: value }))}
+                      labelStyle={styles.choice}
+                      labelWrapStyle={{}}
+                    />
+                  </RadioButton>
+                ))
+              }
+            </RadioForm>
+          </View>
           {answered && (
             <TouchableOpacity style={styles.vote} onPress={() => navigate('QuestionResult')}>
               <Text style={styles.vote_text}>
@@ -167,7 +201,7 @@ const styles = StyleSheet.create({
   },
   date: {
     fontFamily: 'PlayfairDisplay-Medium',
-    fontSize: 9,
+    fontSize: 10,
     marginLeft: 10,
     color: '#457AFB',
   },

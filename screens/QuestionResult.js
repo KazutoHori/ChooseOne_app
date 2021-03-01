@@ -123,7 +123,7 @@ export default class QuestionDetail extends React.Component {
         </View>
         <View style={styles.center}>
           <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>by {author} {created.slice(0,10)}</Text>
+          <Text style={styles.date}>created: {created.slice(0,10)}</Text>
         </View>
 
         <View style={styles.first}>
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   },
   date: {
     fontFamily: 'PlayfairDisplay-Medium',
-    fontSize: 9,
+    fontSize: 10,
     marginLeft: 10,
     color: '#457AFB',
   },

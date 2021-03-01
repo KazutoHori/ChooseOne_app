@@ -11,6 +11,10 @@ let customFonts  = {
 
 export default class Question extends React.Component {
 
+  state = {
+    fontsLoaded: false,
+  };
+
   async _loadFontsAsync() {
     await Font.loadAsync(customFonts);
     this.setState({ fontsLoaded: true });
@@ -23,19 +27,23 @@ export default class Question extends React.Component {
   render() {
     const { author, id, title, created, choices, onPress } = this.props;
 
-    return (
-      <TouchableOpacity style={styles.container} onPress={onPress}>
-        <View>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>by {author} {created.slice(0,10)}</Text>
-          <View style={styles.choices}>
-            {choices.map(choice => (
-              <Text style={styles.choice}>○　{choice.choice_text}</Text>
-            ))}
+    if(this.state.fontsLoaded){
+      return (
+        <TouchableOpacity style={styles.container} onPress={onPress}>
+          <View>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.date}>by {author} {created.slice(0,10)}</Text>
+            <View style={styles.choices}>
+              {choices.map(choice => (
+                <Text style={styles.choice}>○　{choice.choice_text}</Text>
+              ))}
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    );
+        </TouchableOpacity>
+      );
+    }else{
+      return null;
+    }
   }
 }
 
