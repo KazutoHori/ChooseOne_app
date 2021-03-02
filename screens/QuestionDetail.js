@@ -79,7 +79,7 @@ export default class QuestionDetail extends React.Component {
   });
 
   render() {
-    const { question: {author, id, title, created, choices}, modalVisible } = this.state;
+    const { fontsLoaded, question: {author, id, title, created, choices}, modalVisible } = this.state;
     const { navigation: { navigate }} = this.props;
     const { answered, madeit } = this.state;
 
@@ -88,89 +88,93 @@ export default class QuestionDetail extends React.Component {
       choices[i]['value']=i;
     }
 
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity style={[styles.back,]} onPress={() => navigate('Top')}>
-          <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
-        </TouchableOpacity>
-        <View style={styles.center}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>created: {created.slice(0,10)}</Text>
-        </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            this.setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Are you sure you want to delete this question?</Text>
-              <View style={{ flexDirection: 'row'}}>
-                <Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
-                  No
-                </Button>
-                <Button style={{width: 100,}} color='theme' onPress={() => this.setState({ modalVisible: false})}>
-                  Delete
-                </Button>
+    if(fontsLoaded){
+      return (
+        <View style={styles.container}>
+          <TouchableOpacity style={[styles.back,]} onPress={() => navigate('Top')}>
+            <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
+          </TouchableOpacity>
+          <View style={styles.center}>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.date}>created: {created.slice(0,10)}</Text>
+          </View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              this.setModalVisible(!modalVisible);
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Are you sure you want to delete this question?</Text>
+                <View style={{ flexDirection: 'row'}}>
+                  <Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
+                    No
+                  </Button>
+                  <Button style={{width: 100,}} color='theme' onPress={() => this.setState({ modalVisible: false})}>
+                    Delete
+                  </Button>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
-        <View>
+          </Modal>
           <View>
-            <RadioForm>
-              {choices.map((obj, i) => (
-                  <RadioButton　key={i}>
-                    <RadioButtonInput
-                      obj={obj}
-                      index={i}
-                      isSelected={this.state.value3Index === i}
-                      onPress={((value) => this.setState({ value3Index: value }))}
-                      borderWidth={2}
-                      // buttonOuterColor={this.state.value3Index === i ? '#2196f3' : '#000'}
-                      buttonSize={15}
-                      buttonWrapStyle={styles.choice}
-                    />
-                    <RadioButtonLabel
-                      obj={obj}
-                      index={i}
-                      labelHorizontal={true}
-                      onPress={((value) => this.setState({ value3Index: value }))}
-                      labelStyle={styles.choice}
-                      labelWrapStyle={{}}
-                    />
-                  </RadioButton>
-                ))
-              }
-            </RadioForm>
-          </View>
-          {answered && (
-            <Button color={colors.blue} style={styles.vote} onPress={() => navigate('QuestionResult')}>
-              Vote!
-            </Button>
-          )}
-
-          {madeit && (
             <View>
-              <View style={styles.edit}>
-                <Button color='success' onPress={() => navigate('QuestionResult')}>
-                  Edit
-                </Button>
-              </View>
-              <View style={styles.delete}>
-                <Button color='theme' onPress={() => this.setState({ modalVisible: true})}>
-                  Delete
-                </Button>
-              </View>
+              <RadioForm>
+                {choices.map((obj, i) => (
+                    <RadioButton　key={i}>
+                      <RadioButtonInput
+                        obj={obj}
+                        index={i}
+                        isSelected={this.state.value3Index === i}
+                        onPress={((value) => this.setState({ value3Index: value }))}
+                        borderWidth={2}
+                        // buttonOuterColor={this.state.value3Index === i ? '#2196f3' : '#000'}
+                        buttonSize={15}
+                        buttonWrapStyle={styles.choice}
+                      />
+                      <RadioButtonLabel
+                        obj={obj}
+                        index={i}
+                        labelHorizontal={true}
+                        onPress={((value) => this.setState({ value3Index: value }))}
+                        labelStyle={styles.choice}
+                        labelWrapStyle={{}}
+                      />
+                    </RadioButton>
+                  ))
+                }
+              </RadioForm>
             </View>
-          )}
+            {answered && (
+              <Button color={colors.blue} style={styles.vote} onPress={() => navigate('QuestionResult')}>
+                Vote!
+              </Button>
+            )}
+
+            {madeit && (
+              <View>
+                <View style={styles.edit}>
+                  <Button color='success' onPress={() => navigate('QuestionResult')}>
+                    Edit
+                  </Button>
+                </View>
+                <View style={styles.delete}>
+                  <Button color='theme' onPress={() => this.setState({ modalVisible: true})}>
+                    Delete
+                  </Button>
+                </View>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-    );
+      );
+    }else{
+      return null;
+    }
   }
 }
 

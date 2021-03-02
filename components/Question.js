@@ -32,7 +32,7 @@ export default class Question extends React.Component {
         <TouchableOpacity style={styles.container} onPress={onPress}>
           <View>
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.date}>by {author} {created.slice(0,10)}</Text>
+            <Text style={styles.date}>Created: {created.slice(0,10)}</Text>
             <View style={styles.choices}>
               {choices.map(choice => (
                 <Text style={styles.choice}>○　{choice.choice_text}</Text>
