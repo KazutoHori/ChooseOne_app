@@ -284,10 +284,11 @@ const styles = StyleSheet.create({
     height: 40,
     width: screenWidth*7/9,
     borderRadius: 5,
-    marginTop: 7,
     paddingLeft: 10,
     paddingRight: 0,
-    // fontFamily: 'PlayfairDisplay-Regular',
+    textAlign: 'center',
+    fontSize: 17,
+    fontFamily: 'PlayfairDisplay-Regular',
   },
   form: {
     // marginTop: 10,
@@ -303,12 +304,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    marginTop: 20,
+    marginTop: 15,
     fontSize: 30,
     fontFamily: 'PlayfairDisplay-Regular',
   },
   semiTitle: {
-    marginTop: 20,
+    marginTop: 5,
     fontFamily: 'PlayfairDisplay-Regular',
   }
 })
