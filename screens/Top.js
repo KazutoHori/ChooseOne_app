@@ -21,16 +21,6 @@ const options = {
 
 export default class Top extends React.Component {
 
-  // renderPushView () {
-  //   const { navigation: { navigate } } = this.props;
-  //
-  //   const question = this.state.questions[0];
-  //
-  //   if(question) {
-  //     navigate('QuestionDetail', { id });
-  //   }
-  // }
-
   static navigationOptions = () => {
     return {
       headerStyle: {
@@ -82,6 +72,7 @@ export default class Top extends React.Component {
       questions: Questions,
       loading: true,
       error: false,
+      refreshing: false,
     };
     this.scrollRef = React.createRef();
   }
@@ -92,9 +83,16 @@ export default class Top extends React.Component {
     });
   };
 
+  doRefresh = () => {
+    this.setState({ refreshing: true });
+    /// do refresh work here /////
+    //////////////////////////////
+    setTimeout( () => this.setState({refreshing: false}), 5000);
+  }
+
   render() {
     // const { style, commentsForItem, onPressComments } = this.props;
-    const { loading, error, questions } = this.state;
+    const { loading, error, questions, refreshing } = this.state;
     const { navigation: { navigate } } = this.props;
 
     return (
@@ -103,7 +101,7 @@ export default class Top extends React.Component {
           {loading && (
             <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
           )}
-          <TouchableWithoutFeedback onPress={() => this.scrollRef.current.scrollToOffset({ animated: true, offset: 0}) }>
+          <TouchableWithoutFeedback onPress={() => {this.scrollRef.current.scrollToOffset({ animated: true, offset: 0}); this.setState({refreshing: true}, () => this.doRefresh); }}>
             <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 10, left: 20}}/>
           </TouchableWithoutFeedback>
           <TouchableOpacity style={{ position: 'absolute', right: 30, top: 7}}>
@@ -113,7 +111,9 @@ export default class Top extends React.Component {
         <QuestionList
           questions={questions}
           passRef={this.scrollRef}
-          onPress={() => navigate('QuestionDetail', { id: 1 } )}
+          doRefresh={this.doRefresh}
+          refresh={refreshing}
+          onPress={() => navigate('QuestionDetail', { question: questions[0] } )}
         />
       </SafeAreaView>
       // <View style={styles.test}>

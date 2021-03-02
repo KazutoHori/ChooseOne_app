@@ -63,6 +63,7 @@ export default class QuestionDetail extends React.Component {
         ],
       },
       modalVisible: false,
+      error: '',
     };
   }
 
@@ -73,12 +74,30 @@ export default class QuestionDetail extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
+
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { question, question: {id, author, title, created, choices } } = params;
+
+    var copy=choices;
+    copy.sort(function(first, second){
+      if (first.votes > second.votes){
+        return -1;
+      }else if (first.votes < second.votes){
+        return 1;
+      }else{
+        return 0;
+      }
+    });
+
+    this.setState({ id, author, title, created, copy });
+    this.setState({ error: 'You have votes for soccer!' });
+    // setTimeout(() => this.setState({ error: ''}),2500);
   }
 
   render() {
-    const { question: {author, id, title, created, choices}, modalVisible } = this.state;
-    const { navigation: { navigate }} = this.props;
-    const { answered, madeit } = this.state;
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { question: {id, author, title, created, choices } } = params;
+    const { error, fontsLoaded, modalVisible, answered, madeit } = this.state;
 
     var pie_data = Array.from(choices);
     const aaa = created.slice(17, 19);
@@ -116,6 +135,7 @@ export default class QuestionDetail extends React.Component {
       borderTopWidth: 0.4,
     });
 
+    if (!fontsLoaded) return null;
     return (
       <ScrollView style={styles.container}>
         <View style={styles.back}>
@@ -151,6 +171,7 @@ export default class QuestionDetail extends React.Component {
           </View>
         </Modal>
 
+        <View style={{alignItems: 'center'}}><Text style={{ fontSize: 18, color: 'hsla(800, 65%, 45%, 1)', fontFamily: 'PlayfairDisplay-Medium', }}>{error}</Text></View>
         <View style={styles.first}>
           <Text style={styles.c_text}>Choice</Text>
           <Text style={styles.v_text}>Votes</Text>
@@ -194,9 +215,9 @@ export default class QuestionDetail extends React.Component {
           width={screenWidth}
           height={300}
           yAxisLabel=""
+          fromZero
           verticalLabelRotation={30}
           backgroundColor={colors.white}
-          fromZero
           withInnerLines={true}
           segments={3}
           showBarTops={false}
@@ -314,7 +335,7 @@ const styles = StyleSheet.create({
   first: {
     flexDirection: 'row',
     backgroundColor: colors.white,
-    marginTop: 30,
+    marginTop: 10,
     height: 50,
   },
   c_text: {

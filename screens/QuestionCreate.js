@@ -15,6 +15,7 @@ import { Button, Checkbox,  } from 'galio-framework';
 
 import colors from '../utils/colors';
 import tabColors from '../utils/tabColors';
+import Questions from '../utils/questions';
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -41,7 +42,6 @@ export default class QuestionCreate extends React.Component {
   state = {
     fontsLoaded: false,
     loading: true,
-    text: '',
     onNews: false,
     onSports: false,
     onEntertainment: false,
@@ -54,6 +54,11 @@ export default class QuestionCreate extends React.Component {
     onOther: false,
     onIT: false,
     add_choice: 0,
+
+    title: '',
+    choices: Array(10),
+    error: '',
+    current: new Date().toLocaleString(),
   };
 
   handleLoad = () => {
@@ -71,21 +76,78 @@ export default class QuestionCreate extends React.Component {
     this._loadFontsAsync();
   }
 
-  handleChangeText = text => {
-    this.setState({ text });
+  titleChangeText = title => {
+    this.setState({ title });
   };
 
-  handleSubmitEditing = () => {
-    // const { onSubmit } = this.props;
-    const { text } = this.state;
+  choiceChangeText = (text, idx) => {
+    const { choices } = this.state;
+    const　copy = choices.slice();
+    copy[idx] = text;
 
-    // onSubmit(text);
-    this.setState({ text: '' });
+    this.setState({ choices: copy });
+  };
+
+  onSubmit = () => {
+    const { fontsLoaded, loading, onNews, onSports, onEntertainment,
+      onHealth, onQuiz, onCareer, onLiving, onLove, onAcademics, onOther, error,
+      onIT, add_choice, title, choices, } = this.state;
+    const { navigation: { navigate }} = this.props;
+
+    const new_choices = [];
+    for(var i=0; i<10; i++){
+      if(choices[i] !== undefined || choices[i]===''){
+        new_choices.push({
+          choice_text: choices[i],
+          votes: 0,
+        });
+      }
+    }
+
+    if(title === ''){
+      this.setState({ error: 'Title cannot be empty'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+
+    if(new_choices.length<2) {
+      this.setState({ error: 'Choices must be more than two'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+
+    var S = new Set(new_choices);
+    if(new_choices.length!=S.length) {
+      this.setState({ error: 'There are same choices'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+
+    if(!onNews && !onSports && !onEntertainment && !onHealth && !onQuiz && !onCareer && !onLiving && !onLove && !onAcademics && !onOther && !onIT){
+      this.setState({ error: 'Category cannot be empty'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+
+    let current=new Date();
+    let new_question = {
+        id: toString(Questions.length+1),
+        id: 1,
+        title: title,
+        author: 'Kazuto',
+        created: current.getFullYear()+'-'+('0'+current.getMonth()).slice(-2)+'-'+('0'+current.getDate()).slice(-2),
+        choices: new_choices,
+        comments: [],
+    }
+
+    questions.push(new_question);
+    navigate('QuestionDetail', { question: new_question});
   };
 
   render() {
-    const { loading, text, fontsLoaded, add_choice } = this.state;
+    const { error, choices, loading, title, fontsLoaded, add_choice } = this.state;
     const { navigation: { navigate }} = this.props;
+    var current=this.state.current.split('/');
 
     var added=[];
     for (let i=0; i<add_choice; i++){
@@ -94,10 +156,9 @@ export default class QuestionCreate extends React.Component {
           <View style={styles.semiTitle} />
           <TextInput
             style={[styles.input]}
-            value={text}
+            value={choices[2+i]}
             underlineColorAndroid="transparent"
-            onChangeText={this.handleChangeText}
-            onSubmitEditing={this.handleSubmitEditing}
+            onChangeText={(text) => this.choiceChangeText(text, (i+2))}
             placeholder={'Choice '+(3+i)}
           />
         </View>
@@ -129,12 +190,40 @@ export default class QuestionCreate extends React.Component {
                 <View style={styles.semiTitle} />
                 <TextInput
                   style={styles.input}
-                  value={text}
+                  value={title}
                   underlineColorAndroid="transparent"
-                  onChangeText={this.handleChangeText}
-                  onSubmitEditing={this.handleSubmitEditing}
+                  onChangeText={this.titleChangeText}
+                  // onSubmitEditing={this.handleSubmitEditing}
                   placeholder={'Title'}
                 />
+
+                <Text style={styles.title}>Choices</Text>
+                <View style={styles.semiTitle} />
+                <TextInput
+                  style={styles.input}
+                  value={choices[0]}
+                  underlineColorAndroid="transparent"
+                  onChangeText={(text) => this.choiceChangeText(text, 0)}
+                  // onSubmitEditing={this.choiceSubmitEditing}
+                  placeholder={'Choice 1'}
+                />
+                <View style={styles.semiTitle} />
+                <TextInput
+                  style={styles.input}
+                  value={choices[1]}
+                  underlineColorAndroid="transparent"
+                  onChangeText={(text) => this.choiceChangeText(text, 1)}
+                  // onSubmitEditing={this.choice}
+                  placeholder={'Choice 2'}
+                />
+                {add_choice !== 0 && (
+                  [added]
+                )}
+                <Button style={{ width: screenWidth*4/9, marginTop: 20,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color={colors.blue}>Add New Choice</Button>
+                {add_choice !==0 && (
+                  <Button style={{ width: screenWidth*4/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice-1 })} color="theme">Remove Last Choice</Button>
+                )}
+
                 <Text style={styles.title}>Category</Text>
                 <View style={{ width: screenWidth*4/5, alignItems: 'center'}} >
                   <View style={[styles.block, {flexDirection: 'row'}]}>
@@ -143,48 +232,21 @@ export default class QuestionCreate extends React.Component {
                     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[4]} onChange={() => this.setState({onEntertainment:!this.state.onEntertainment})} label="Entertainment" />
                   </View>
                   <View style={[styles.block, {flexDirection: 'row'}]}>
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[5]} onChange={() => this.setState({onHealth:!this.state.onHealth})} label="Health" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[1]} onChange={() => this.setState({onLove:!this.state.onLove})} label="Love" />
                     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[6]} onChange={() => this.setState({onLiving:!this.state.onLiving})} label="Living" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[7]} onChange={() => this.setState({onCareer:!this.state.Career})} label="Career" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[9]} onChange={() => this.setState({onIT:!this.state.onIT})} label="IT" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[10]} onChange={() => this.setState({onQuiz:!this.state.onQuiz})} label="Quiz" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[8]} onChange={() => this.setState({onAcademics:!this.state.onAcademics})} label="Academics" />
                   </View>
                   <View style={[styles.block, {flexDirection: 'row'}]}>
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[8]} onChange={() => this.setState({onAcademics:!this.state.onAcademics})} label="Academics" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[1]} onChange={() => this.setState({onLove:!this.state.onLove})} label="Love" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[10]} onChange={() => this.setState({onQuiz:!this.state.onQuiz})} label="Quiz" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[11]} onChange={() => this.setState({onOther:!this.state.onOther})} label="Other" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[5]} onChange={() => this.setState({onHealth:!this.state.onHealth})} label="Health" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[9]} onChange={() => this.setState({onIT:!this.state.onIT})} label="IT" />
+                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[7]} onChange={() => this.setState({onCareer:!this.state.Career})} label="Career" />
                   </View>
                 </View>
 
-                <Text style={styles.title}>Choices</Text>
-                <View style={styles.semiTitle} />
-                <TextInput
-                  style={styles.input}
-                  value={text}
-                  underlineColorAndroid="transparent"
-                  onChangeText={this.handleChangeText}
-                  onSubmitEditing={this.handleSubmitEditing}
-                  placeholder={'Choice 1'}
-                />
-                <View style={styles.semiTitle} />
-                <TextInput
-                  style={styles.input}
-                  value={text}
-                  underlineColorAndroid="transparent"
-                  onChangeText={this.handleChangeText}
-                  onSubmitEditing={this.handleSubmitEditing}
-                  placeholder={'Choice 2'}
-                />
-                {add_choice !== 0 && (
-                  [added]
-                )}
-                <Button style={{ width: screenWidth*7/9, marginTop: 20,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color={colors.blue}>Add New Choice</Button>
-                {add_choice !==0 && (
-                  <Button style={{ width: screenWidth*7/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice-1 })} color="theme">Remove Last Choice</Button>
-                )}
-
-                <Text style={{  marginTop: 40, }}>You can edit after you make one.</Text>
-                <Button style={{ width: screenWidth*7/9, marginTop: 10,  }} color='success'>Add Question</Button>
+                {error !== '' && (<View style={{ marginTop: 40 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
+                {!error && (<Text style={{  marginTop: 40, }}>You can edit after you make one.</Text>)}
+                <Button onPress={this.onSubmit} style={{ width: screenWidth*7/9, marginTop: 10,  }} color='success'>Add Question</Button>
 
               </View>
               <View style={{ height: 200 }} />
@@ -250,3 +312,6 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Regular',
   }
 })
+
+
+// <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[11]} onChange={() => this.setState({onOther:!this.state.onOther})} label="Other" />

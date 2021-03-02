@@ -1,4 +1,4 @@
-import { FlatList } from 'react-native';
+import { FlatList, RefreshControl } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -26,7 +26,7 @@ export default class QuestionList extends React.Component {
   };
 
   render() {
-    const { questions, passRef  } = this.props;
+    const { questions, passRef, doRefresh, refreshing  } = this.props;
 
     return (
       <FlatList
@@ -34,6 +34,12 @@ export default class QuestionList extends React.Component {
         ref={passRef}
         renderItem={this.renderItem}
         keyExtractor={keyExtractor}
+        refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={doRefresh}
+            />
+        }
         // extraData={commentsForItem}
       />
     );

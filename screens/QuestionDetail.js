@@ -62,6 +62,7 @@ export default class QuestionDetail extends React.Component {
       value: 0,
       value3Index: null,
       modalVisible: false,
+      error: '',
     };
   }
 
@@ -78,10 +79,30 @@ export default class QuestionDetail extends React.Component {
 
   });
 
+  onVote = () => {
+    const { error, value3Index } = this.state;
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { question, question: { id, choices} , } = params;
+    if(value3Index === null){
+      this.setState({ error: 'You have not chosen yet'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+
+    var copy=choices;
+    copy[value3Index].votes=copy[value3Index].votes+1;
+    this.setState({ choices: copy });
+    this.setState({ error:  copy[value3Index].votes });
+    setTimeout(() => this.setState({ error: ''}),2500);
+
+    navigate('QuestionResult', { question: question })
+  }
+
   render() {
-    const { fontsLoaded, question: {author, id, title, created, choices}, modalVisible } = this.state;
-    const { navigation: { navigate }} = this.props;
-    const { answered, madeit } = this.state;
+    const { fontsLoaded, modalVisible } = this.state;
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { question, question: {id, author, title, created, choices } } = params;
+    const { error, answered, madeit } = this.state;
 
     for(let i=0; i<choices.length; i++){
       choices[i]['label']=choices[i]['choice_text'];
@@ -149,8 +170,9 @@ export default class QuestionDetail extends React.Component {
                 }
               </RadioForm>
             </View>
+            {error !== '' && (<View style={{ marginLeft: 110 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
             {answered && (
-              <Button color={colors.blue} style={styles.vote} onPress={() => navigate('QuestionResult')}>
+              <Button color={colors.blue} style={styles.vote} onPress={this.onVote}>
                 Vote!
               </Button>
             )}
