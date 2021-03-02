@@ -138,11 +138,9 @@ export default class QuestionDetail extends React.Component {
     if (!fontsLoaded) return null;
     return (
       <ScrollView style={styles.container}>
-        <View style={styles.back}>
-          <TouchableOpacity onPress={() => navigate('Top')}>
-            <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.back} onPress={() => navigate('Top')}>
+          <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
+        </TouchableOpacity>
         <View style={styles.center}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.date}>created: {created.slice(0,10)}</Text>
