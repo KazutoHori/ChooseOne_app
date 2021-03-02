@@ -177,11 +177,8 @@ export default class QuestionCreate extends React.Component {
                 <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
               )}
               <TouchableWithoutFeedback onPress={() => navigate('QuestionCreate')}>
-                <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 40,}}/>
+                <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} />
               </TouchableWithoutFeedback>
-              <TouchableOpacity style={{ position: 'absolute', right: 40, top: 13}}>
-                <Icon name={'search'} size={30} style={{ color: colors.grey }} />
-              </TouchableOpacity>
             </View>
             <ScrollView style={styles.container}>
               <View style={styles.form}>
@@ -269,12 +266,13 @@ const styles = StyleSheet.create({
   },
   topbar: {
     width: screenWidth,
-    flexDirection: 'row',
     height: 60,
     backgroundColor: 'red',
     borderTopWidth: 0.3,
     borderColor: 'white',
     borderBottomWidth: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
     // marginBottom: 10,
   },
   input: {
