@@ -58,7 +58,7 @@ export default class QuestionAnswered extends React.Component {
     this._loadFontsAsync();
   }
 
-  handleChangeText = text => {
+  nameChangeText = text => {
     this.setState({ text });
   };
 
@@ -99,16 +99,19 @@ export default class QuestionAnswered extends React.Component {
             <View style={styles.form}>
               <Text>Name</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, {textAlign: 'center'}]}
                 value={text}
+                autoCorrect={false}
                 underlineColorAndroid="transparent"
                 onChangeText={this.handleChangeText}
                 onSubmitEditing={this.handleSubmitEditing}
               />
               <Text>Comments</Text>
               <TextInput
-                style={[styles.input, { height: 300,}]}
+                style={[styles.input, { height: 300 }]}
+                multiline={true}
                 value={text}
+                autoCorrect={false}
                 underlineColorAndroid="transparent"
                 onChangeText={this.handleChangeText}
                 onSubmitEditing={this.handleSubmitEditing}
@@ -163,6 +166,7 @@ const styles = StyleSheet.create({
     width: screenWidth*5/7,
     borderRadius: 5,
     marginTop: 7,
-    // fontFamily: 'PlayfairDisplay-Regular',
+    fontSize: 12,
+    fontFamily: 'PlayfairDisplay-Regular',
   },
 });

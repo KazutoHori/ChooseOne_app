@@ -7,8 +7,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Font from 'expo-font';
 import { Button, Radio } from 'galio-framework';
+import { Button as Button_c } from 'react-native-paper';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel}
   from 'react-native-simple-radio-button';
+import { Dimensions } from "react-native";
+const screenWidth = Dimensions.get("window").width;
+const screenHeight = Dimensions.get('window').height;
 
 import colors from '../utils/colors';
 
@@ -143,54 +147,32 @@ export default class QuestionDetail extends React.Component {
         </Modal>
         <View>
           <View>
-            <RadioForm>
-              {choices.map((obj, i) => (
-                  <RadioButton　key={i}>
-                    <RadioButtonInput
-                      obj={obj}
-                      index={i}
-                      isSelected={this.state.value3Index === i}
-                      onPress={((value) => this.setState({ value3Index: value }))}
-                      borderWidth={2}
-                      // buttonOuterColor={this.state.value3Index === i ? '#2196f3' : '#000'}
-                      buttonSize={15}
-                      buttonWrapStyle={styles.choice}
-                    />
-                    <RadioButtonLabel
-                      obj={obj}
-                      index={i}
-                      labelHorizontal={true}
-                      onPress={((value) => this.setState({ value3Index: value }))}
-                      labelStyle={styles.choice}
-                      labelWrapStyle={{}}
-                    />
-                  </RadioButton>
-                ))
-              }
-            </RadioForm>
+            {choices.map((obj, i) => {
+                const { value3Index } = this.state;
+                if(value3Index === i) var m='contained';
+                else var m='outlined';
+                return (
+                  <Button_c color={colors.blue} mode={m} style={styles.choice} onPress={() => this.setState({ value3Index: i }) }>
+                    {obj.choice_text}
+                  </Button_c>
+                );
+              })
+            }
           </View>
-          {error !== '' && (<View style={{ marginLeft: 110 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
+          {error !== '' && (<View style={{ marginLeft: 16 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
           {answered && (
-            <Button color={colors.blue} style={styles.vote} onPress={this.onVote}>
+            <Button color={'success'} style={styles.vote} onPress={this.onVote}>
               Vote!
             </Button>
           )}
-
-          {madeit && (
-            <View>
-              <View style={styles.edit}>
-                <Button color='success' onPress={() => navigate('QuestionResult')}>
-                  Edit
-                </Button>
-              </View>
-              <View style={styles.delete}>
-                <Button color='theme' onPress={() => this.setState({ modalVisible: true})}>
-                  Delete
-                </Button>
-              </View>
-            </View>
-          )}
         </View>
+        {madeit && (
+          <View style={styles.delete}>
+            <Button color='theme' onPress={() => this.setState({ modalVisible: true})}>
+              Delete
+            </Button>
+          </View>
+        )}
       </View>
     );
   }
@@ -227,17 +209,18 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   edit: {
-    marginTop: 100,
+    // marginTop: 40,
     marginLeft: 90,
   },
   delete: {
-    marginTop: 15,
-    marginLeft: 90,
+    position: 'absolute',
+    bottom: 30,
   },
   container: {
     flex: 1,
     backgroundColor: colors.grey,
-    // justifyContent: 'center',
+    alignItems: 'center',
+    height: screenHeight,
   },
   back: {
     padding: 10,
@@ -262,11 +245,45 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Medium',
     fontSize: 15,
     marginBottom: 15,
-    left: 100,
+    borderWidth: 0.7,
+    borderColor: colors.blue,
+    // buttonSize: 15,
   },
   vote: {
     // alignItems: 'flex-start',
-    marginLeft: 100,
+    // marginLeft: 100,
     marginTop: 10,
   },
 });
+
+// <RadioForm>
+//   {choices.map((obj, i) => (
+//       <RadioButton　key={i}>
+//         <RadioButtonInput
+//           obj={obj}
+//           index={i}
+//           isSelected={this.state.value3Index === i}
+//           onPress={((value) => this.setState({ value3Index: value }))}
+//           borderWidth={2}
+//           // buttonOuterColor={this.state.value3Index === i ? '#2196f3' : '#000'}
+//           buttonSize={15}
+//           buttonWrapStyle={styles.choice}
+//         />
+//         <RadioButtonLabel
+//           obj={obj}
+//           index={i}
+//           labelHorizontal={true}
+//           onPress={((value) => this.setState({ value3Index: value }))}
+//           labelStyle={styles.choice}
+//           labelWrapStyle={{}}
+//         />
+//       </RadioButton>
+//     ))
+//   }
+// </RadioForm>
+
+  // <View style={styles.edit}>
+  //   <Button color='success' onPress={() => navigate('QuestionResult')}>
+  //     Edit
+  //   </Button>
+  // </View>

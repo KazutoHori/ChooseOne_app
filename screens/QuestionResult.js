@@ -252,11 +252,6 @@ export default class QuestionDetail extends React.Component {
         {madeit && (
           <View style={styles.buttons}>
             <View>
-              <Button color='success' onPress={() => this.setState({ modalVisible: true})}>
-                Edit
-              </Button>
-            </View>
-            <View>
               <Button color='theme' onPress={() => this.setState({modalVisible:true})}>
                 Delete
               </Button>
@@ -265,11 +260,9 @@ export default class QuestionDetail extends React.Component {
         )}
 
         <View style={{ marginTop: 40}} />
-        <View style={styles.back }>
-          <TouchableOpacity onPress={() => navigate('Top')}>
-            <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.back } onPress={() => navigate('Top')}>
+          <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
+        </TouchableOpacity>
         <View style={{ marginBottom: 40}} />
       </ScrollView>
     );
@@ -433,3 +426,10 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Medium',
   },
 });
+
+
+// <View>
+//   <Button color='success' onPress={() => this.setState({ modalVisible: true})}>
+//     Edit
+//   </Button>
+// </View>
