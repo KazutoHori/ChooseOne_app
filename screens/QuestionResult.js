@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { PieChart, BarChart } from 'react-native-chart-kit';
 import { Dimensions } from "react-native";
 import * as Font from 'expo-font';
-import { Button, Radio } from 'galio-framework';
+import { Button, Radio, theme, withGalio, GalioProvider } from 'galio-framework';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -90,7 +90,7 @@ export default class QuestionDetail extends React.Component {
     });
 
     this.setState({ id, author, title, created, copy });
-    this.setState({ error: 'You have votes for soccer!' });
+    this.setState({ error: 'You have voted for soccer!' });
     // setTimeout(() => this.setState({ error: ''}),2500);
   }
 
@@ -251,6 +251,12 @@ export default class QuestionDetail extends React.Component {
 
         {madeit && (
           <View style={styles.buttons}>
+            <View>
+              <Button color={colors.blue} onPress={() => this.setState({ modalVisible: true})}>
+                <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
+                <Text style={{ color: 'white' }}>Like it!</Text>
+              </Button>
+            </View>
             <View>
               <Button color='theme' onPress={() => this.setState({modalVisible:true})}>
                 Delete

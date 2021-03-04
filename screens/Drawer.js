@@ -69,6 +69,12 @@ export default class About extends React.Component {
               <Icon name={'chevron-right'} size={'12'} style={styles.arrow} />
             </TouchableOpacity>
           </View>
+          <View style={styles.third}>
+            <TouchableOpacity style={{marginTop: 10 }} onPress={() => navigate('AccountSetting') }>
+              <Text style={styles.text}>Liked Questions</Text>
+              <Icon name={'chevron-right'} size={'12'} style={styles.arrow} />
+            </TouchableOpacity>
+          </View>
         </View>
       );
     }else{
@@ -78,6 +84,12 @@ export default class About extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  third: {
+    paddingTop: 10,
+    paddingBottom: 20,
+    borderColor: colors.darkGrey,
+    borderBottomWidth: 1,
+  },
   second: {
     paddingBottom: 20,
     borderColor: colors.darkGrey,

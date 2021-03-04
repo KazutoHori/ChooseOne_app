@@ -11,6 +11,8 @@ import { Button as Button_c } from 'react-native-paper';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel}
   from 'react-native-simple-radio-button';
 import { Dimensions } from "react-native";
+import LoginForm from './LoginForm';
+
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get('window').height;
 
@@ -115,7 +117,7 @@ export default class QuestionDetail extends React.Component {
     if(!fontsLoaded) return null;
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={[styles.back,]} onPress={() => navigate('Top')}>
+        <TouchableOpacity style={styles.back} onPress={() => navigate('Top')}>
           <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
         </TouchableOpacity>
         <View style={styles.center}>
@@ -138,7 +140,7 @@ export default class QuestionDetail extends React.Component {
                 <Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
                   No
                 </Button>
-                <Button style={{width: 100,}} color='theme' onPress={() => this.setState({ modalVisible: false})}>
+                <Button style={{width: 100,}} color='theme' onPress={() => { this.setState({ modalVisible: false}); navigate('Top') }}>
                   Delete
                 </Button>
               </View>
@@ -146,13 +148,13 @@ export default class QuestionDetail extends React.Component {
           </View>
         </Modal>
         <View>
-          <View>
+          <View style={{ marginBottom: 10, }}>
             {choices.map((obj, i) => {
                 const { value3Index } = this.state;
                 if(value3Index === i) var m='contained';
                 else var m='outlined';
                 return (
-                  <Button_c color={colors.blue} mode={m} style={styles.choice} onPress={() => this.setState({ value3Index: i }) }>
+                  <Button_c labelStyle={styles.l_choice} color={colors.blue} mode={m} style={styles.choice} onPress={() => this.setState({ value3Index: i }) }>
                     {obj.choice_text}
                   </Button_c>
                 );
@@ -165,12 +167,22 @@ export default class QuestionDetail extends React.Component {
               Vote!
             </Button>
           )}
+
+
         </View>
         {madeit && (
-          <View style={styles.delete}>
-            <Button color='theme' onPress={() => this.setState({ modalVisible: true})}>
-              Delete
-            </Button>
+          <View style={styles.buttons}>
+            <View>
+              <Button color={colors.blue} onPress={() => this.setState({ modalVisible: true})}>
+                <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
+                <Text style={{ color: 'white' }}>Interesting!</Text>
+              </Button>
+            </View>
+            <View>
+              <Button color='theme' onPress={() => this.setState({modalVisible:true})}>
+                Delete
+              </Button>
+            </View>
           </View>
         )}
       </View>
@@ -179,6 +191,13 @@ export default class QuestionDetail extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+    position: 'absolute',
+    bottom: 30,
+  },
   modalText: {
     marginBottom: 15,
     fontSize: 20,
@@ -240,13 +259,17 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: '#457AFB',
   },
+  l_choice: {
+    // fontFamily: 'PlayfairDisplay-Medium',
+  },
   choice: {
     // alignItems: 'flex-start',
     fontFamily: 'PlayfairDisplay-Medium',
     fontSize: 15,
-    marginBottom: 15,
+    marginBottom: 12,
     borderWidth: 0.7,
     borderColor: colors.blue,
+    borderRadius: 15,
     // buttonSize: 15,
   },
   vote: {
@@ -255,6 +278,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
+
+// {madeit && (
+//   <View style={styles.delete}>
+//     <Button color='theme' onPress={() => this.setState({ modalVisible: true})}>
+//       Delete
+//     </Button>
+//   </View>
+// )}
+
 
 // <RadioForm>
 //   {choices.map((obj, i) => (

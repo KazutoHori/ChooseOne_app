@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 import { Button, Checkbox,  } from 'galio-framework';
+import { Button as Button_c } from 'react-native-paper';
 
 import colors from '../utils/colors';
 import tabColors from '../utils/tabColors';
@@ -21,6 +22,11 @@ let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
+
+let all_cat = [
+  'Top', 'Love', 'News', 'Sports', 'Entertainment', 'Health', 'Living', 'Career', 'Academics',
+  'IT', 'Quiz',
+];
 
 export default class QuestionCreate extends React.Component {
   static navigationOptions = () => ({
@@ -41,18 +47,7 @@ export default class QuestionCreate extends React.Component {
 
   state = {
     fontsLoaded: false,
-    loading: true,
-    onNews: false,
-    onSports: false,
-    onEntertainment: false,
-    onHealth: false,
-    onQuiz: false,
-    onCareer: false,
-    onLiving: false,
-    onLove: false,
-    onAcademics: false,
-    onOther: false,
-    onIT: false,
+    categories: [],
     add_choice: 0,
 
     title: '',
@@ -81,16 +76,15 @@ export default class QuestionCreate extends React.Component {
 
   choiceChangeText = (text, idx) => {
     const { choices } = this.state;
-    const　copy = choices.slice();
+    var copy = choices.slice();
     copy[idx] = text;
 
     this.setState({ choices: copy });
   };
 
   onSubmit = () => {
-    const { fontsLoaded, loading, onNews, onSports, onEntertainment,
-      onHealth, onQuiz, onCareer, onLiving, onLove, onAcademics, onOther, error,
-      onIT, add_choice, title, choices, } = this.state;
+    const { fontsLoaded, loading, error, add_choice, title, choices, categories,
+      } = this.state;
     const { navigation: { navigate }} = this.props;
 
     const new_choices = [];
@@ -122,7 +116,7 @@ export default class QuestionCreate extends React.Component {
       return null;
     }
 
-    if(!onNews && !onSports && !onEntertainment && !onHealth && !onQuiz && !onCareer && !onLiving && !onLove && !onAcademics && !onIT){
+    if(categories.length === 0){
       this.setState({ error: 'Category cannot be empty'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
@@ -139,30 +133,31 @@ export default class QuestionCreate extends React.Component {
         comments: [],
     }
 
-    if(onNews) this.setState({ onNews: !onNews });
-    if(onEntertainment) this.setState({ onEntertainment: !onEntertainment });
-    if(onHealth) this.setState({ onHealth: !onHealth });
-    if(onQuiz) this.setState({ onQuiz: !onQuiz });
-    if(onCareer) this.setState({ onCareer: !onCareer });
-    if(onLiving) this.setState({ onLiving: !onLiving });
-    if(onLove) this.setState({ onLove: !onLove });
-    if(onAcademics) this.setState({ onAcademics: !onAcademics });
-    if(onIT) this.setState({ onIT: !onIT });
-
     questions.push(new_question);
     this.setState({
       add_choice: 0,
       title: '',
       choices: Array(10),
       error: '',
+      categories: [],
     });
     navigate('QuestionDetail', { question: new_question});
   };
 
+  onCategory = idx => {
+    const { categories } = this.state;
+    var copy=categories.slice();
+    if(copy.includes(all_cat[idx])){
+      copy=copy.filter(c => c !== all_cat[idx]);
+    }else{
+      copy.push(all_cat[idx]);
+    }
+    this.setState({ categories: copy });
+  }
+
   render() {
-    const { fontsLoaded, loading, onNews, onSports, onEntertainment,
-      onHealth, onQuiz, onCareer, onLiving, onLove, onAcademics, onOther, error,
-      onIT, add_choice, title, choices, } = this.state;
+    const { fontsLoaded, loading, categories, error,
+      add_choice, title, choices, } = this.state;
     const { navigation: { navigate }} = this.props;
 
     var added=[];
@@ -236,7 +231,7 @@ export default class QuestionCreate extends React.Component {
                 {add_choice !== 0 && (
                   [added]
                 )}
-                {add_choice < 6 && (
+                {add_choice < 8 && (
                   <Button style={{ width: screenWidth*4/9, marginTop: 20,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color={colors.blue}>Add New Choice</Button>
                 )}
                 {add_choice !==0 && (
@@ -244,27 +239,50 @@ export default class QuestionCreate extends React.Component {
                 )}
 
                 <Text style={styles.title}>Category</Text>
-                <View style={{ width: screenWidth*4/5, alignItems: 'center'}} >
+                <View style={{ marginTop: 10, width: screenWidth*4/5, alignItems: 'center'}} >
                   <View style={[styles.block, {flexDirection: 'row'}]}>
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={false} onChange={() => this.setState({onNews: !onNews})} color={tabColors[2]} label="News" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={true} onChange={() => this.setState({onSports: !onSports})} color={tabColors[3]} label="Sports" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onEntertainment} color={tabColors[4]} onChange={() => this.setState({onEntertainment: !onEntertainment})} label="Entertainment" />
+                    {all_cat.map((cate, idx) => {
+                      if(idx < 1 || idx >=4) return null;
+                      const { categories } = this.state;
+                      if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                      else { var m='outlined'; var sselected=null; }
+                      return (
+                        <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]} mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
+                          {cate}
+                        </Button_c>
+                      );
+                    })}
                   </View>
                   <View style={[styles.block, {flexDirection: 'row'}]}>
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onLove} color={tabColors[1]} onChange={() => this.setState({onLove: !onLove})} label="Love" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onLiving} color={tabColors[6]} onChange={() => this.setState({onLiving: !onLiving})} label="Living" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onQuiz} color={tabColors[10]} onChange={() => this.setState({onQuiz: !onQuiz})} label="Quiz" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onAcademics} color={tabColors[8]} onChange={() => this.setState({onAcademics: !onAcademics})} label="Academics" />
+                    {all_cat.map((cate, idx) => {
+                      if (idx <= 3 || idx>=7) return null;
+                      const { categories } = this.state;
+                      if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                      else { var m='outlined'; var sselected=null; }
+                      return (
+                        <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]} mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
+                          {cate}
+                        </Button_c>
+                      );
+                    })}
                   </View>
                   <View style={[styles.block, {flexDirection: 'row'}]}>
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onHealth} color={tabColors[5]} onChange={() => this.setState({onHealth: !onHealth})} label="Health" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onIT} color={tabColors[9]} onChange={() => this.setState({onIT: !onIT})} label="IT" />
-                    <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={false} color={tabColors[7]} onChange={() => this.setState({onCareer: !onCareer})} label="Career" />
+                    {all_cat.map((cate, idx) => {
+                      if(idx < 7 ) return null;
+                      const { categories } = this.state;
+                      if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                      else { var m='outlined'; var sselected=null; }
+                      return (
+                        <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]}  mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
+                          {cate}
+                        </Button_c>
+                      );
+                    })}
                   </View>
                 </View>
 
-                {error !== '' && (<View style={{ marginTop: 40 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
-                {!error && (<Text style={{  marginTop: 40, fontSize: 9 }}>You can delete but cannot edit after you make one.</Text>)}
+                {error !== '' && (<View style={{ marginTop: 10 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
+                {!error && (<Text style={{  marginTop: 10, fontSize: 9 }}>You can delete but cannot edit after you make one.</Text>)}
                 <Button onPress={this.onSubmit} style={{ width: screenWidth*7/9, marginTop: 10,  }} color='success'>Add Question</Button>
 
               </View>
@@ -280,8 +298,20 @@ export default class QuestionCreate extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  l_choice: {
+    // fontFamily: 'PlayfairDisplay-Medium',
+    fontSize: 10,
+  },
+  choice: {
+    // alignItems: 'flex-start',
+    fontFamily: 'PlayfairDisplay-Medium',
+    marginBottom: 12,
+    borderWidth: 0.7,
+    borderRadius: 15,
+    // buttonSize: 15,
+  },
   block: {
-    marginTop: 20,
+    marginTop: 10,
   },
   button: {
 
@@ -333,6 +363,26 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Regular',
   }
 })
+
+
+// <View style={{ width: screenWidth*4/5, alignItems: 'center'}} >
+//   <View style={[styles.block, {flexDirection: 'row'}]}>
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={false} onChange={() => this.setState({onNews: !onNews})} color={tabColors[2]} label="News" />
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={true} onChange={() => this.setState({onSports: !onSports})} color={tabColors[3]} label="Sports" />
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onEntertainment} color={tabColors[4]} onChange={() => this.setState({onEntertainment: !onEntertainment})} label="Entertainment" />
+//   </View>
+//   <View style={[styles.block, {flexDirection: 'row'}]}>
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onLove} color={tabColors[1]} onChange={() => this.setState({onLove: !onLove})} label="Love" />
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onLiving} color={tabColors[6]} onChange={() => this.setState({onLiving: !onLiving})} label="Living" />
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onQuiz} color={tabColors[10]} onChange={() => this.setState({onQuiz: !onQuiz})} label="Quiz" />
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onAcademics} color={tabColors[8]} onChange={() => this.setState({onAcademics: !onAcademics})} label="Academics" />
+//   </View>
+//   <View style={[styles.block, {flexDirection: 'row'}]}>
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onHealth} color={tabColors[5]} onChange={() => this.setState({onHealth: !onHealth})} label="Health" />
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onIT} color={tabColors[9]} onChange={() => this.setState({onIT: !onIT})} label="IT" />
+//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={false} color={tabColors[7]} onChange={() => this.setState({onCareer: !onCareer})} label="Career" />
+//   </View>
+// </View>
 
 
 // <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[11]} onChange={() => this.setState({onOther:!this.state.onOther})} label="Other" />
