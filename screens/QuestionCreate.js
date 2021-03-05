@@ -17,6 +17,9 @@ import { Button as Button_c } from 'react-native-paper';
 import colors from '../utils/colors';
 import tabColors from '../utils/tabColors';
 import Questions from '../utils/questions';
+import LoginForm from './LoginForm';
+
+import * as firebase from 'firebase';
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -53,6 +56,7 @@ export default class QuestionCreate extends React.Component {
     title: '',
     choices: Array(10),
     error: '',
+    s_modalVisible: false,
   };
 
   handleLoad = () => {
@@ -86,6 +90,11 @@ export default class QuestionCreate extends React.Component {
     const { fontsLoaded, loading, error, add_choice, title, choices, categories,
       } = this.state;
     const { navigation: { navigate }} = this.props;
+    var user = firebase.auth().currentUser;
+    if(user === null){
+      this.setState({ s_modalVisible: true });
+      return null;
+    }
 
     const new_choices = [];
     for(var i=0; i<add_choice+2; i++){
@@ -156,9 +165,11 @@ export default class QuestionCreate extends React.Component {
   }
 
   render() {
-    const { fontsLoaded, loading, categories, error,
+    const { fontsLoaded, loading, categories, error, s_modalVisible,
       add_choice, title, choices, } = this.state;
     const { navigation: { navigate }} = this.props;
+
+    
 
     var added=[];
     for (let i=0; i<add_choice; i++){
@@ -183,6 +194,7 @@ export default class QuestionCreate extends React.Component {
     if (fontsLoaded) {
       return (
         <SafeAreaView>
+          {s_modalVisible && (<LoginForm /> )}
           <KeyboardAvoidingView behavior='padding'>
             <View style={styles.topbar}>
               {loading && (
@@ -232,7 +244,7 @@ export default class QuestionCreate extends React.Component {
                   [added]
                 )}
                 {add_choice < 8 && (
-                  <Button style={{ width: screenWidth*4/9, marginTop: 20,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color={colors.blue}>Add New Choice</Button>
+                  <Button style={{ width: screenWidth*4/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color={colors.blue}>Add New Choice</Button>
                 )}
                 {add_choice !==0 && (
                   <Button style={{ width: screenWidth*4/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice-1 })} color="theme">Remove Last Choice</Button>
@@ -281,8 +293,8 @@ export default class QuestionCreate extends React.Component {
                   </View>
                 </View>
 
-                {error !== '' && (<View style={{ marginTop: 10 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
-                {!error && (<Text style={{  marginTop: 10, fontSize: 9 }}>You can delete but cannot edit after you make one.</Text>)}
+                {error !== '' && (<View style={{ marginTop: 7 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
+                {!error && (<Text style={{  marginTop: 7, fontSize: 9 }}>You can delete but cannot edit after you make one.</Text>)}
                 <Button onPress={this.onSubmit} style={{ width: screenWidth*7/9, marginTop: 10,  }} color='success'>Add Question</Button>
 
               </View>
@@ -311,7 +323,7 @@ const styles = StyleSheet.create({
     // buttonSize: 15,
   },
   block: {
-    marginTop: 10,
+    marginTop: 0,
   },
   button: {
 
