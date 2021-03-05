@@ -9,11 +9,30 @@ import {
   SafeAreaView, TouchableWithoutFeedback, Image, TouchableOpacity
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as firebase from 'firebase';
 
 import {fetchQuestions} from '../utils/api';
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
 import Questions from '../utils/questions';
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyArjDv3hS4_rw1YyNz-JFXDX1ufF72bqr8",
+  authDomain: "chooseone-105a9.firebaseapp.com",
+  databaseURL: "https://chooseone-default-rtdb.firebaseio.com",
+  projectId: "chooseone",
+  storageBucket: "chooseone.appspot.com",
+  messagingSenderId: "722704825746",
+  appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
+  measurementId: "G-YJ97DZH6V5"
+};
+
+
+if (firebase.apps.length === 0) {  
+  firebase.initializeApp(firebaseConfig);
+}
+var database = firebase.database();
 
 const options = {
   method: 'POST',
@@ -42,24 +61,37 @@ export default class Top extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
-    // try {
-    //   const questions = await fetch('http://192.168.1.75:8000/api/v1/?format=json', options)
-    //     .then(res => res.json());
-    //   // const questions = await response.json();
-    //
-    //   this.setState({
-    //     loading: false,
-    //     questions,
-    //   });
-    // } catch(e){
-    //   this.setState({
-    //     loading: false,
-    //     error: true,
-    //     questions: list(e),
-    //   });
-    //   console.log('akvankanln');
-    //   console.log(e);
-    // }
+
+  
+
+    var user = firebase.auth().currentUser;
+    if(user !== null){
+      var userId = user.uid;
+    }
+
+    // database.child("questions").child('MV1zhm54PmOP3whnTyP').get().then(function(snapshot) {
+    //   if (snapshot.exists()) {
+    //     console.error(snapshot.val());
+    //   }
+    //   else {
+    //     console.error("No data available");
+    //   }
+    // }).catch(function(error) {
+    //   console.error(error);
+    // });
+
+    // database.child("questions").child(userId).get().then(function(snapshot) {
+    //   if (!snapshot.exists()) {
+    //     this.setState({ questions: Questions });
+    //   }
+    //   else {
+    //     this.setState({
+    //       questions: snapshot.val(),
+    //     })
+    //   }
+    // }).catch(function(error) {
+    //   console.error(error);
+    // });
   }
 
   static navigationOptions = () => ({
@@ -69,7 +101,7 @@ export default class Top extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      questions: Questions,
+      questions: [],
       loading: true,
       error: false,
       refreshing: false,
@@ -94,6 +126,7 @@ export default class Top extends React.Component {
     // const { style, commentsForItem, onPressComments } = this.props;
     const { loading, error, questions, refreshing } = this.state;
     const { navigation: { navigate } } = this.props;
+    
 
     return (
       <SafeAreaView style={styles.container}>

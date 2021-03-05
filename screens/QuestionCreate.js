@@ -20,6 +20,7 @@ import Questions from '../utils/questions';
 import LoginForm from './LoginForm';
 
 import * as firebase from 'firebase';
+import questions from '../utils/questions';
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -72,6 +73,7 @@ export default class QuestionCreate extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
+    
   }
 
   titleChangeText = title => {
@@ -137,10 +139,18 @@ export default class QuestionCreate extends React.Component {
         id: 1,
         title: title,
         author: 'Kazuto',
+        category: categories,
         created: current.getFullYear()+'-'+('0'+current.getMonth()).slice(-2)+'-'+('0'+current.getDate()).slice(-2),
         choices: new_choices,
         comments: [],
     }
+
+    // var key = firebase.database().ref('/questions').push().key
+    // firebase.database().ref('/questions').child(key).set({ question: new_question })
+
+    // firebase.database().ref('/questions').on('child_added', function(new_question){
+      
+    // });
 
     questions.push(new_question);
     this.setState({
@@ -168,8 +178,9 @@ export default class QuestionCreate extends React.Component {
     const { fontsLoaded, loading, categories, error, s_modalVisible,
       add_choice, title, choices, } = this.state;
     const { navigation: { navigate }} = this.props;
-
     
+
+    var user = firebase.auth().currentUser;
 
     var added=[];
     for (let i=0; i<add_choice; i++){
@@ -191,121 +202,118 @@ export default class QuestionCreate extends React.Component {
       added.pop();
     }
 
-    if (fontsLoaded) {
-      return (
-        <SafeAreaView>
-          {s_modalVisible && (<LoginForm /> )}
-          <KeyboardAvoidingView behavior='padding'>
-            <View style={styles.topbar}>
-              {loading && (
-                <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
+    if(!fontsLoaded) return null;
+    return (
+      <SafeAreaView>
+        {s_modalVisible && (<LoginForm /> )}
+        <KeyboardAvoidingView behavior='padding'>
+          <View style={styles.topbar}>
+            {loading && (
+              <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
+            )}
+            <TouchableWithoutFeedback onPress={() => navigate('QuestionCreate')}>
+              <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} />
+            </TouchableWithoutFeedback>
+          </View>
+          <ScrollView style={styles.container}>
+            <View style={styles.form}>
+              <Text style={styles.text}>Let's Create Your {'\n'}  Own Question!</Text>
+              <Text style={styles.title}>Question</Text>
+              <View style={styles.semiTitle} />
+              <TextInput
+                style={styles.input}
+                autoCorrect={false}
+                value={title}
+                underlineColorAndroid="transparent"
+                onChangeText={this.titleChangeText}
+                // onSubmitEditing={this.handleSubmitEditing}
+                placeholder={'Title'}
+              />
+
+              <Text style={styles.title}>Choices</Text>
+              <View style={styles.semiTitle} />
+              <TextInput
+                style={styles.input}
+                value={choices[0]}
+                autoCorrect={false}
+                underlineColorAndroid="transparent"
+                onChangeText={(text) => this.choiceChangeText(text, 0)}
+                // onSubmitEditing={this.choiceSubmitEditing}
+                placeholder={'Choice 1'}
+              />
+              <View style={styles.semiTitle} />
+              <TextInput
+                autoCorrect={false}
+                style={styles.input}
+                value={choices[1]}
+                underlineColorAndroid="transparent"
+                onChangeText={(text) => this.choiceChangeText(text, 1)}
+                // onSubmitEditing={this.choice}
+                placeholder={'Choice 2'}
+              />
+              {add_choice !== 0 && (
+                [added]
               )}
-              <TouchableWithoutFeedback onPress={() => navigate('QuestionCreate')}>
-                <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} />
-              </TouchableWithoutFeedback>
-            </View>
-            <ScrollView style={styles.container}>
-              <View style={styles.form}>
-                <Text style={styles.text}>Let's Create Your {'\n'}  Own Question!</Text>
-                <Text style={styles.title}>Question</Text>
-                <View style={styles.semiTitle} />
-                <TextInput
-                  style={styles.input}
-                  autoCorrect={false}
-                  value={title}
-                  underlineColorAndroid="transparent"
-                  onChangeText={this.titleChangeText}
-                  // onSubmitEditing={this.handleSubmitEditing}
-                  placeholder={'Title'}
-                />
+              {add_choice < 8 && (
+                <Button style={{ width: screenWidth*4/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color={colors.blue}>Add New Choice</Button>
+              )}
+              {add_choice !==0 && (
+                <Button style={{ width: screenWidth*4/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice-1 })} color="theme">Remove Last Choice</Button>
+              )}
 
-                <Text style={styles.title}>Choices</Text>
-                <View style={styles.semiTitle} />
-                <TextInput
-                  style={styles.input}
-                  value={choices[0]}
-                  autoCorrect={false}
-                  underlineColorAndroid="transparent"
-                  onChangeText={(text) => this.choiceChangeText(text, 0)}
-                  // onSubmitEditing={this.choiceSubmitEditing}
-                  placeholder={'Choice 1'}
-                />
-                <View style={styles.semiTitle} />
-                <TextInput
-                  autoCorrect={false}
-                  style={styles.input}
-                  value={choices[1]}
-                  underlineColorAndroid="transparent"
-                  onChangeText={(text) => this.choiceChangeText(text, 1)}
-                  // onSubmitEditing={this.choice}
-                  placeholder={'Choice 2'}
-                />
-                {add_choice !== 0 && (
-                  [added]
-                )}
-                {add_choice < 8 && (
-                  <Button style={{ width: screenWidth*4/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color={colors.blue}>Add New Choice</Button>
-                )}
-                {add_choice !==0 && (
-                  <Button style={{ width: screenWidth*4/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice-1 })} color="theme">Remove Last Choice</Button>
-                )}
-
-                <Text style={styles.title}>Category</Text>
-                <View style={{ marginTop: 10, width: screenWidth*4/5, alignItems: 'center'}} >
-                  <View style={[styles.block, {flexDirection: 'row'}]}>
-                    {all_cat.map((cate, idx) => {
-                      if(idx < 1 || idx >=4) return null;
-                      const { categories } = this.state;
-                      if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
-                      else { var m='outlined'; var sselected=null; }
-                      return (
-                        <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]} mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
-                          {cate}
-                        </Button_c>
-                      );
-                    })}
-                  </View>
-                  <View style={[styles.block, {flexDirection: 'row'}]}>
-                    {all_cat.map((cate, idx) => {
-                      if (idx <= 3 || idx>=7) return null;
-                      const { categories } = this.state;
-                      if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
-                      else { var m='outlined'; var sselected=null; }
-                      return (
-                        <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]} mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
-                          {cate}
-                        </Button_c>
-                      );
-                    })}
-                  </View>
-                  <View style={[styles.block, {flexDirection: 'row'}]}>
-                    {all_cat.map((cate, idx) => {
-                      if(idx < 7 ) return null;
-                      const { categories } = this.state;
-                      if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
-                      else { var m='outlined'; var sselected=null; }
-                      return (
-                        <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]}  mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
-                          {cate}
-                        </Button_c>
-                      );
-                    })}
-                  </View>
+              <Text style={styles.title}>Category</Text>
+              <View style={{ marginTop: 10, width: screenWidth*4/5, alignItems: 'center'}} >
+                <View style={[styles.block, {flexDirection: 'row'}]}>
+                  {all_cat.map((cate, idx) => {
+                    if(idx < 1 || idx >=4) return null;
+                    const { categories } = this.state;
+                    if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                    else { var m='outlined'; var sselected=null; }
+                    return (
+                      <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]} mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
+                        {cate}
+                      </Button_c>
+                    );
+                  })}
                 </View>
-
-                {error !== '' && (<View style={{ marginTop: 7 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
-                {!error && (<Text style={{  marginTop: 7, fontSize: 9 }}>You can delete but cannot edit after you make one.</Text>)}
-                <Button onPress={this.onSubmit} style={{ width: screenWidth*7/9, marginTop: 10,  }} color='success'>Add Question</Button>
-
+                <View style={[styles.block, {flexDirection: 'row'}]}>
+                  {all_cat.map((cate, idx) => {
+                    if (idx <= 3 || idx>=7) return null;
+                    const { categories } = this.state;
+                    if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                    else { var m='outlined'; var sselected=null; }
+                    return (
+                      <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]} mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
+                        {cate}
+                      </Button_c>
+                    );
+                  })}
+                </View>
+                <View style={[styles.block, {flexDirection: 'row'}]}>
+                  {all_cat.map((cate, idx) => {
+                    if(idx < 7 ) return null;
+                    const { categories } = this.state;
+                    if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                    else { var m='outlined'; var sselected=null; }
+                    return (
+                      <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]}  mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
+                        {cate}
+                      </Button_c>
+                    );
+                  })}
+                </View>
               </View>
-              <View style={{ height: 200 }} />
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </SafeAreaView>
-      );
-    } else {
-      return null;
-    }
+
+              {error !== '' && (<View style={{ marginTop: 7 }}><Text style={{ color: 'red' }}>{error}</Text></View>)}
+              {!error && (<Text style={{  marginTop: 7, fontSize: 9 }}>You can delete but cannot edit after you make one.</Text>)}
+              <Button onPress={this.onSubmit} style={{ width: screenWidth*7/9, marginTop: 10,  }} color='success'>Add Question</Button>
+
+            </View>
+            <View style={{ height: 200 }} />
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
   }
 }
 

@@ -13,14 +13,15 @@ import * as Font from 'expo-font'
 import { MaterialIcons } from '@expo/vector-icons';
 import { Button, Checkbox,  } from 'galio-framework';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as firebase from 'firebase';
+
 import LoginForm from './LoginForm';
 import { availables } from '../utils/characters';
-
 import colors from '../utils/colors';
 import SignupModal from '../components/SignupModal';
 // import { Button } from 'native-base';
 
-import * as firebase from 'firebase';
+
 
 
 let customFonts  = {
@@ -54,11 +55,11 @@ export default class About extends React.Component {
   
 
   onLogout = () => {
-    firebase.auth().signOut();
     this.setState({ 
       loggedIn: false,
       modalVisible: false,
     });
+    firebase.auth().signOut();
   }
 
   onSignup = () => {
@@ -70,6 +71,7 @@ export default class About extends React.Component {
     }
 
     this.setState({ s_modalVisible: true });
+    return null;
   }
 
   render() {

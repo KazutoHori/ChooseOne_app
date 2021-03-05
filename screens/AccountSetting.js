@@ -13,8 +13,10 @@ import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 import { Button, Switch } from 'galio-framework';
 import { Avatar } from 'react-native-elements';
+import * as firebase from 'firebase';
 
 import colors from '../utils/colors';
+import { availables } from '../utils/characters';
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -61,6 +63,7 @@ export default class QuestionAnswered extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
+    
   }
 
   render() {
@@ -68,8 +71,9 @@ export default class QuestionAnswered extends React.Component {
     const { navigation: { openDrawer, navigate }} = this.props;
 
     const initials=username.toUpperCase().slice(0,2);
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let num=(alphabet.indexOf(initials[0])+1)*1000+alphabet.indexOf(initials[1])*100;
+    let num=(availables.indexOf(initials[0])+1)*1000+availables.indexOf(initials[1])*100;
+
+    var user = firebase.auth().currentUser;
 
     if (fontsLoaded) {
       return (
@@ -96,7 +100,7 @@ export default class QuestionAnswered extends React.Component {
               <View style={[styles.col, ]}>
                 <View style={{ flexDirection: 'row'}}>
                   <Text style={[styles.letter,]}>
-                    Username:     {username}
+                    Username:     {user.displayName}
                   </Text>
                   <View style={{ position: 'absolute', right: 10, top: 0 }}>
                     <Avatar
@@ -111,23 +115,8 @@ export default class QuestionAnswered extends React.Component {
               </View>
               <View style={[styles.col]}>
                 <Text style={[styles.letter]}>
-                  Email:             {email}
+                  Email:             {user.email}
                 </Text>
-              </View>
-              <View style={[styles.col]}>
-                <View style={styles.password}>
-                  <Text style={[styles.letter]}>
-                    Password:
-                  </Text>
-                  {!show && <Text style={styles.letter}>      *********</Text>}
-                  {show && <Text style={styles.letter}>      {password}</Text>}
-                  <Switch
-                    value={show}
-                    style={{position: 'absolute', right: 10, top: 0,}}
-                    onValueChange={() => this.setState({ show: !show })}
-                    onChange={() => {}}
-                  />
-                </View>
               </View>
             </View>
           </View>
@@ -196,3 +185,22 @@ const styles = StyleSheet.create({
 //   <Text>     or     </Text>
 //   <TouchableOpacity><Text style={[styles.letter, {fontSize: 15, color: colors.blue}]}>Forgot Password?</Text></TouchableOpacity>
 // </View>
+
+
+
+{/* <View style={[styles.col]}>
+<View style={styles.password}>
+  <Text style={[styles.letter]}>
+    Password:
+  </Text>
+  {!show && <Text style={styles.letter}>      *********</Text>}
+  {show && <Text style={styles.letter}>      {user.password}</Text>}
+  <Switch
+    value={show}
+    style={{position: 'absolute', right: 10, top: 0,}}
+    onValueChange={() => this.setState({ show: !show })}
+    onChange={() => {}}
+  />
+</View>
+</View> */}
+

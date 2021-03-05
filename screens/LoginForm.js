@@ -13,8 +13,10 @@ from 'react-native-simple-radio-button';
 import { Dimensions } from "react-native";
 import PasswordInputText from 'react-native-hide-show-password-input';
 import { availables } from '../utils/characters';
+import { Permissions, Notifications } from 'expo';
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get('window').height;
+
 
 import colors from '../utils/colors';
 
@@ -49,6 +51,7 @@ export default class LoginForm extends React.Component {
 
   componentDidMount(){
     this._loadFontsAsync();
+    
   }
 
   usernameChangeText = username => {
@@ -63,7 +66,35 @@ export default class LoginForm extends React.Component {
     this.setState({ password });
   };
 
+  RegisterForPushNotificationAsync = async (user) => {
 
+    let token;
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = await Notifications.getExpoPushTokenAsync();
+    console.error(token);
+
+    var updates = {};
+    updates['/expoToken'] = token;
+    firebase.database().ref('users').child(user.uid).update(updates);
+  
+    // if (Platform.OS === 'android') {
+    //   Notifications.setNotificationChannelAsync('default', {
+    //     name: 'default',
+    //     importance: Notifications.AndroidImportance.MAX,
+    //     vibrationPattern: [0, 250, 250, 250],
+    //     lightColor: '#FF231F7C',
+    //   });
+    // }
+  }
 
   onSignup = () => {
     const { error, username, email, password} = this.state;
@@ -99,7 +130,7 @@ export default class LoginForm extends React.Component {
       if(!availables.includes(password[i])) p_valid=false;
     }
     if(!p_valid){
-      this.setState({ error: 'Your password must consist of only alphabets, numbers, _ and -'});
+      this.setState({ error: 'Your password must consist of only alphabets, numbers, ".", _ and -'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
@@ -109,9 +140,16 @@ export default class LoginForm extends React.Component {
       return null;
     }
     
-    firebase.auth().createUserWithEmailAndPassword(email, password).then(function(user){
-      this.setState({ error: user });
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
+      this.RegisterForPushNotificationAsync(user);
     });
+
+    var user=firebase.auth().currentUser;
+    user.updateProfile({
+      displayName: toString(username),
+    });
+    console.error(user);
+    
     if(error === ''){
       this.setState({ s_modalVisible: false });
       if('closeDrawer' in this.props ){
@@ -127,10 +165,10 @@ export default class LoginForm extends React.Component {
     const { email, password } = this.state;
 
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(function(user) {
-        console.error(user)
+      .then(user => {
+        this.RegisterForPushNotificationAsync(user)
       });
-      this.setState({ l_modalVisible: false });
+    this.setState({ l_modalVisible: false });
     
     if('closeDrawer' in this.props){
       const { closeDrawer } = this.props;
