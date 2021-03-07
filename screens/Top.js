@@ -81,6 +81,10 @@ export default class Top extends React.Component {
     });
   }
 
+  // componentWillUnmount() {
+  //   this.unsubscribe();
+  // }
+
   static navigationOptions = () => ({
 
   });

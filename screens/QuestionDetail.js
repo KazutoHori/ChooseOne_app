@@ -70,31 +70,40 @@ export default class QuestionDetail extends React.Component {
     var userId = firebase.auth().currentUser;
     if(!userId){
       this.setState({ s_modalVisible: true });
-      console.error('You should log in!!!!');
       return null;
     }
 
-    var copy=choices;
-    copy[value3Index].votes=copy[value3Index].votes+1;
-    this.setState({ choices: copy });
+    await db.collection('questions').doc(slug).get().then((doc) => {
+      var bef_choices = doc.data().choices;
+      var copy=bef_choices.slice();
+  
+      var remove_data = Object.assign({}, copy[value3Index]);
+      
+      var add_data = {
+        choice_text: copy[value3Index].choice_text,
+        votes: parseInt(copy[value3Index].votes, 10)+1,
+      };
+      copy[value3Index].votes=parseInt(copy[value3Index].votes, 10)+1;
+      question.choices=copy;
 
-    // await db.collection('questions').doc(slug).update({
-    //   'choices[value3Index].votes': 
-    // }).then(() => {
-    //   console.error('hello');
+      db.collection('questions').doc(slug).update({
+        choices: firebase.firestore.FieldValue.arrayRemove(remove_data)
+      });
+      db.collection('questions').doc(slug).update({
+        choices: firebase.firestore.FieldValue.arrayUnion(add_data)
+      });
+    })
+
+    // await db.collection('users').doc(userId).update({
+    //   question_answered: firebase.firestore.FieldValue.arrayUnion(slug)
     // });
 
-    var unsubscribe = db.collection("questions").doc(slug).update({
-      'choices[value3Index].votes': firebase.firestore.FieldValue.increment(1)
-    });
-    
-    await db.collection('users').doc(userId).update({
-      question_answered: firebase.firestore.FieldValue.arrayUnion(slug)
-    });
-
-    unsubscribe();
     navigate('QuestionResult', { question: question })
   }
+
+  // componentWillUnmount() {
+  //   this.unsubscribe();
+  // }
 
   render() {
     const { s_modalVisible, fontsLoaded, modalVisible } = this.state;

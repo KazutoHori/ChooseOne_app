@@ -64,7 +64,7 @@ export default class QuestionDetail extends React.Component {
     const { error, fontsLoaded, modalVisible, answered, madeit } = this.state;
 
     var pie_data = Array.from(choices);
-    const aaa = created.slice(17, 19);
+    const aaa = created.slice(-2);
 
     let bar_data = {
       labels: [],
