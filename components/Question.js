@@ -24,15 +24,21 @@ export default class Question extends React.Component {
     this._loadFontsAsync();
   }
 
+  onContent = () => {
+    const { onPress, slug } = this.props;
+
+    onPress(slug);
+  }
+
   render() {
     const { author, id, title, created, choices, onPress } = this.props;
 
     if(this.state.fontsLoaded){
       return (
-        <TouchableOpacity style={styles.container} onPress={onPress}>
+        <TouchableOpacity style={styles.container} onPress={this.onContent}>
           <View>
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.date}>Created: {created.slice(0,10)}</Text>
+            <Text style={styles.date}>Created: {created.slice(0, 10)}</Text>  
             <View style={styles.choices}>
               {choices.map(choice => (
                 <Text style={styles.choice}>○　{choice.choice_text}</Text>
@@ -51,13 +57,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingLeft: 20,
+    paddingLeft: 15,
     marginBottom: 10,
     backgroundColor: colors.white,
     padding: 10,
   },
   title: {
-    fontSize:25,
+    fontSize:22,
     fontFamily: 'PlayfairDisplay-Medium',
   },
   date: {
@@ -67,7 +73,7 @@ const styles = StyleSheet.create({
     color: colors.blue,
   },
   choice: {
-    fontFamily: 'PlayfairDisplay-Medium',
+    // fontFamily: 'PlayfairDisplay-Medium',
     fontSize: 15,
     paddingTop: 5,
     paddingLeft: 40,

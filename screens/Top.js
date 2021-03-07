@@ -32,7 +32,10 @@ const firebaseConfig = {
 if (firebase.apps.length === 0) {  
   firebase.initializeApp(firebaseConfig);
 }
-var database = firebase.database();
+
+// Required for side-effects
+require("firebase/firestore");
+var db = firebase.firestore();
 
 const options = {
   method: 'POST',
@@ -61,37 +64,21 @@ export default class Top extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
-
-  
-
-    var user = firebase.auth().currentUser;
-    if(user !== null){
-      var userId = user.uid;
-    }
-
-    // database.child("questions").child('MV1zhm54PmOP3whnTyP').get().then(function(snapshot) {
-    //   if (snapshot.exists()) {
-    //     console.error(snapshot.val());
-    //   }
-    //   else {
-    //     console.error("No data available");
-    //   }
-    // }).catch(function(error) {
-    //   console.error(error);
-    // });
-
-    // database.child("questions").child(userId).get().then(function(snapshot) {
-    //   if (!snapshot.exists()) {
-    //     this.setState({ questions: Questions });
-    //   }
-    //   else {
-    //     this.setState({
-    //       questions: snapshot.val(),
-    //     })
-    //   }
-    // }).catch(function(error) {
-    //   console.error(error);
-    // });
+    
+    db.collection("questions").onSnapshot((querySnapshot) => {
+      var ques = [];
+      querySnapshot.forEach((doc) => {
+          ques.push(doc.data());
+      });
+      ques.sort(function(a, b) {
+        if (a.created > b.created) {
+          return -1;
+        } else {
+          return 1;
+        }
+      })
+      this.setState({ questions: ques });
+    });
   }
 
   static navigationOptions = () => ({
@@ -122,6 +109,24 @@ export default class Top extends React.Component {
     setTimeout( () => this.setState({refreshing: false}), 5000);
   }
 
+  onContent = async the_slug => {
+    const { navigation: { navigate }} = this.props;
+
+    var the_question={};
+    the_question = await db.collection('questions').doc(the_slug);
+
+    await the_question.get().then((doc) => {
+      if (doc.exists) {
+        the_question = doc.data();
+      } else {
+        console.error("No such document!");
+      }
+    }).catch((error) => {
+        console.error("Error getting document:", error);
+    });
+    navigate('QuestionDetail', { question: the_question });
+  }
+
   render() {
     // const { style, commentsForItem, onPressComments } = this.props;
     const { loading, error, questions, refreshing } = this.state;
@@ -146,7 +151,7 @@ export default class Top extends React.Component {
           passRef={this.scrollRef}
           doRefresh={this.doRefresh}
           refresh={refreshing}
-          onPress={() => navigate('QuestionDetail', { question: questions[0] } )}
+          onPress={this.onContent}
         />
       </SafeAreaView>
       // <View style={styles.test}>

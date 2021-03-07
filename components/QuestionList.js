@@ -5,16 +5,17 @@ import React from 'react';
 import { getImageFromId } from '../utils/api';
 import Question from './Question';
 
-const keyExtractor = ({ id }) => id.toString();
+// const keyExtractor = ({ id }) => id.toString();
 
 export default class QuestionList extends React.Component {
 
-  renderItem = ({ item: { id, author, title, created, updated, choices, comments }}) => {
+  renderItem = ({ item: { id, slug, author, title, created, updated, choices, comments }}) => {
     const { onPress } = this.props;
     return (
       <Question
         author={author}
         id={id}
+        slug={slug}
         title={title}
         created={created}
         choices={choices}
@@ -33,7 +34,7 @@ export default class QuestionList extends React.Component {
         data={questions}
         ref={passRef}
         renderItem={this.renderItem}
-        keyExtractor={keyExtractor}
+        // keyExtractor={keyExtractor}
         refreshControl={
             <RefreshControl
               refreshing={refreshing}

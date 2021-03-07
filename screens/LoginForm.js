@@ -12,20 +12,25 @@ import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel}
 from 'react-native-simple-radio-button';
 import { Dimensions } from "react-native";
 import PasswordInputText from 'react-native-hide-show-password-input';
-import { availables } from '../utils/characters';
 import { Permissions, Notifications } from 'expo';
+
+import { availables } from '../utils/characters';
+
+import * as firebase from 'firebase';
+var db = firebase.firestore();
+
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get('window').height;
 
 
 import colors from '../utils/colors';
+import { showMessage } from 'react-native-flash-message';
 
 let customFonts  = {
   'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
 };
 
-import * as firebase from 'firebase';
 
 export default class LoginForm extends React.Component {
 
@@ -80,11 +85,10 @@ export default class LoginForm extends React.Component {
       return;
     }
     token = await Notifications.getExpoPushTokenAsync();
-    console.error(token);
 
-    var updates = {};
-    updates['/expoToken'] = token;
-    firebase.database().ref('users').child(user.uid).update(updates);
+    db.collection('users').doc(user.uid).update({
+      'expoToken': token
+    });
   
     // if (Platform.OS === 'android') {
     //   Notifications.setNotificationChannelAsync('default', {
@@ -96,7 +100,7 @@ export default class LoginForm extends React.Component {
     // }
   }
 
-  onSignup = () => {
+  onSignup = async () => {
     const { error, username, email, password} = this.state;
 
     var u_valid=true;
@@ -140,15 +144,26 @@ export default class LoginForm extends React.Component {
       return null;
     }
     
-    firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
-      this.RegisterForPushNotificationAsync(user);
+    await firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
+      // this.RegisterForPushNotificationAsync(user)
+      var userId = user.uid;
+      if(db.collection('users').doc(userId).get() !== null){
+        console.error('you are logged in!!');
+        return null;
+      }
+      console.error('before');
+      db.collection('users').doc(userId).add(user);
     });
 
-    var user=firebase.auth().currentUser;
-    user.updateProfile({
-      displayName: toString(username),
-    });
-    console.error(user);
+    firebase.auth().onAuthStateChanged(user => {
+      showMessage({
+        message: "Simple message",
+        type: "info",
+      });
+      user.updateProfile({
+        displayName: username
+      });
+    })
     
     if(error === ''){
       this.setState({ s_modalVisible: false });
@@ -164,10 +179,14 @@ export default class LoginForm extends React.Component {
   onLogin = () => {
     const { email, password } = this.state;
 
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(user => {
-        this.RegisterForPushNotificationAsync(user)
+    firebase.auth().signInWithEmailAndPassword(email, password);
+    firebase.auth().onAuthStateChanged(user => {
+      showMessage({
+        message: "Simple message",
+        type: "info",
       });
+    })
+
     this.setState({ l_modalVisible: false });
     
     if('closeDrawer' in this.props){
@@ -177,7 +196,8 @@ export default class LoginForm extends React.Component {
   }
 
   render() {
-    const { error, s_modalVisible, l_modalVisible, not_show, fontsLoaded, username, email, password } = this.state;
+    const { error, s_modalVisible, l_modalVisible, not_show, fontsLoaded, username, email, password,
+      } = this.state;
 
     if (!fontsLoaded) return null;
 

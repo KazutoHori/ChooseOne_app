@@ -26,42 +26,6 @@ export default class QuestionDetail extends React.Component {
     this.state = {
       answered: true,
       madeit: true,
-      question: {
-        id: 1,
-        title: 'What sports do you like?',
-        author: 'Kazuto',
-        created: "2021-02-23T07:51:42.275101Z",
-        choices: [
-          {
-            choice_text: 'basketball',
-            votes: 19551,
-          },
-          {
-            choice_text: 'soccer',
-            votes: 1857,
-          },
-          {
-            choice_text: 'hockey' ,
-            votes: 1591,
-          },
-          {
-            choice_text: 'tennis',
-            votes: 660,
-          }
-        ],
-        comments: [
-          {
-            author: 'Kazuto',
-            comment: 'This is so true!!',
-            created: "2021-02-23T07:51:42.275101Z",
-          },
-          {
-            author: 'Kazuto',
-            comment: 'That is no true!',
-            created: "2021-02-23T07:51:42.275101Z",
-          }
-        ],
-      },
       modalVisible: false,
       error: '',
     };
@@ -312,15 +276,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: screenWidth/4,
     top: 10,
-    fontSize: 20,
-    fontFamily: 'PlayfairDisplay-Regular',
+    fontSize: 18,
+    paddingTop: 5,
+    // fontFamily: 'PlayfairDisplay-Regular',
   },
   vv: {
     position: 'absolute',
     left: screenWidth/3*2,
     top: 10,
     fontSize: 20,
-    fontFamily: 'PlayfairDisplay-Regular',
+    // fontFamily: 'PlayfairDisplay-Regular',
   },
   index: {
     position: 'absolute',
@@ -399,7 +364,7 @@ const styles = StyleSheet.create({
   },
   title: {
     // marginTop: 40,
-    fontSize: 30,
+    fontSize: 22,
     fontFamily: 'PlayfairDisplay-Medium',
   },
   date: {

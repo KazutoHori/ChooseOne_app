@@ -21,6 +21,9 @@ import LoginForm from './LoginForm';
 
 import * as firebase from 'firebase';
 import questions from '../utils/questions';
+import slugify from '../utils/slugify.js';
+
+var db = firebase.firestore();
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -88,7 +91,7 @@ export default class QuestionCreate extends React.Component {
     this.setState({ choices: copy });
   };
 
-  onSubmit = () => {
+  onSubmit = async () => {
     const { fontsLoaded, loading, error, add_choice, title, choices, categories,
       } = this.state;
     const { navigation: { navigate }} = this.props;
@@ -132,27 +135,41 @@ export default class QuestionCreate extends React.Component {
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
-
-    let current=new Date();
-    let new_question = {
-        id: toString(Questions.length+1),
-        id: 1,
-        title: title,
-        author: 'Kazuto',
-        category: categories,
-        created: current.getFullYear()+'-'+('0'+current.getMonth()).slice(-2)+'-'+('0'+current.getDate()).slice(-2),
-        choices: new_choices,
-        comments: [],
+    
+    var how_many=0;
+    await db.collection('questions').get().then(snap => {
+      how_many = snap.size
+    });
+    
+    var rep=0;
+    var new_slug=slugify(title);
+    await db.collection('questions').where('slug', '==', new_slug).get().then(snap => {
+      rep=snap.size
+    });
+    if(rep !== 0) {
+      rep=rep+1;
+      new_slug=new_slug.concat(rep.toString());
     }
 
-    // var key = firebase.database().ref('/questions').push().key
-    // firebase.database().ref('/questions').child(key).set({ question: new_question })
+    let current=new Date();
+    current=current.toJSON();
+    let new_question = {
+      id: how_many+1,
+      title: title,
+      author: user.uid,
+      category: categories,
+      slug: new_slug,
+      created: current.slice(0, 10)+current.slice(11, 19),
+      choices: new_choices,
+      comments: [],
+      users_answered: [],
+    }
+    
+    db.collection('questions').doc(new_slug).set(new_question);
+    // db.collection('users').doc(user.uid).update({
 
-    // firebase.database().ref('/questions').on('child_added', function(new_question){
-      
-    // });
+    // })
 
-    questions.push(new_question);
     this.setState({
       add_choice: 0,
       title: '',
@@ -179,7 +196,6 @@ export default class QuestionCreate extends React.Component {
       add_choice, title, choices, } = this.state;
     const { navigation: { navigate }} = this.props;
     
-
     var user = firebase.auth().currentUser;
 
     var added=[];
@@ -188,7 +204,7 @@ export default class QuestionCreate extends React.Component {
         <View>
           <View style={styles.semiTitle} />
           <TextInput
-            style={[styles.input]}
+            style={[styles.input, ]}
             autoCorrect={false}
             value={choices[2+i]}
             underlineColorAndroid="transparent"
@@ -221,7 +237,7 @@ export default class QuestionCreate extends React.Component {
               <Text style={styles.title}>Question</Text>
               <View style={styles.semiTitle} />
               <TextInput
-                style={styles.input}
+                style={[styles.input, { fontFamily: 'PlayfairDisplay-Regular', }]}
                 autoCorrect={false}
                 value={title}
                 underlineColorAndroid="transparent"
@@ -233,7 +249,7 @@ export default class QuestionCreate extends React.Component {
               <Text style={styles.title}>Choices</Text>
               <View style={styles.semiTitle} />
               <TextInput
-                style={styles.input}
+                style={[styles.input, ]}
                 value={choices[0]}
                 autoCorrect={false}
                 underlineColorAndroid="transparent"
@@ -244,7 +260,7 @@ export default class QuestionCreate extends React.Component {
               <View style={styles.semiTitle} />
               <TextInput
                 autoCorrect={false}
-                style={styles.input}
+                style={[styles.input, ]}
                 value={choices[1]}
                 underlineColorAndroid="transparent"
                 onChangeText={(text) => this.choiceChangeText(text, 1)}
@@ -358,7 +374,7 @@ const styles = StyleSheet.create({
     paddingRight: 0,
     textAlign: 'center',
     fontSize: 17,
-    fontFamily: 'PlayfairDisplay-Regular',
+    // fontFamily: 'PlayfairDisplay-Regular',
   },
   form: {
     // marginTop: 10,

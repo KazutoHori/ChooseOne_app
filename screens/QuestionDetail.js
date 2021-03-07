@@ -11,12 +11,19 @@ import { Button as Button_c } from 'react-native-paper';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel}
   from 'react-native-simple-radio-button';
 import { Dimensions } from "react-native";
+
+
+import slugify from '../utils/slugify.js';
 import LoginForm from './LoginForm';
+
+import * as firebase from 'firebase';
+var db = firebase.firestore();
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get('window').height;
 
 import colors from '../utils/colors';
+import { firestore } from 'firebase';
 
 let customFonts  = {
   'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
@@ -29,44 +36,9 @@ export default class QuestionDetail extends React.Component {
     this.state = {
       answered: true,
       madeit: true,
-      question: {
-        id: 1,
-        title: 'What sports do you like?',
-        author: 'Kazuto',
-        created: "2021-02-23T07:51:42.275101Z",
-        choices: [
-          {
-            choice_text: 'basketball',
-            votes: 19551,
-          },
-          {
-            choice_text: 'soccer',
-            votes: 1857,
-          },
-          {
-            choice_text: 'hockey' ,
-            votes: 1591,
-          },
-          {
-            choice_text: 'tennis',
-            votes: 660,
-          }
-        ],
-        comments: [
-          {
-            author: 'Kazuto',
-            comment: 'This is so true!!',
-            created: "2021-02-23T07:51:42.275101Z",
-          },
-          {
-            author: 'Kazuto',
-            comment: 'That is no true!',
-            created: "2021-02-23T07:51:42.275101Z",
-          }
-        ],
-      },
       value: 0,
       value3Index: null,
+      s_modalVisible: false,
       modalVisible: false,
       error: '',
     };
@@ -85,26 +57,47 @@ export default class QuestionDetail extends React.Component {
 
   });
 
-  onVote = () => {
+  onVote = async () => {
     const { error, value3Index } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { question, question: { id, choices} , } = params;
+    const { question, question: { id, slug, choices} , } = params;
     if(value3Index === null){
       this.setState({ error: 'You have not chosen yet'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
 
+    var userId = firebase.auth().currentUser;
+    if(!userId){
+      this.setState({ s_modalVisible: true });
+      console.error('You should log in!!!!');
+      return null;
+    }
+
     var copy=choices;
     copy[value3Index].votes=copy[value3Index].votes+1;
     this.setState({ choices: copy });
-    setTimeout(() => this.setState({ error: ''}),2500);
 
+    // await db.collection('questions').doc(slug).update({
+    //   'choices[value3Index].votes': 
+    // }).then(() => {
+    //   console.error('hello');
+    // });
+
+    var unsubscribe = db.collection("questions").doc(slug).update({
+      'choices[value3Index].votes': firebase.firestore.FieldValue.increment(1)
+    });
+    
+    await db.collection('users').doc(userId).update({
+      question_answered: firebase.firestore.FieldValue.arrayUnion(slug)
+    });
+
+    unsubscribe();
     navigate('QuestionResult', { question: question })
   }
 
   render() {
-    const { fontsLoaded, modalVisible } = this.state;
+    const { s_modalVisible, fontsLoaded, modalVisible } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
     const { question, question: {id, author, title, created, choices } } = params;
     const { error, answered, madeit } = this.state;
@@ -117,6 +110,7 @@ export default class QuestionDetail extends React.Component {
     if(!fontsLoaded) return null;
     return (
       <View style={styles.container}>
+        {s_modalVisible && (<LoginForm />)}
         <TouchableOpacity style={styles.back} onPress={() => navigate('Top')}>
           <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
         </TouchableOpacity>
@@ -250,7 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   title: {
-    fontSize: 30,
+    fontSize: 20,
     fontFamily: 'PlayfairDisplay-Medium',
   },
   date: {
