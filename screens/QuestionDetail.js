@@ -73,12 +73,12 @@ export default class QuestionDetail extends React.Component {
       return null;
     }
 
+    var your_vote = choices[value3Index].choice_text;
+
     await db.collection('questions').doc(slug).get().then((doc) => {
-      var bef_choices = doc.data().choices;
-      var copy=bef_choices.slice();
+      var copy=Array.from(doc.data().choices);
   
       var remove_data = Object.assign({}, copy[value3Index]);
-      
       var add_data = {
         choice_text: copy[value3Index].choice_text,
         votes: parseInt(copy[value3Index].votes, 10)+1,
@@ -98,7 +98,7 @@ export default class QuestionDetail extends React.Component {
     //   question_answered: firebase.firestore.FieldValue.arrayUnion(slug)
     // });
 
-    navigate('QuestionResult', { question: question })
+    navigate('QuestionResult', { question: question, your_vote: your_vote })
   }
 
   // componentWillUnmount() {

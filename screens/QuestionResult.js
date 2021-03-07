@@ -40,7 +40,7 @@ export default class QuestionDetail extends React.Component {
     this._loadFontsAsync();
 
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { question, question: {id, author, title, created, choices } } = params;
+    const { your_vote, question, question: {id, author, title, created, choices } } = params;
 
     var copy=choices;
     copy.sort(function(first, second){
@@ -54,13 +54,13 @@ export default class QuestionDetail extends React.Component {
     });
 
     this.setState({ id, author, title, created, copy });
-    this.setState({ error: 'You have voted for soccer!' });
+    this.setState({ error: 'You have voted for '+your_vote+'!' });
     // setTimeout(() => this.setState({ error: ''}),2500);
   }
 
   render() {
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { question: {id, author, title, created, choices } } = params;
+    const { your_vote, question: {id, author, title, created, choices } } = params;
     const { error, fontsLoaded, modalVisible, answered, madeit } = this.state;
 
     var pie_data = Array.from(choices);
