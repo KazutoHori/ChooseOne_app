@@ -65,25 +65,26 @@ export default class Top extends React.Component {
   componentDidMount() {
     this._loadFontsAsync();
     
-    db.collection("questions").onSnapshot((querySnapshot) => {
+    this.unsubscribe = db.collection("questions").onSnapshot((querySnapshot) => {
       var ques = [];
       querySnapshot.forEach((doc) => {
           ques.push(doc.data());
       });
-      ques.sort(function(a, b) {
-        if (a.created > b.created) {
-          return -1;
-        } else {
-          return 1;
-        }
-      })
+      db.collection('questions').orderBy('all_votes').limit(20);
+      // ques.sort(function(a, b) {
+      //   if (a.created > b.created) {
+      //     return -1;
+      //   } else {
+      //     return 1;
+      //   }
+      // })
       this.setState({ questions: ques });
     });
   }
 
-  // componentWillUnmount() {
-  //   this.unsubscribe();
-  // }
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
 
   static navigationOptions = () => ({
 

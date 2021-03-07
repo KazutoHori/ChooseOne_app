@@ -100,6 +100,7 @@ export default class QuestionCreate extends React.Component {
       this.setState({ s_modalVisible: true });
       return null;
     }
+    var userId = user.uid;
 
     const new_choices = [];
     for(var i=0; i<add_choice+2; i++){
@@ -163,12 +164,13 @@ export default class QuestionCreate extends React.Component {
       choices: new_choices,
       comments: [],
       users_answered: [],
+      all_votes: 0,
     }
     
     db.collection('questions').doc(new_slug).set(new_question);
-    // db.collection('users').doc(user.uid).update({
-
-    // })
+    db.collection('users').doc(userId).update({
+      question_created: firebase.firestore.FieldValue.arrayUnion(new_slug)
+    });
 
     this.setState({
       add_choice: 0,

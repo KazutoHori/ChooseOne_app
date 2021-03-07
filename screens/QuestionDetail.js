@@ -67,11 +67,12 @@ export default class QuestionDetail extends React.Component {
       return null;
     }
 
-    var userId = firebase.auth().currentUser;
-    if(!userId){
+    var user = firebase.auth().currentUser;
+    if(!user){
       this.setState({ s_modalVisible: true });
       return null;
     }
+    var userId = user.uid;
 
     var your_vote = choices[value3Index].choice_text;
 
@@ -92,11 +93,15 @@ export default class QuestionDetail extends React.Component {
       db.collection('questions').doc(slug).update({
         choices: firebase.firestore.FieldValue.arrayUnion(add_data)
       });
+      db.collection('questions').doc(slug).update({
+        all_votes: firebase.firestore.FieldValue.increment(1)
+      })
     })
 
-    // await db.collection('users').doc(userId).update({
-    //   question_answered: firebase.firestore.FieldValue.arrayUnion(slug)
-    // });
+    db.collection('users').doc(userId).set({
+      question_answered: firebase.firestore.FieldValue.arrayUnion({ question: slug, answer: your_vote}) },
+      { merge: true}
+    );
 
     navigate('QuestionResult', { question: question, your_vote: your_vote })
   }
