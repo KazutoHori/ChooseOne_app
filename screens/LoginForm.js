@@ -56,7 +56,7 @@ export default class LoginForm extends React.Component {
 
   componentDidMount(){
     this._loadFontsAsync();
-    
+
   }
 
   usernameChangeText = username => {
@@ -89,7 +89,7 @@ export default class LoginForm extends React.Component {
     db.collection('users').doc(user.uid).update({
       'expoToken': token
     });
-  
+
     // if (Platform.OS === 'android') {
     //   Notifications.setNotificationChannelAsync('default', {
     //     name: 'default',
@@ -100,12 +100,17 @@ export default class LoginForm extends React.Component {
     // }
   }
 
+  validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  };
+
   onSignup = async () => {
     const { error, username, email, password} = this.state;
 
     var u_valid=true;
     for(let i=0; i<username.length; i++){
-      if(!availables.includes(username[i])){ 
+      if(!availables.includes(username[i])){
         u_valid=false;
       }
     }
@@ -124,7 +129,7 @@ export default class LoginForm extends React.Component {
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
-    if( email.length<5 || !email.includes('.') || !email.includes('@')){
+    if( email.length<5 || !this.validateEmail(email)){
       this.setState({ error: 'The email is not a valid email address'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
@@ -143,7 +148,7 @@ export default class LoginForm extends React.Component {
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
-    
+
     await firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
       // this.RegisterForPushNotificationAsync(user)
       var userId = user.uid;
@@ -164,7 +169,7 @@ export default class LoginForm extends React.Component {
         displayName: username
       });
     })
-    
+
     if(error === ''){
       this.setState({ s_modalVisible: false });
       if('closeDrawer' in this.props ){
@@ -188,7 +193,7 @@ export default class LoginForm extends React.Component {
     })
 
     this.setState({ l_modalVisible: false });
-    
+
     if('closeDrawer' in this.props){
       const { closeDrawer } = this.props;
       closeDrawer();
