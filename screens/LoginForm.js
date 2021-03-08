@@ -130,7 +130,7 @@ export default class LoginForm extends React.Component {
       return null;
     }
     if( email.length<5 || !this.validateEmail(email)){
-      this.setState({ error: 'The email is not a valid email address'});
+      this.setState({ error: 'The email is not valid'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
