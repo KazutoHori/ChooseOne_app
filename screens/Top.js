@@ -37,6 +37,7 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
 require("firebase/firestore");
+var user = firebase.auth().currentUser;
 var db = firebase.firestore();
 
 const options = {
@@ -124,18 +125,23 @@ export default class Top extends React.Component {
     const { navigation: { navigate }} = this.props;
 
     var the_question={};
-    the_question = await db.collection('questions').doc(the_slug);
 
-    await the_question.get().then((doc) => {
-      if (doc.exists) {
-        the_question = doc.data();
-      } else {
-        console.error("No such document!");
-      }
-    }).catch((error) => {
-        console.error("Error getting document:", error);
+    await db.collection('questions').doc(the_slug).get().then((doc) => {
+      the_question = doc.data()
     });
-    navigate('QuestionDetail', { question: the_question });
+
+    var goDetail = true;
+    if(user){
+      await db.collection('users').doc(user.uid).get().then((doc) => {
+        for(let i=0; i<doc.data().question_answered.length; i++){
+          if(doc.data().question_answered[i].question === the_slug){
+            navigate('QuestionResult', { question: the_question, your_vote: doc.data().question_answered[i].answer})
+            goResult=false;
+          }
+        }
+      })
+    }
+    if(goDetail) navigate('QuestionDetail', { question: the_question });
   }
 
   titleContains = ({ title }, query) => {

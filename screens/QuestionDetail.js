@@ -18,6 +18,7 @@ import LoginForm from './LoginForm';
 
 import * as firebase from 'firebase';
 var db = firebase.firestore();
+var user = firebase.auth().currentUser;
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get('window').height;
@@ -67,7 +68,6 @@ export default class QuestionDetail extends React.Component {
       return null;
     }
 
-    var user = firebase.auth().currentUser;
     if(!user){
       this.setState({ s_modalVisible: true });
       return null;
@@ -101,6 +101,11 @@ export default class QuestionDetail extends React.Component {
     db.collection('users').doc(userId).set({
       question_answered: firebase.firestore.FieldValue.arrayUnion({ question: slug, answer: your_vote}) },
       { merge: true}
+    );
+
+    db.collection('questions').doc(slug).set({
+      users_answered: firebase.firestore.FieldValue.arrayUnion(userId) },
+      { merge: true }
     );
 
     navigate('QuestionResult', { question: question, your_vote: your_vote })
