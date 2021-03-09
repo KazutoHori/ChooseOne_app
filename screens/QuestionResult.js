@@ -365,6 +365,7 @@ const styles = StyleSheet.create({
   title: {
     // marginTop: 40,
     fontSize: 22,
+    textAlign: 'center',
     fontFamily: 'PlayfairDisplay-Medium',
   },
   date: {

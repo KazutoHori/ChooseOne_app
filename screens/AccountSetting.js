@@ -63,7 +63,12 @@ export default class QuestionAnswered extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
-    
+
+    var user = firebase.auth().currentUser;
+    this.setState({
+      // username: user.displayName,
+      email: user.email,
+    });
   }
 
   render() {
@@ -203,4 +208,3 @@ const styles = StyleSheet.create({
   />
 </View>
 </View> */}
-

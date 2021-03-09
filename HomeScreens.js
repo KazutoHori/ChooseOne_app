@@ -280,7 +280,7 @@ export const HomeScreens = createMaterialTopTabNavigator(
       paddingTop: 40,
     },
     tabBarComponent: CustomTabBar,
-    pagerComponent: ViewPagerAdapter,
+    // pagerComponent: ViewPagerAdapter,             // 要らないはず
     tabBarOptions: {
       paddingTop: 40,
       labelStyle: {
@@ -294,6 +294,7 @@ export const HomeScreens = createMaterialTopTabNavigator(
         // backgroundColor: colors.red,
       },
       scrollEnabled: true,
+
     },
   }
 );

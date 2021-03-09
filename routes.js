@@ -147,6 +147,7 @@ const TabNavigator = createBottomTabNavigator(
   {
     initialRouteName: 'Home',
     tabBarPosition: 'bottom',
+    keyboardHidesTabBar: true,
     tabBarOptions: {
       style: {
         backgroundColor: colors.greyLight,
@@ -154,6 +155,7 @@ const TabNavigator = createBottomTabNavigator(
       showLabel: true,
       showIcon: true,
       inactiveTintColor: colors.greyDark,
+      keyboardHidesTabBar: true,
     },
   },
 );

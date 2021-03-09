@@ -76,7 +76,7 @@ export default class QuestionCreate extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
-    
+
   }
 
   titleChangeText = title => {
@@ -136,12 +136,12 @@ export default class QuestionCreate extends React.Component {
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
-    
+
     var how_many=0;
     await db.collection('questions').get().then(snap => {
       how_many = snap.size
     });
-    
+
     var rep=0;
     var new_slug=slugify(title);
     await db.collection('questions').where('slug', '==', new_slug).get().then(snap => {
@@ -166,7 +166,7 @@ export default class QuestionCreate extends React.Component {
       users_answered: [],
       all_votes: 0,
     }
-    
+
     db.collection('questions').doc(new_slug).set(new_question);
     db.collection('users').doc(userId).update({
       question_created: firebase.firestore.FieldValue.arrayUnion(new_slug)
@@ -197,7 +197,7 @@ export default class QuestionCreate extends React.Component {
     const { fontsLoaded, loading, categories, error, s_modalVisible,
       add_choice, title, choices, } = this.state;
     const { navigation: { navigate }} = this.props;
-    
+
     var user = firebase.auth().currentUser;
 
     var added=[];
@@ -390,6 +390,7 @@ const styles = StyleSheet.create({
     fontWeight: '100',
     fontSize: 40,
     alignItems: 'center',
+    textAlign: 'center',
   },
   title: {
     marginTop: 15,

@@ -78,7 +78,7 @@ export default class QuestionDetail extends React.Component {
 
     await db.collection('questions').doc(slug).get().then((doc) => {
       var copy=Array.from(doc.data().choices);
-  
+
       var remove_data = Object.assign({}, copy[value3Index]);
       var add_data = {
         choice_text: copy[value3Index].choice_text,
@@ -175,8 +175,6 @@ export default class QuestionDetail extends React.Component {
               Vote!
             </Button>
           )}
-
-
         </View>
         {madeit && (
           <View style={styles.buttons}>
@@ -259,6 +257,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+    textAlign: 'center',
     fontFamily: 'PlayfairDisplay-Medium',
   },
   date: {
