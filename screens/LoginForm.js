@@ -149,21 +149,22 @@ export default class LoginForm extends React.Component {
       return null;
     }
 
-    await firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
-      // this.RegisterForPushNotificationAsync(user)
-      var userId = user.uid;
-      if(db.collection('users').doc(userId).get() !== null){
-        console.error('you are logged in!!');
-        return null;
-      }
-      console.error('before');
-      db.collection('users').doc(userId).add(user);
-    });
+    await firebase.auth().createUserWithEmailAndPassword(email, password);
+    // .then(user => {
+    //   // this.RegisterForPushNotificationAsync(user)
+    //   var userId = user.uid;
+    //   if(db.collection('users').doc(userId).get() !== null){
+    //     console.error('you are logged in!!');
+    //     return null;
+    //   }
+    //   console.error('before');
+    //   db.collection('users').doc(userId).add(user);
+    // });
 
     firebase.auth().onAuthStateChanged(user => {
       showMessage({
-        message: "Simple message",
-        type: "info",
+        message: "You have now logged in!",
+        type: "success",
       });
       user.updateProfile({
         displayName: username
@@ -185,12 +186,12 @@ export default class LoginForm extends React.Component {
     const { email, password } = this.state;
 
     firebase.auth().signInWithEmailAndPassword(email, password);
-    firebase.auth().onAuthStateChanged(user => {
-      showMessage({
-        message: "Simple message",
-        type: "info",
-      });
-    })
+    // firebase.auth().onAuthStateChanged(user => {
+    //   showMessage({
+    //     message: "You have now logged in!",
+    //     type: "success",
+    //   });
+    // })
 
     this.setState({ l_modalVisible: false });
 

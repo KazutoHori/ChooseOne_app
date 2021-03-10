@@ -27,18 +27,19 @@ export default class QuestionList extends React.Component {
   };
 
   render() {
-    const { questions, passRef, doRefresh, refreshing  } = this.props;
+    const { questions, passRef, onRefresh, refreshing  } = this.props;
 
     return (
       <FlatList
         data={questions}
         ref={passRef}
         renderItem={this.renderItem}
+        keyExtractor={({ slug }) => slug}
         // keyExtractor={keyExtractor}
         refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={doRefresh}
+              onRefresh={onRefresh}
             />
         }
         // extraData={commentsForItem}

@@ -23,6 +23,7 @@ let customFonts  = {
 }
 
 import * as firebase from 'firebase';
+import { Tile } from 'react-native-elements';
 var db = firebase.firestore();
 
 const you_did = ['QuestionAnswered', 'QuestionCreated', 'QuestionLiked'];
@@ -49,6 +50,8 @@ export default class QuestionAnswered extends React.Component {
     loading: true,
     text: '',
     questions: [],
+    refreshing: false,
+    screen: 'QuestionAnswered',
   };
 
   handleLoad = () => {
@@ -77,30 +80,118 @@ export default class QuestionAnswered extends React.Component {
     }).catch((error) => {
         console.error("Error getting document:", error);
     });
-    navigate('QuestionDetail', { question: the_question });
+    navigate('QuestionDetail', { from_where: this.state.screen, question: the_question });
   }
 
-  componentDidMount() {
+  doRefresh = () => {
+    this.setState({ refreshing: true });
+    /// do refresh work here /////
+    //////////////////////////////
+    setTimeout( () => this.setState({refreshing: false}), 1500);
+  }
+
+  async componentDidMount() {
     this._loadFontsAsync();
 
     var user = firebase.auth().currentUser;
+    // var ques;
+    // if(user){
+    //   db.collection("questions").where('users_answered', 'array-contains', user.uid).onSnapshot((querySnapshot) => {
+    //     querySnapshot.forEach((doc) => {
+    //         ques.push(doc.data());
+    //     });
+    //   });
+    // }
+    // this.setState({ questions: ques });
+
     var ques = [];
-    this.unsubscribe = db.collection("questions").where('users_answered', 'array-contains', user.uid).onSnapshot((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            ques.push(doc.data());
-        });
-        this.setState({ questions: ques });
-    });
+    const { screen } = this.state;
+    if(user){
+      db.collection("users").doc(user.uid).onSnapshot((doc) => {
+        ques = [];
+        var questions_ = [];
+        if(screen === 'QuestionAnswered') questions_ = doc.data().question_answered;
+        else if(screen === 'QuestionCreated') questions_ = doc.data().question_created;
+        else questions_ = doc.data().question_liked;
+
+        // this.setState({ questions: ques });
+        for(let i=0; i<questions_.length; i++){
+          db.collection('questions').doc(questions_[i].question).get().then((doc) => {
+            ques.unshift(doc.data())
+            this.setState({ questions: ques });
+          });
+        }
+      });
+    }
   }
 
-  componentWillUnmount() {
-    this.unsubscribe();
+  onChange = idx => {
+    this.setState({ screen: you_did[idx] });
+
+    var user = firebase.auth().currentUser;
+    var ques = [];
+    if(user){
+      db.collection("users").doc(user.uid).onSnapshot((doc) => {
+        ques = [];
+        var questions_ = [];
+        if(you_did[idx] === 'QuestionAnswered') questions_ = doc.data().question_answered;
+        else if(you_did[idx] === 'QuestionCreated') questions_ = doc.data().question_created;
+        else questions_ = doc.data().question_liked;
+
+        console.error(questions_);
+        this.setState({ questions: ques });
+        for(let i=0; i<questions_.length; i++){
+          db.collection('questions').doc(questions_[i]).get().then((doc) => {
+            ques.unshift(doc.data())
+            this.setState({ questions: ques });
+          });
+        }
+      });
+    }
   }
+
+  onContent = async the_slug => {
+    const { navigation: { navigate }} = this.props;
+
+    var the_question={};
+
+    await db.collection('questions').doc(the_slug).get().then((doc) => {
+      the_question = doc.data()
+    });
+
+    var user = firebase.auth().currentUser;
+
+    if(user){
+      await db.collection('users').doc(user.uid).get().then((doc) => {
+        var goDetail = true;
+        let i=0;
+        for(i=0; i<doc.data().question_answered.length; i++){
+          if(doc.data().question_answered[i].question === the_slug){
+            goDetail=false;
+            navigate('QuestionResult', { question: the_question, your_vote: doc.data().question_answered[i].answer})
+          }
+        }
+        if(i===doc.data().question_answered.length && goDetail){
+          navigate('QuestionDetail', { from_where: 'Top', question: the_question });
+        }
+      })
+    }else{
+      navigate('QuestionDetail', { from_where: 'Top', question: the_question });
+    }
+  }
+
+  // componentWillUnmount() {
+  //   this.unsubscribe();
+  // }
 
   render() {
-    const { questions, loading, text, fontsLoaded } = this.state;
+    const { screen, refreshing, questions, loading, text, fontsLoaded } = this.state;
     const { navigation: { openDrawer, navigate }} = this.props;
-    console.error(questions);
+
+    var title='';
+    if(screen === 'QuestionAnswered') title='Questions You Answered';
+    else if(screen === 'QuestionCreated') title='Questions You Created';
+    else title='Questions You Liked';
 
     if (fontsLoaded) {
       return (
@@ -112,7 +203,7 @@ export default class QuestionAnswered extends React.Component {
             <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswered')}>
               <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
             </TouchableWithoutFeedback>
-            <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={(idx) => navigate(you_did[idx]) } dropdownStyle={{ height: 3*50+5 }} dropdownTextStyle={{ alignItems: 'center', fontWeight: '500', color: 'black', height: 50, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions you answerd', 'Questions you created', 'Questions you liked']} >
+            <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={this.onChange} dropdownStyle={{ height: 3*40+5 }} dropdownTextStyle={{ fontWeight: '500', color: 'black', height: 40, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions You Answerd', 'Questions You Created', 'Questions You Liked']} >
               <Icon name={'archive'} size={30} style={{ color: colors.grey }} />
             </ModalDropdown>
             <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>
@@ -120,20 +211,22 @@ export default class QuestionAnswered extends React.Component {
             </TouchableOpacity>
           </View>
           <View style={styles.ttext}>
-            <Text style={styles.text}>Questions You Answered</Text>
+            <Text style={styles.text}>{title}</Text>
           </View>
-
-          {questions && (
+          <View style={{ flex: 1}}>
+            {questions.length === 0 && (
+              <View style={{ marginTop: 30 }}>
+                <Text style={{ fontSize: 15, textAlign: 'center', fontFamily: 'PlayfairDisplay-Medium', marginBottom: 20 }}>You have not yet answered any questions.</Text>
+              </View>
+            )}
             <QuestionList
+              onRefresh={this.doRefresh}
+              refreshing={refreshing}
               questions={questions}
               onPress={this.onContent}
             />
-          )}
-          {!questions && (
-            <View style={{ marginTop: 30 }}>
-              <Text style={{ fontSize: 20, textAlign: 'center', fontFamily: 'PlayfairDisplay-Medium', marginBottom: 20 }}>You have not yet answered any questions</Text>
-            </View>
-          )}
+          </View>
+
         </SafeAreaView>
       );
     }else{

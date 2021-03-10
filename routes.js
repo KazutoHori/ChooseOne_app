@@ -34,6 +34,8 @@ import About from './screens/About';
 import Drawer from './screens/Drawer';
 import CustomTabBar from './CustomTabBar';
 import { HomeScreens } from './HomeScreens';
+import QuestionCreated from './screens/QuestionCreated';
+import QuestionLiked from './screens/QuestionLiked';
 
 const getTabBarIcon = icon => ({ tintColor }) => (
   <MaterialIcons name={icon} size={30} style={{ color: tintColor }} />
@@ -118,9 +120,24 @@ const ContactUsScreen = createStackNavigator(
   },
 );
 
+const QuestionScreen = createStackNavigator (
+  {
+    QuestionAnswered,
+    QuestionDetail,
+    QuestionResult,
+  },
+  {
+    initialRouteName: 'QuestionAnswered',
+    headerMode: 'none',
+    mode: 'modal',
+  }
+);
+
 const SettingDrawer = createDrawerNavigator(
   {
-    QuestionAnswered: QuestionAnswered,
+    QuestionAnswered: QuestionScreen,
+    QuestionLiked: QuestionLiked,
+    QuestionCreated: QuestionCreated,
     About: About,
     Drawer: Drawer,
     AccountSetting: AccountSetting,
@@ -130,7 +147,7 @@ const SettingDrawer = createDrawerNavigator(
     contentComponent: Drawer,
     drawerPosition: 'right',
     initialRouteName: 'QuestionAnswered',
-    headerMode: 'none',
+    // headerMode: 'none',
     mode: 'modal',
     navigationOptions: {
       tabBarIcon: getTabBarIcon('storage'),

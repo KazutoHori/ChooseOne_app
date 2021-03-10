@@ -14,15 +14,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Button, Checkbox,  } from 'galio-framework';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as firebase from 'firebase';
+import { showMessage } from 'react-native-flash-message';
 
 import LoginForm from './LoginForm';
 import { availables } from '../utils/characters';
 import colors from '../utils/colors';
 import SignupModal from '../components/SignupModal';
 // import { Button } from 'native-base';
-
-
-
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -52,12 +50,16 @@ export default class About extends React.Component {
     }
     this._loadFontsAsync();
   }
-  
 
-  onLogout = () => {
-    this.setState({ 
+
+  onLogout = async () => {
+    this.setState({
       loggedIn: false,
       modalVisible: false,
+    });
+    await showMessage({
+      message: 'You have now logged out!',
+      type: 'warning'
     });
     firebase.auth().signOut();
   }
@@ -230,5 +232,3 @@ const styles = StyleSheet.create({
     fontFamily: 'BerkshireSwash-Regular',
   }
 })
-
-

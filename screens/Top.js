@@ -37,7 +37,6 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
 require("firebase/firestore");
-var user = firebase.auth().currentUser;
 var db = firebase.firestore();
 
 const options = {
@@ -118,7 +117,7 @@ export default class Top extends React.Component {
     this.setState({ refreshing: true });
     /// do refresh work here /////
     //////////////////////////////
-    setTimeout( () => this.setState({refreshing: false}), 5000);
+    setTimeout( () => this.setState({refreshing: false}), 1500);
   }
 
   onContent = async the_slug => {
@@ -130,18 +129,25 @@ export default class Top extends React.Component {
       the_question = doc.data()
     });
 
-    var goDetail = true;
+    var user = firebase.auth().currentUser;
+
     if(user){
       await db.collection('users').doc(user.uid).get().then((doc) => {
-        for(let i=0; i<doc.data().question_answered.length; i++){
+        var goDetail = true;
+        let i=0;
+        for(i=0; i<doc.data().question_answered.length; i++){
           if(doc.data().question_answered[i].question === the_slug){
+            goDetail=false;
             navigate('QuestionResult', { question: the_question, your_vote: doc.data().question_answered[i].answer})
-            goResult=false;
           }
         }
+        if(i===doc.data().question_answered.length && goDetail){
+          navigate('QuestionDetail', { from_where: 'Top', question: the_question });
+        }
       })
+    }else{
+      navigate('QuestionDetail', { from_where: 'Top', question: the_question });
     }
-    if(goDetail) navigate('QuestionDetail', { question: the_question });
   }
 
   titleContains = ({ title }, query) => {
@@ -238,8 +244,8 @@ export default class Top extends React.Component {
           <QuestionList
             questions={questions}
             passRef={this.scrollRef}
-            doRefresh={this.doRefresh}
-            refresh={refreshing}
+            onRefresh={this.doRefresh}
+            refreshing={refreshing}
             onPress={this.onContent}
             style={{ zIndex: 2 }}
           />
@@ -249,8 +255,8 @@ export default class Top extends React.Component {
           <QuestionList
             questions={search_results}
             passRef={this.scrollRef}
-            doRefresh={this.doRefresh}
-            refresh={refreshing}
+            onRefresh={this.doRefresh}
+            refreshing={refreshing}
             onPress={this.onContent}
             style={{ zIndex: 2}}
           />

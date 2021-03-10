@@ -168,7 +168,7 @@ export default class QuestionCreate extends React.Component {
     }
 
     db.collection('questions').doc(new_slug).set(new_question);
-    db.collection('users').doc(userId).update({
+    await db.collection('users').doc(userId).update({
       question_created: firebase.firestore.FieldValue.arrayUnion(new_slug)
     });
 
@@ -179,7 +179,7 @@ export default class QuestionCreate extends React.Component {
       error: '',
       categories: [],
     });
-    navigate('QuestionDetail', { question: new_question});
+    navigate('QuestionDetail', { from_where: 'QuestionCreated', question: new_question});
   };
 
   onCategory = idx => {

@@ -18,7 +18,6 @@ import LoginForm from './LoginForm';
 
 import * as firebase from 'firebase';
 var db = firebase.firestore();
-var user = firebase.auth().currentUser;
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get('window').height;
@@ -68,6 +67,7 @@ export default class QuestionDetail extends React.Component {
       return null;
     }
 
+    var user = firebase.auth().currentUser;
     if(!user){
       this.setState({ s_modalVisible: true });
       return null;
@@ -98,12 +98,12 @@ export default class QuestionDetail extends React.Component {
       })
     })
 
-    db.collection('users').doc(userId).set({
+    await db.collection('users').doc(userId).set({
       question_answered: firebase.firestore.FieldValue.arrayUnion({ question: slug, answer: your_vote}) },
       { merge: true}
     );
 
-    db.collection('questions').doc(slug).set({
+    await db.collection('questions').doc(slug).set({
       users_answered: firebase.firestore.FieldValue.arrayUnion(userId) },
       { merge: true }
     );
@@ -118,7 +118,7 @@ export default class QuestionDetail extends React.Component {
   render() {
     const { s_modalVisible, fontsLoaded, modalVisible } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { question, question: {id, author, title, created, choices } } = params;
+    const { from_where, question, question: {id, author, title, created, choices } } = params;
     const { error, answered, madeit } = this.state;
 
     for(let i=0; i<choices.length; i++){
@@ -130,7 +130,8 @@ export default class QuestionDetail extends React.Component {
     return (
       <View style={styles.container}>
         {s_modalVisible && (<LoginForm />)}
-        <TouchableOpacity style={styles.back} onPress={() => navigate('Top')}>
+        {from_where === 'QuestionAnswered' && <View style={{ height: 100 }} />}
+        <TouchableOpacity style={styles.back} onPress={() => navigate(from_where)}>
           <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
         </TouchableOpacity>
         <View style={styles.center}>
@@ -150,10 +151,10 @@ export default class QuestionDetail extends React.Component {
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Are you sure you want to delete this question?</Text>
               <View style={{ flexDirection: 'row'}}>
-                <Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
+                <Button style={{ width: 100 }} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
                   No
                 </Button>
-                <Button style={{width: 100,}} color='theme' onPress={() => { this.setState({ modalVisible: false}); navigate('Top') }}>
+                <Button style={{ width: 100 }} color='theme' onPress={() => { this.setState({ modalVisible: false}); navigate(from_where); }}>
                   Delete
                 </Button>
               </View>

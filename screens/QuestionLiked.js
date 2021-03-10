@@ -20,7 +20,7 @@ let customFonts  = {
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
 
-export default class QuestionAnswered extends React.Component {
+export default class QuestionLiked extends React.Component {
   static navigationOptions = () => ({
     // title: 'Let\'s Create A Question!',
     // headerTintColor: colors.white,
