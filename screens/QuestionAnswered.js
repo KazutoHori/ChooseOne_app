@@ -138,10 +138,9 @@ export default class QuestionAnswered extends React.Component {
         else if(you_did[idx] === 'QuestionCreated') questions_ = doc.data().question_created;
         else questions_ = doc.data().question_liked;
 
-        console.error(questions_);
         this.setState({ questions: ques });
         for(let i=0; i<questions_.length; i++){
-          db.collection('questions').doc(questions_[i]).get().then((doc) => {
+          db.collection('questions').doc(questions_[i].question).get().then((doc) => {
             ques.unshift(doc.data())
             this.setState({ questions: ques });
           });

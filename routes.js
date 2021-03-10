@@ -123,8 +123,8 @@ const ContactUsScreen = createStackNavigator(
 const QuestionScreen = createStackNavigator (
   {
     QuestionAnswered,
-    QuestionDetail,
-    QuestionResult,
+    // QuestionDetail,
+    // QuestionResult,
   },
   {
     initialRouteName: 'QuestionAnswered',
@@ -136,8 +136,8 @@ const QuestionScreen = createStackNavigator (
 const SettingDrawer = createDrawerNavigator(
   {
     QuestionAnswered: QuestionScreen,
-    QuestionLiked: QuestionLiked,
-    QuestionCreated: QuestionCreated,
+    // QuestionLiked: QuestionLiked,
+    // QuestionCreated: QuestionCreated,
     About: About,
     Drawer: Drawer,
     AccountSetting: AccountSetting,
