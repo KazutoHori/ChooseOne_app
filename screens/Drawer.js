@@ -29,10 +29,10 @@ let customFonts  = {
 
 export default class About extends React.Component {
   state = {
-    username: 'KazutoHori',
+    username: '',
     fontsLoaded: false,
     modalVisible: false,
-    loggedIn: false,
+    loggedIn: true,
     s_modalVisible: false,
     l_modalVisible: false,
   };
@@ -47,6 +47,7 @@ export default class About extends React.Component {
 
     if(user){
       this.setState({ loggedIn: true });
+      this.setState({ username: user.displayName });
     }
     this._loadFontsAsync();
   }
@@ -57,10 +58,17 @@ export default class About extends React.Component {
       loggedIn: false,
       modalVisible: false,
     });
+    const { navigation: { closeDrawer, navigate }} = this.props;
+    closeDrawer();
     await showMessage({
       message: 'You have now logged out!',
-      type: 'warning'
+      type: 'warning',
+      icon: 'warning',
+      titleStyle: {
+        paddingLeft: 30,
+      }
     });
+    this.setState({ loggedIn: false });
     firebase.auth().signOut();
   }
 
@@ -76,6 +84,14 @@ export default class About extends React.Component {
     return null;
   }
 
+  signedIn = () => {
+    this.setState({ loggedIn: true });
+  }
+
+  changeUsername = (username) => {
+    this.setState({ username });
+  }
+
   render() {
     const {l_modalVisible, s_modalVisible, username, fontsLoaded, modalVisible, loggedIn } = this.state;
     const { navigation: { closeDrawer, navigate }} = this.props;
@@ -86,7 +102,7 @@ export default class About extends React.Component {
     if(!fontsLoaded) return null;
     return (
       <View style={styles.container}>
-        {s_modalVisible && (<LoginForm closeDrawer={closeDrawer} />)}
+        {s_modalVisible && (<LoginForm signedIn={this.signedIn} closeDrawer={closeDrawer} />)}
         <Modal
           animationType="slide"
           transparent={true}
@@ -110,31 +126,32 @@ export default class About extends React.Component {
             </View>
           </View>
         </Modal>
-        <TouchableOpacity onPress={() => navigate('AccountSetting')} style={styles.avatar}>
-          <Avatar
-            rounded
-            title={initials}
-            size='medium'
-            backgroundColor={'hsla('+num+',95%,55%, 1)'}
-          />
-        </TouchableOpacity>
-        <View style={styles.second}>
-          <TouchableOpacity onPress={() => navigate('AccountSetting') } style={styles.user}>
-            <Text style={styles.username}>{username}</Text>
-            <Icon name={'chevron-right'} size={'12'} style={styles.arrow} />
+        {loggedIn && (
+          <View style={{ borderColor: colors.darkGrey, borderBottomWidth: 1, paddingBottom: 20, }}>
+            <TouchableOpacity onPress={() => navigate('AccountSetting', { changeUsername: this.changeUsername })} style={styles.avatar}>
+            <Avatar
+              rounded
+              title={initials}
+              size='medium'
+              backgroundColor={'hsla('+num+',95%,55%, 1)'}
+            />
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigate('AccountSetting', { changeUsername: this.changeUsername.bind(this) }) } style={[styles.user, { marginTop: 10 }]}>
+              <Text style={styles.username}>{username}</Text>
+              <Icon name={'chevron-right'} size={'12'} style={styles.arrow} />
+          </TouchableOpacity>
+        </View>
+        )}
+        {!loggedIn && (
+          <View style={{ borderColor: colors.darkGrey, borderBottomWidth: 1, paddingBottom: 20, }} />
+        )}
+        <View style={styles.second}>
           <TouchableOpacity onPress={() => navigate('About')} style={styles.settings}>
             <Text style={styles.text}>About This App</Text>
             <Icon name={'chevron-right'} size={'12'} style={styles.arrow} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigate('ContactUs')} style={styles.settings}>
             <Text style={styles.text}>Contact Us</Text>
-            <Icon name={'chevron-right'} size={'12'} style={styles.arrow} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.third}>
-          <TouchableOpacity style={{marginTop: 10 }} onPress={() => navigate('AccountSetting') }>
-            <Text style={styles.text}>Liked Questions</Text>
             <Icon name={'chevron-right'} size={'12'} style={styles.arrow} />
           </TouchableOpacity>
         </View>
@@ -213,10 +230,6 @@ const styles = StyleSheet.create({
   },
   user: {
     flexDirection: 'row',
-    marginTop: 10,
-    borderColor: colors.darkGrey,
-    borderBottomWidth: 1,
-    paddingBottom: 20,
   },
   container: {
     padding: 20,

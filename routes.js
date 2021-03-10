@@ -36,6 +36,8 @@ import CustomTabBar from './CustomTabBar';
 import { HomeScreens } from './HomeScreens';
 import QuestionCreated from './screens/QuestionCreated';
 import QuestionLiked from './screens/QuestionLiked';
+import UserQuestionDetail from './screens/UserQuestionDetail';
+import UserQuestionResult from './screens/UserQuestionResult';
 
 const getTabBarIcon = icon => ({ tintColor }) => (
   <MaterialIcons name={icon} size={30} style={{ color: tintColor }} />
@@ -123,8 +125,8 @@ const ContactUsScreen = createStackNavigator(
 const QuestionScreen = createStackNavigator (
   {
     QuestionAnswered,
-    // QuestionDetail,
-    // QuestionResult,
+    UserQuestionDetail,
+    UserQuestionResult,
   },
   {
     initialRouteName: 'QuestionAnswered',
@@ -136,8 +138,6 @@ const QuestionScreen = createStackNavigator (
 const SettingDrawer = createDrawerNavigator(
   {
     QuestionAnswered: QuestionScreen,
-    // QuestionLiked: QuestionLiked,
-    // QuestionCreated: QuestionCreated,
     About: About,
     Drawer: Drawer,
     AccountSetting: AccountSetting,

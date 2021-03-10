@@ -43,11 +43,8 @@ export default class QuestionAnswered extends React.Component {
   state = {
     fontsLoaded: false,
     loading: true,
-    text: '',
-    username: 'KazutoHori',
-    email: 'kazutohori0714@icloud.com',
-    show: false,
-    password: 'Kazuto0714',
+    username: '',
+    changing: false,
   };
 
   handleLoad = () => {
@@ -66,13 +63,28 @@ export default class QuestionAnswered extends React.Component {
 
     var user = firebase.auth().currentUser;
     this.setState({
-      // username: user.displayName,
+      username: user.displayName,
       email: user.email,
     });
   }
 
+  usernameChange = text => {
+    this.setState({ username: text });
+  }
+
+  finishChange = () => {
+    this.setState({ changing: false });
+    const { navigation: { state: {params} }} = this.props;
+    const { changeUsername } = params;
+    var user = firebase.auth().currentUser;
+    user.updateProfile({
+      displayName: this.state.username
+    });
+    changeUsername(this.state.username);
+  }
+
   render() {
-    const { loading, text, fontsLoaded, username, email, show, password } = this.state;
+    const { changing, loading, text, fontsLoaded, username, email, show, password } = this.state;
     const { navigation: { openDrawer, navigate }} = this.props;
 
     const initials=username.toUpperCase().slice(0,2);
@@ -104,9 +116,26 @@ export default class QuestionAnswered extends React.Component {
             <View style={styles.content}>
               <View style={[styles.col, ]}>
                 <View style={{ flexDirection: 'row'}}>
-                  <Text style={[styles.letter,]}>
-                    Username:     {user.displayName}
-                  </Text>
+                  {!changing && (
+                    <Text style={[styles.letter,]}>
+                      Username:     {username}
+                    </Text>
+                  )}
+                  {changing && (
+                    <View style={{ flexDirection: 'row'}}>
+                      <Text style={[styles.letter,]}>Username:     </Text>
+                      <TextInput
+                        autoCorrect={false}
+                        autoFocus={true}
+                        clearButtonMode='always'
+                        width='1'
+                        style={[styles.letter,{ width: 160 }]}
+                        value={username}
+                        onChangeText={this.usernameChange}
+                        onSubmitEditing={this.finishChange}
+                      />
+                    </View>
+                  )}
                   <View style={{ position: 'absolute', right: 10, top: 0 }}>
                     <Avatar
                       rounded
@@ -116,7 +145,7 @@ export default class QuestionAnswered extends React.Component {
                     />
                   </View>
                 </View>
-                <TouchableOpacity style={{ flexDirection: 'column', marginTop: 25, marginLeft: 30,}}><Text style={[styles.letter, {fontSize: 15, color: colors.blue }]}>Change Username?</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => this.setState({ changing: true })} style={{ flexDirection: 'column', marginTop: 25, marginLeft: 30,}}><Text style={[styles.letter, {fontSize: 15, color: colors.blue }]}>Change Username?</Text></TouchableOpacity>
               </View>
               <View style={[styles.col]}>
                 <Text style={[styles.letter]}>

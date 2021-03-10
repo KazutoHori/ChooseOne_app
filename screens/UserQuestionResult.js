@@ -1,5 +1,5 @@
 import { Image, StyleSheet, FlatList, View, ActivityIndicator,
-    Text, TouchableOpacity, SafeAreaView, ScrollView, Modal
+    Text, TouchableOpacity, SafeAreaView, ScrollView, Modal, TouchableWithoutFeedback
   } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -9,6 +9,7 @@ import { PieChart, BarChart } from 'react-native-chart-kit';
 import { Dimensions } from "react-native";
 import * as Font from 'expo-font';
 import { Button, Radio, theme, withGalio, GalioProvider } from 'galio-framework';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -65,6 +66,10 @@ export default class QuestionDetail extends React.Component {
 
     var pie_data = Array.from(choices);
     const aaa = created.slice(-2);
+		var top;
+		if(from_where === 'QuestionAnswered') top='Questions You Answered';
+		else if(from_where === 'QuestionCreated') top='Questions You Created';
+		else top='Questions You Liked';
 
     let bar_data = {
       labels: [],
@@ -101,140 +106,156 @@ export default class QuestionDetail extends React.Component {
 
     if (!fontsLoaded) return null;
     return (
-      <ScrollView style={styles.container}>
-        <TouchableOpacity style={styles.back} onPress={() => navigate(from_where)}>
-          <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
-        </TouchableOpacity>
-        <View style={styles.center}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>created: {created.slice(0,10)}</Text>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.topbar}>
+          <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswerd')}>
+            <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
+          </TouchableWithoutFeedback>
+          <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={this.onChange} dropdownStyle={{ height: 3*40+5 }} dropdownTextStyle={{ fontWeight: '500', color: 'black', height: 40, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions You Answerd', 'Questions You Created', 'Questions You Liked']} >
+            <Icon name={'archive'} size={30} style={{ color: colors.grey }} />
+          </ModalDropdown>
+          <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>
+            <Icon name={'cogs'} size={30} style={{ color: colors.grey }} />
+          </TouchableOpacity>
         </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            this.setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Are you sure you want to delete this question?</Text>
-              <View style={{ flexDirection: 'row'}}>
-                <Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
-                  No
-                </Button>
-                <Button style={{width: 100,}} color='theme' onPress={() => this.setState({ modalVisible: false})}>
-                  Delete
-                </Button>
-              </View>
-            </View>
-          </View>
-        </Modal>
-
-        <View style={{alignItems: 'center'}}><Text style={{ fontSize: 18, color: 'hsla(800, 65%, 45%, 1)', fontFamily: 'PlayfairDisplay-Medium', }}>{error}</Text></View>
-        <View style={styles.first}>
-          <Text style={styles.c_text}>Choice</Text>
-          <Text style={styles.v_text}>Votes</Text>
+        <View style={[styles.ttext, { backgroundColor: colors.grey }]}>
+          <Text style={styles.text}>{top}</Text>
         </View>
+				<ScrollView style={styles.container}>
+					<TouchableOpacity style={styles.back} onPress={() => navigate('QuestionAnswered')}>
+						<Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
+					</TouchableOpacity>
+					<View style={styles.center}>
+						<Text style={styles.title}>{title}</Text>
+						<Text style={styles.date}>created: {created.slice(0,10)}</Text>
+					</View>
+					<Modal
+						animationType="slide"
+						transparent={true}
+						visible={modalVisible}
+						onRequestClose={() => {
+							Alert.alert("Modal has been closed.");
+							this.setModalVisible(!modalVisible);
+						}}
+					>
+						<View style={styles.centeredView}>
+							<View style={styles.modalView}>
+								<Text style={styles.modalText}>Are you sure you want to delete this question?</Text>
+								<View style={{ flexDirection: 'row'}}>
+									<Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
+										No
+									</Button>
+									<Button style={{width: 100,}} color='theme' onPress={() => this.setState({ modalVisible: false})}>
+										Delete
+									</Button>
+								</View>
+							</View>
+						</View>
+					</Modal>
 
-        {choices.map((choice, index) => {
-          return (
-            <View style={table(index)}>
-              <Text style={styles.index}>{index+1}</Text>
-              <Text style={styles.cc}>{choice['name']}</Text>
-              <Text style={styles.vv}>{choice['votes']}</Text>
-            </View>
-          );
-        })}
+					<View style={{alignItems: 'center'}}><Text style={{ fontSize: 18, color: 'hsla(800, 65%, 45%, 1)', fontFamily: 'PlayfairDisplay-Medium', }}>{error}</Text></View>
+					<View style={styles.first}>
+						<Text style={styles.c_text}>Choice</Text>
+						<Text style={styles.v_text}>Votes</Text>
+					</View>
 
-        <PieChart
-          style={{
-            marginTop: 10,
-          }}
-          data={pie_data}
-          width={screenWidth}
-          height={300}
-          chartConfig={{
-            backgroundGradientFromOpacity: 0,
-            backgroundGradientTo: colors.white,
-            backgroundGradientToOpacity: 0,
-            color: (opacity = 1) => `rgba(${opacity*0}, 122, 205, 1)`,
-            useShadowColorFromDataset: false // optional
-          }}
-          accessor={"votes"}
-          backgroundColor={colors.white}
-          paddingLeft={20}
-          center={[10, 0]}
-          bgColor={'transparent'}
-          avoidFalseZero
-        />
+					{choices.map((choice, index) => {
+						return (
+							<View style={table(index)}>
+								<Text style={styles.index}>{index+1}</Text>
+								<Text style={styles.cc}>{choice['name']}</Text>
+								<Text style={styles.vv}>{choice['votes']}</Text>
+							</View>
+						);
+					})}
 
-        <BarChart
-          style={styles.barchart}
-          data={bar_data}
-          width={screenWidth}
-          height={300}
-          yAxisLabel=""
-          fromZero
-          verticalLabelRotation={30}
-          backgroundColor={colors.white}
-          withInnerLines={true}
-          segments={3}
-          showBarTops={false}
-          verticalLabelRotation={0}
-          showValuesOnTopOfBars
-          chartConfig={{
-            backgroundGradientFromOpacity: 0,
-            backgroundGradientTo: colors.white,
-            backgroundGradientToOpacity: 0,
-            // backgroundColor: 'red',
-            // fillShadowGradient: 'blue',
-            fillShadowGradientOpacity: 100,
-            color: (opacity = 1) => `rgba(${opacity*0}, 122, 205, 1)`,
-            labelColor: (index) => colors.black,
-            propsForBackgroundLines: {
-              strokeWidth: 0.8,
-              stroke: '#efefef',
-              strokeDasharray: '0',
-            },
-            propsForLabels: {
-              // fontFamily: 'Bogle-Regular',
-              fontSize: 11,
-            },
-            barPercentage: 0.9,
-            decimalPlaces: 0,
-            useShadowColorFromDataset: false // optional
-          }}
-          style={{
-            marginTop: 10,
-            backgroundColor: colors.white,
-          }}
-        />
+					<PieChart
+						style={{
+							marginTop: 10,
+						}}
+						data={pie_data}
+						width={screenWidth}
+						height={300}
+						chartConfig={{
+							backgroundGradientFromOpacity: 0,
+							backgroundGradientTo: colors.white,
+							backgroundGradientToOpacity: 0,
+							color: (opacity = 1) => `rgba(${opacity*0}, 122, 205, 1)`,
+							useShadowColorFromDataset: false // optional
+						}}
+						accessor={"votes"}
+						backgroundColor={colors.white}
+						paddingLeft={20}
+						center={[10, 0]}
+						bgColor={'transparent'}
+						avoidFalseZero
+					/>
 
-        {madeit && (
-          <View style={styles.buttons}>
-            <View>
-              <Button color={colors.blue} onPress={() => this.setState({ modalVisible: true})}>
-                <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
-                <Text style={{ color: 'white' }}>Like it!</Text>
-              </Button>
-            </View>
-            <View>
-              <Button color='theme' onPress={() => this.setState({modalVisible:true})}>
-                Delete
-              </Button>
-            </View>
-          </View>
-        )}
+					<BarChart
+						style={styles.barchart}
+						data={bar_data}
+						width={screenWidth}
+						height={300}
+						yAxisLabel=""
+						fromZero
+						verticalLabelRotation={30}
+						backgroundColor={colors.white}
+						withInnerLines={true}
+						segments={3}
+						showBarTops={false}
+						verticalLabelRotation={0}
+						showValuesOnTopOfBars
+						chartConfig={{
+							backgroundGradientFromOpacity: 0,
+							backgroundGradientTo: colors.white,
+							backgroundGradientToOpacity: 0,
+							// backgroundColor: 'red',
+							// fillShadowGradient: 'blue',
+							fillShadowGradientOpacity: 100,
+							color: (opacity = 1) => `rgba(${opacity*0}, 122, 205, 1)`,
+							labelColor: (index) => colors.black,
+							propsForBackgroundLines: {
+								strokeWidth: 0.8,
+								stroke: '#efefef',
+								strokeDasharray: '0',
+							},
+							propsForLabels: {
+								// fontFamily: 'Bogle-Regular',
+								fontSize: 11,
+							},
+							barPercentage: 0.9,
+							decimalPlaces: 0,
+							useShadowColorFromDataset: false // optional
+						}}
+						style={{
+							marginTop: 10,
+							backgroundColor: colors.white,
+						}}
+					/>
 
-        <View style={{ marginTop: 40}} />
-        <TouchableOpacity style={styles.back } onPress={() => navigate(from_where)}>
-          <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
-        </TouchableOpacity>
-        <View style={{ marginBottom: 40}} />
-      </ScrollView>
+					{madeit && (
+						<View style={styles.buttons}>
+							<View>
+								<Button color={colors.blue} onPress={() => this.setState({ modalVisible: true})}>
+									<Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
+									<Text style={{ color: 'white' }}>Like it!</Text>
+								</Button>
+							</View>
+							<View>
+								<Button color='theme' onPress={() => this.setState({modalVisible:true})}>
+									Delete
+								</Button>
+							</View>
+						</View>
+					)}
+
+					<View style={{ marginTop: 40}} />
+					<TouchableOpacity style={styles.back } onPress={() => navigate('QuestionAnswered')}>
+						<Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
+					</TouchableOpacity>
+					<View style={{ marginBottom: 40}} />
+				</ScrollView>
+			</SafeAreaView>
     );
   }
 }
@@ -396,6 +417,29 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.white,
     fontFamily: 'PlayfairDisplay-Medium',
+  },
+	topbar: {
+    // marginTop: 40,
+    width: screenWidth,
+    flexDirection: 'row',
+    height: 60,
+    backgroundColor: 'red',
+    borderTopWidth: 0.3,
+    borderColor: 'white',
+    // marginBottom: 10,
+  },
+  text: {
+    fontFamily: 'BerkshireSwash-Regular',
+    fontWeight: '100',
+    fontSize: 25,
+    alignItems: 'center',
+    paddingLeft: 20,
+    textAlign: 'center',
+  },
+  ttext: {
+    paddingTop: 20,
+    paddingBottom: 20,
+    alignItems: 'center',
   },
 });
 

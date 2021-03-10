@@ -179,7 +179,7 @@ export default class QuestionCreate extends React.Component {
       error: '',
       categories: [],
     });
-    navigate('QuestionDetail', { from_where: 'QuestionCreated', question: new_question});
+    navigate('UserQuestionDetail', { from_where: 'QuestionCreated', question: new_question});
   };
 
   onCategory = idx => {

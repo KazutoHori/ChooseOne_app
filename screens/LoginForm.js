@@ -115,8 +115,8 @@ export default class LoginForm extends React.Component {
       }
     }
     if(!u_valid){
-      this.setState({ error: 'Your username must consist of only alphabets, numbers, _ and -'});
-      setTimeout(() => this.setState({ error: ''}),2500);
+      this.setState({ error: "Your username must consist of only A-Z, a-z, 0-9, _ and -, ., /, ), (, &, =, |, @, ¥, :, ', ! " });
+      setTimeout(() => this.setState({ error: ''}),10000);
       return null;
     }
     if( username.length > 19){
@@ -150,25 +150,29 @@ export default class LoginForm extends React.Component {
     }
 
     await firebase.auth().createUserWithEmailAndPassword(email, password);
-    // .then(user => {
-    //   // this.RegisterForPushNotificationAsync(user)
-    //   var userId = user.uid;
-    //   if(db.collection('users').doc(userId).get() !== null){
-    //     console.error('you are logged in!!');
-    //     return null;
-    //   }
-    //   console.error('before');
-    //   db.collection('users').doc(userId).add(user);
-    // });
 
+    const { signedIn } = this.props;
+    let current=new Date();
+    current=current.toJSON();
     firebase.auth().onAuthStateChanged(user => {
       showMessage({
         message: "You have now logged in!",
         type: "success",
+        icon: 'success',
       });
       user.updateProfile({
-        displayName: username
+        displayName: username,
       });
+      signedIn();
+      db.collection('users').doc(user.uid).set({
+        email: user.email,
+        uid: user.uid,
+        created: current.slice(0, 10)+current.slice(11, 19),
+        question_answered: [],
+        question_created: [],
+        question_liked: [],
+        username: username,
+      })
     })
 
     if(error === ''){
@@ -185,13 +189,18 @@ export default class LoginForm extends React.Component {
   onLogin = () => {
     const { email, password } = this.state;
 
-    firebase.auth().signInWithEmailAndPassword(email, password);
-    // firebase.auth().onAuthStateChanged(user => {
-    //   showMessage({
-    //     message: "You have now logged in!",
-    //     type: "success",
-    //   });
-    // })
+    firebase.auth().onAuthStateChanged(user => {
+      showMessage({
+        message: "You have now logged in!",
+        type: "success",
+        icon: 'success',
+      });
+      user.updateProfile({
+        displayName: username
+      });
+      const { signedIn } = this.props;
+      signedIn();
+    })
 
     this.setState({ l_modalVisible: false });
 
@@ -343,24 +352,26 @@ centeredView: {
   // paddingTop: 100,
   marginTop: 22,
   backgroundColor: 'hsla(180, 75%, 55%, 0.2)',       // 90
+  backgroundColor: 'hsla(440, 55%, 1%, 0.2)'
 },
 modalView: {
   margin: 10,
   height: 550,
   width: 350,
   backgroundColor: "white",
-  borderRadius: 20,
-  borderColor: colors.blue,                          // #89de47
+  borderRadius: 30,
+  borderColor: colors.white,                          // #89de47
   borderWidth: 2,
   padding: 35,
   alignItems: "center",
   shadowColor: "#000",
   shadowOffset: {
-    width: 4,
+    width: 10,
+    height: 30,
   },
-  shadowOpacity: 0.25,
+  shadowOpacity: 0.6,
   shadowRadius: 4,
-  elevation: 5
+  elevation: 100
 },
 input: {
   borderColor: colors.black,

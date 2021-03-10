@@ -16,7 +16,6 @@ import ModalDropdown from 'react-native-modal-dropdown';
 
 import colors from '../utils/colors';
 import QuestionList from '../components/QuestionList';
-import UserQuestionDetail from './UserQuestionDetail';
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -81,7 +80,7 @@ export default class QuestionAnswered extends React.Component {
     }).catch((error) => {
         console.error("Error getting document:", error);
     });
-    navigate('UserQuestionDetail', { from_where: this.state.screen, question: the_question });
+    navigate('QuestionDetail', { from_where: this.state.screen, question: the_question });
   }
 
   doRefresh = () => {
@@ -95,6 +94,15 @@ export default class QuestionAnswered extends React.Component {
     this._loadFontsAsync();
 
     var user = firebase.auth().currentUser;
+    // var ques;
+    // if(user){
+    //   db.collection("questions").where('users_answered', 'array-contains', user.uid).onSnapshot((querySnapshot) => {
+    //     querySnapshot.forEach((doc) => {
+    //         ques.push(doc.data());
+    //     });
+    //   });
+    // }
+    // this.setState({ questions: ques });
 
     var ques = [];
     const { screen } = this.state;
@@ -106,7 +114,7 @@ export default class QuestionAnswered extends React.Component {
         else if(screen === 'QuestionCreated') questions_ = doc.data().question_created;
         else questions_ = doc.data().question_liked;
 
-        this.setState({ questions: ques });
+        // this.setState({ questions: ques });
         for(let i=0; i<questions_.length; i++){
           db.collection('questions').doc(questions_[i].question).get().then((doc) => {
             ques.unshift(doc.data())
@@ -132,17 +140,10 @@ export default class QuestionAnswered extends React.Component {
 
         this.setState({ questions: ques });
         for(let i=0; i<questions_.length; i++){
-          if(you_did[idx] === 'QuestionAnswered'){
-            db.collection('questions').doc(questions_[i].question).get().then((doc) => {
-              ques.unshift(doc.data())
-              this.setState({ questions: ques });
-            });
-          }else{
-            db.collection('questions').doc(questions_[i]).get().then((doc) => {
-              ques.unshift(doc.data())
-              this.setState({ questions: ques });
-            });
-          }
+          db.collection('questions').doc(questions_[i].question).get().then((doc) => {
+            ques.unshift(doc.data())
+            this.setState({ questions: ques });
+          });
         }
       });
     }
@@ -166,15 +167,15 @@ export default class QuestionAnswered extends React.Component {
         for(i=0; i<doc.data().question_answered.length; i++){
           if(doc.data().question_answered[i].question === the_slug){
             goDetail=false;
-            navigate('UserQuestionResult', { from_where: this.state.screen, question: the_question, your_vote: doc.data().question_answered[i].answer})
+            navigate('QuestionResult', { question: the_question, your_vote: doc.data().question_answered[i].answer})
           }
         }
         if(i===doc.data().question_answered.length && goDetail){
-          navigate('UserQuestionDetail', { from_where: this.state.screen, question: the_question });
+          navigate('QuestionDetail', { from_where: 'Top', question: the_question });
         }
       })
     }else{
-      navigate('UserQuestionDetail', { from_where: this.state.screen, question: the_question });
+      navigate('QuestionDetail', { from_where: 'Top', question: the_question });
     }
   }
 
@@ -187,55 +188,49 @@ export default class QuestionAnswered extends React.Component {
     const { navigation: { openDrawer, navigate }} = this.props;
 
     var title='';
-    var comment='';
-    if(screen === 'QuestionAnswered'){
-      title='Questions You Answered';
-      comment='answered';
-    }else if(screen === 'QuestionCreated'){
-      title='Questions You Created';
-      comment='created';
+    if(screen === 'QuestionAnswered') title='Questions You Answered';
+    else if(screen === 'QuestionCreated') title='Questions You Created';
+    else title='Questions You Liked';
+
+    if (fontsLoaded) {
+      return (
+        <SafeAreaView style={styles.container}>
+          <View style={styles.topbar}>
+            {loading && (
+              <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
+            )}
+            <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswered')}>
+              <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
+            </TouchableWithoutFeedback>
+            <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={this.onChange} dropdownStyle={{ height: 3*40+5 }} dropdownTextStyle={{ fontWeight: '500', color: 'black', height: 40, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions You Answerd', 'Questions You Created', 'Questions You Liked']} >
+              <Icon name={'archive'} size={30} style={{ color: colors.grey }} />
+            </ModalDropdown>
+            <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>
+              <Icon name={'cogs'} size={30} style={{ color: colors.grey }} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.ttext}>
+            <Text style={styles.text}>{title}</Text>
+          </View>
+          <View style={{ flex: 1}}>
+            {questions.length === 0 && (
+              <View style={{ marginTop: 30 }}>
+                <Text style={{ fontSize: 15, textAlign: 'center', fontFamily: 'PlayfairDisplay-Medium', marginBottom: 20 }}>You have not yet answered any questions.</Text>
+              </View>
+            )}
+            <QuestionList
+              onRefresh={this.doRefresh}
+              refreshing={refreshing}
+              questions={questions}
+              onPress={this.onContent}
+            />
+          </View>
+
+        </SafeAreaView>
+      );
     }else{
-      title='Questions You Liked';
-      comment='liked';
+      return null;
     }
-
-    if(!fontsLoaded) return null;
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.topbar}>
-          {loading && (
-            <ActivityIndicator style={StyleSheet.absoluteFill} size={'large'} />
-          )}
-          <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswered')}>
-            <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
-          </TouchableWithoutFeedback>
-          <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={this.onChange} dropdownStyle={{ height: 3*40+5 }} dropdownTextStyle={{ fontWeight: '500', color: 'black', height: 40, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions You Answerd', 'Questions You Created', 'Questions You Liked']} >
-            <Icon name={'archive'} size={30} style={{ color: colors.grey }} />
-          </ModalDropdown>
-          <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>
-            <Icon name={'cogs'} size={30} style={{ color: colors.grey }} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.ttext}>
-          <Text style={styles.text}>{title}</Text>
-        </View>
-
-        <View style={{ flex: 1}}>
-          {questions.length === 0 && (
-            <View style={{ marginTop: 30 }}>
-              <Text style={{ fontSize: 15, textAlign: 'center', fontFamily: 'PlayfairDisplay-Medium', marginBottom: 20 }}>You have not yet {comment} any questions.</Text>
-            </View>
-          )}
-          <QuestionList
-            onRefresh={this.doRefresh}
-            refreshing={refreshing}
-            questions={questions}
-            onPress={this.onContent}
-          />
-        </View>
-
-      </SafeAreaView>
-    );
   }
 }
 

@@ -138,7 +138,7 @@ export default class Top extends React.Component {
         for(i=0; i<doc.data().question_answered.length; i++){
           if(doc.data().question_answered[i].question === the_slug){
             goDetail=false;
-            navigate('QuestionResult', { question: the_question, your_vote: doc.data().question_answered[i].answer})
+            navigate('QuestionResult', { from_where: 'Top', question: the_question, your_vote: doc.data().question_answered[i].answer})
           }
         }
         if(i===doc.data().question_answered.length && goDetail){

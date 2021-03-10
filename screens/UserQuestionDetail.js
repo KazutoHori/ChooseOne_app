@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View, Text, ActivityIndicator,
+import { Image, StyleSheet, View, Text, ActivityIndicator, TouchableWithoutFeedback, SafeAreaView,
     TouchableOpacity, Alert, Modal, }
   from 'react-native';
 import PropTypes from 'prop-types';
@@ -11,7 +11,7 @@ import { Button as Button_c } from 'react-native-paper';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel}
   from 'react-native-simple-radio-button';
 import { Dimensions } from "react-native";
-
+import ModalDropdown from 'react-native-modal-dropdown';
 
 import slugify from '../utils/slugify.js';
 import LoginForm from './LoginForm';
@@ -41,6 +41,7 @@ export default class QuestionDetail extends React.Component {
       s_modalVisible: false,
       modalVisible: false,
       error: '',
+			justDid: false,
     };
   }
 
@@ -60,7 +61,7 @@ export default class QuestionDetail extends React.Component {
   onVote = async () => {
     const { error, value3Index } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { from_where, question, question: { id, slug, choices} , } = params;
+    const { question, question: { id, slug, choices} , } = params;
     if(value3Index === null){
       this.setState({ error: 'You have not chosen yet'});
       setTimeout(() => this.setState({ error: ''}),2500);
@@ -108,7 +109,7 @@ export default class QuestionDetail extends React.Component {
       { merge: true }
     );
 
-    navigate('QuestionResult', { from_where: from_where, question: question, your_vote: your_vote })
+    navigate('UserQuestionResult', { from_where: 'QuestionAnswered', question: question, your_vote: your_vote })
   }
 
   // componentWillUnmount() {
@@ -116,7 +117,7 @@ export default class QuestionDetail extends React.Component {
   // }
 
   render() {
-    const { s_modalVisible, fontsLoaded, modalVisible } = this.state;
+    const { fontsLoaded, modalVisible } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
     const { from_where, question, question: {id, author, title, created, choices } } = params;
     const { error, answered, madeit } = this.state;
@@ -125,12 +126,29 @@ export default class QuestionDetail extends React.Component {
       choices[i]['label']=choices[i]['choice_text'];
       choices[i]['value']=i;
     }
+		var top;
+		if(from_where === 'QuestionAnswered') top='Questions You Answered';
+		else if(from_where === 'QuestionCreated') top='Questions You Created';
+		else top='Questions You Liked';
 
     if(!fontsLoaded) return null;
     return (
-      <View style={styles.container}>
-        {s_modalVisible && (<LoginForm />)}
-        <TouchableOpacity style={styles.back} onPress={() => navigate(from_where)}>
+      <SafeAreaView style={styles.container}>
+				<View style={styles.topbar}>
+          <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswerd')}>
+            <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
+          </TouchableWithoutFeedback>
+          <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={this.onChange} dropdownStyle={{ height: 3*40+5 }} dropdownTextStyle={{ fontWeight: '500', color: 'black', height: 40, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions You Answerd', 'Questions You Created', 'Questions You Liked']} >
+            <Icon name={'archive'} size={30} style={{ color: colors.grey }} />
+          </ModalDropdown>
+          <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>
+            <Icon name={'cogs'} size={30} style={{ color: colors.grey }} />
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.ttext, { backgroundColor: colors.grey }]}>
+          <Text style={styles.text}>{top}</Text>
+        </View>
+        <TouchableOpacity style={styles.back} onPress={() => navigate('QuestionAnswered')}>
           <Icon name={'chevron-down'} size={30} style={{ color: colors.blue }} />
         </TouchableOpacity>
         <View style={styles.center}>
@@ -153,7 +171,7 @@ export default class QuestionDetail extends React.Component {
                 <Button style={{ width: 100 }} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
                   No
                 </Button>
-                <Button style={{ width: 100 }} color='theme' onPress={() => { this.setState({ modalVisible: false}); navigate(from_where); }}>
+                <Button style={{ width: 100 }} color='theme' onPress={() => { this.setState({ modalVisible: false}); }}>
                   Delete
                 </Button>
               </View>
@@ -196,7 +214,7 @@ export default class QuestionDetail extends React.Component {
             </View>
           </View>
         )}
-      </View>
+      </SafeAreaView>
     );
   }
 }
@@ -288,6 +306,29 @@ const styles = StyleSheet.create({
     // alignItems: 'flex-start',
     // marginLeft: 100,
     marginTop: 10,
+  },
+	topbar: {
+    // marginTop: 40,
+    width: screenWidth,
+    flexDirection: 'row',
+    height: 60,
+    backgroundColor: 'red',
+    borderTopWidth: 0.3,
+    borderColor: 'white',
+    // marginBottom: 10,
+  },
+  text: {
+    fontFamily: 'BerkshireSwash-Regular',
+    fontWeight: '100',
+    fontSize: 25,
+    alignItems: 'center',
+    paddingLeft: 20,
+    textAlign: 'center',
+  },
+  ttext: {
+    paddingTop: 20,
+    paddingBottom: 20,
+    alignItems: 'center',
   },
 });
 
