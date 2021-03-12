@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
   ActivityIndicator,
   SafeAreaView,
   TouchableOpacity,
@@ -25,7 +24,7 @@ let customFonts  = {
 export default class QuestionAnswered extends React.Component {
   constructor(props){
     super(props);
-    state = {
+    this.state = {
       fontsLoaded: false,
       loading: true,
       text: '',

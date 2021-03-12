@@ -17,7 +17,7 @@ import UserQuestionDetail from './screens/UserQuestionDetail';
 import UserQuestionResult from './screens/UserQuestionResult';
 
 const getTabBarIcon = icon => ({ tintColor }) => (
-  <MaterialIcons name={icon} size={30} style={{ color: tintColor }} />
+  <MaterialIcons name={icon} size={32} style={{ color: tintColor }} />
 );
 
 const getDrawerItemIcon = icon => ({ tintColor }) => (
@@ -39,56 +39,6 @@ const CreateScreens = createStackNavigator(
     headerMode: 'none',
     mode: 'modal',
   }
-);
-
-const QuestionAnsweredScreen = createStackNavigator(
-  {
-    QuestionAnswered,
-  },
-  {
-    initialRouteName: 'QuestionAnswered',
-    navigationOptions: {
-      drawerIcon: getDrawerItemIcon('storage'),
-    },
-  },
-);
-
-const AboutScreen = createStackNavigator(
-  {
-    About,
-  },
-  {
-    initialRouteName: 'About',
-    navigationOptions: {
-      drawerIcon: getDrawerItemIcon('star'),
-    },
-  },
-);
-
-const AccountSettingScreen = createStackNavigator(
-  {
-    AccountSetting,
-  },
-  {
-    mode: 'modal',
-    initialRouteName: 'AccountSetting',
-    navigationOptions: {
-      drawerIcon: getDrawerItemIcon('person'),
-    },
-  },
-);
-
-const ContactUsScreen = createStackNavigator(
-  {
-    ContactUs,
-  },
-  {
-    mode: 'modal',
-    initialRouteName: 'ContactUs',
-    navigationOptions: {
-      drawerIcon: getDrawerItemIcon('contact'),
-    },
-  },
 );
 
 const QuestionScreen = createStackNavigator (
@@ -116,7 +66,6 @@ const SettingDrawer = createDrawerNavigator(
     contentComponent: Drawer,
     drawerPosition: 'right',
     initialRouteName: 'QuestionAnswered',
-    // headerMode: 'none',
     mode: 'modal',
     navigationOptions: {
       tabBarIcon: getTabBarIcon('storage'),
@@ -128,7 +77,7 @@ const TabNavigator = createBottomTabNavigator(
   {
     Home: HomeScreens,
     Create: CreateScreens,
-    Answered: SettingDrawer,
+    'Your Library': SettingDrawer,
   },
   {
     initialRouteName: 'Home',

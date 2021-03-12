@@ -67,7 +67,7 @@ export default class Love extends React.Component {
   componentDidMount() {
     this._loadFontsAsync();
 
-    this.unsubscribe = db.collection("questions").onSnapshot((querySnapshot) => {
+    db.collection("questions").onSnapshot((querySnapshot) => {
       var ques = [];
       querySnapshot.forEach((doc) => {
           ques.push(doc.data());
@@ -83,14 +83,6 @@ export default class Love extends React.Component {
       this.setState({ questions: ques });
     });
   }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  static navigationOptions = () => ({
-
-  });
 
   constructor(props){
     super(props);

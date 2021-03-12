@@ -8,7 +8,8 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Image
+  Image,
+  KeyboardAvoidingView,
 } from 'react-native';
 import * as Font from 'expo-font'
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -23,27 +24,14 @@ let customFonts  = {
 }
 
 export default class QuestionAnswered extends React.Component {
-  static navigationOptions = () => ({
-    // title: 'Let\'s Create A Question!',
-    // headerTintColor: colors.white,
-    // headerStyle: {
-    //   backgroundColor: colors.blue,
-    //   // marginTop: 40,
-    //   // height: 30,
-    // },
-    // headerTitleStyle: {
-    //   // fontFamily: 'BerkshireSwash-Regular',
-    // },
-    // headerTitleContainerStyle: {
-    //   // marginTop: 100,
-    // }
-  });
-
-  state = {
-    fontsLoaded: false,
-    loading: true,
-    text: '',
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+      fontsLoaded: false,
+      loading: true,
+      text: '',
+    };
+  }
 
   handleLoad = () => {
     this.setState({
@@ -76,9 +64,9 @@ export default class QuestionAnswered extends React.Component {
     const { loading, text, fontsLoaded } = this.state;
     const { navigation: { openDrawer, navigate }} = this.props;
 
-    if (fontsLoaded) {
-      return (
-        <SafeAreaView>
+    if(!fontsLoaded) return null;
+    return (
+        <SafeAreaView style={{ flex: 1 }}>
           <View style={styles.container}>
             <View style={styles.topbar}>
               {loading && (
@@ -121,16 +109,12 @@ export default class QuestionAnswered extends React.Component {
             </View>
           </View>
         </SafeAreaView>
-      );
-    }else{
-      return null;
-    }
+    );
   }
 }
 
 const styles = StyleSheet.create({
   form: {
-    // marginTop: 10,
     padding: 10,
     backgroundColor: colors.white,
     width: screenWidth,
@@ -144,7 +128,6 @@ const styles = StyleSheet.create({
 
   },
   topbar: {
-    // marginTop: 40,
     width: screenWidth,
     flexDirection: 'row',
     height: 60,

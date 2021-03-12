@@ -42,31 +42,18 @@ let customFonts  = {
 
 
 export default class QuestionAnswered extends React.Component {
-  static navigationOptions = () => ({
-    // title: 'Let\'s Create A Question!',
-    // headerTintColor: colors.white,
-    // headerStyle: {
-    //   backgroundColor: colors.blue,
-    //   // marginTop: 40,
-    //   // height: 30,
-    // },
-    // headerTitleStyle: {
-    //   // fontFamily: 'BerkshireSwash-Regular',
-    // },
-    // headerTitleContainerStyle: {
-    //   // marginTop: 100,
-    // }
-  });
-
-  state = {
-    fontsLoaded: false,
-    loading: true,
-    text: '',
-    questions: [],
-    refreshing: false,
-    screen: 'QuestionAnswered',
-    noContent: false,
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+      fontsLoaded: false,
+      loading: true,
+      text: '',
+      questions: [],
+      refreshing: false,
+      screen: 'QuestionAnswered',
+      noContent: false,
+    };
+  }
 
   handleLoad = () => {
     this.setState({
@@ -231,10 +218,6 @@ export default class QuestionAnswered extends React.Component {
       navigate('UserQuestionDetail', { from_where: this.state.screen, question: the_question });
     }
   }
-
-  // componentWillUnmount() {
-  //   this.unsubscribe();
-  // }
 
   noData () {
     const { screen, questions } = this.state;

@@ -86,10 +86,6 @@ export default class QuestionDetail extends React.Component {
     }
   }
 
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
   onVote = async () => {
     const { error, value3Index } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;

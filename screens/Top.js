@@ -67,7 +67,7 @@ export default class Top extends React.Component {
   };
 
   componentDidMount() {
-    this.unsubscribe = db.collection("questions").onSnapshot((querySnapshot) => {
+    db.collection("questions").onSnapshot((querySnapshot) => {
       var ques = [];
       querySnapshot.forEach((doc) => {
           ques.push(doc.data());
@@ -75,10 +75,6 @@ export default class Top extends React.Component {
       db.collection('questions').orderBy('all_votes').limit(20);
       this.setState({ questions: ques });
     });
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
   }
 
   handleLoad = () => {
@@ -89,7 +85,7 @@ export default class Top extends React.Component {
 
   doRefresh = () => {
     this.setState({ refreshing: true });
-    this.unsubscribe = db.collection("questions").onSnapshot((querySnapshot) => {
+    db.collection("questions").onSnapshot((querySnapshot) => {
       var ques = [];
       querySnapshot.forEach((doc) => {
           ques.push(doc.data());

@@ -43,32 +43,19 @@ let customFonts  = {
 }
 
 export default class QuestionCreate extends React.Component {
-  static navigationOptions = () => ({
-    // title: 'Let\'s Create A Question!',
-    // headerTintColor: colors.white,
-    // headerStyle: {
-    //   backgroundColor: colors.blue,
-    //   // marginTop: 40,
-    //   // height: 30,
-    // },
-    // headerTitleStyle: {
-    //   // fontFamily: 'BerkshireSwash-Regular',
-    // },
-    // headerTitleContainerStyle: {
-    //   // marginTop: 100,
-    // }
-  });
+  constructor(props){
+    super(props);
+    this.state = {
+      fontsLoaded: false,
+      categories: [],
+      add_choice: 0,
 
-  state = {
-    fontsLoaded: false,
-    categories: [],
-    add_choice: 0,
-
-    title: '',
-    choices: Array(10),
-    error: '',
-    s_modalVisible: false,
-  };
+      title: '',
+      choices: Array(10),
+      error: '',
+      s_modalVisible: false,
+    };
+  }
 
   handleLoad = () => {
     this.setState({
@@ -344,16 +331,13 @@ export default class QuestionCreate extends React.Component {
 
 const styles = StyleSheet.create({
   l_choice: {
-    // fontFamily: 'PlayfairDisplay-Medium',
     fontSize: 10,
   },
   choice: {
-    // alignItems: 'flex-start',
     fontFamily: 'PlayfairDisplay-Medium',
     marginBottom: 12,
     borderWidth: 0.7,
     borderRadius: 15,
-    // buttonSize: 15,
   },
   block: {
     marginTop: 0,
@@ -370,7 +354,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    // marginBottom: 10,
   },
   input: {
     borderColor: colors.black,
@@ -383,10 +366,8 @@ const styles = StyleSheet.create({
     paddingRight: 0,
     textAlign: 'center',
     fontSize: 17,
-    // fontFamily: 'PlayfairDisplay-Regular',
   },
   form: {
-    // marginTop: 10,
     padding: 20,
     backgroundColor: colors.white,
     width: screenWidth,
@@ -409,26 +390,3 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Regular',
   }
 })
-
-
-// <View style={{ width: screenWidth*4/5, alignItems: 'center'}} >
-//   <View style={[styles.block, {flexDirection: 'row'}]}>
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={false} onChange={() => this.setState({onNews: !onNews})} color={tabColors[2]} label="News" />
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={true} onChange={() => this.setState({onSports: !onSports})} color={tabColors[3]} label="Sports" />
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onEntertainment} color={tabColors[4]} onChange={() => this.setState({onEntertainment: !onEntertainment})} label="Entertainment" />
-//   </View>
-//   <View style={[styles.block, {flexDirection: 'row'}]}>
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onLove} color={tabColors[1]} onChange={() => this.setState({onLove: !onLove})} label="Love" />
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onLiving} color={tabColors[6]} onChange={() => this.setState({onLiving: !onLiving})} label="Living" />
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onQuiz} color={tabColors[10]} onChange={() => this.setState({onQuiz: !onQuiz})} label="Quiz" />
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onAcademics} color={tabColors[8]} onChange={() => this.setState({onAcademics: !onAcademics})} label="Academics" />
-//   </View>
-//   <View style={[styles.block, {flexDirection: 'row'}]}>
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onHealth} color={tabColors[5]} onChange={() => this.setState({onHealth: !onHealth})} label="Health" />
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={onIT} color={tabColors[9]} onChange={() => this.setState({onIT: !onIT})} label="IT" />
-//     <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox initialValue={false} color={tabColors[7]} onChange={() => this.setState({onCareer: !onCareer})} label="Career" />
-//   </View>
-// </View>
-
-
-// <View style={{ marginRight: 10, marginLeft: 10}} /><Checkbox color={tabColors[11]} onChange={() => this.setState({onOther:!this.state.onOther})} label="Other" />

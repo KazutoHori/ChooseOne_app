@@ -41,7 +41,7 @@ export default class QuestionAnswered extends React.Component {
 
   constructor(props){
     super(props);
-    state = {
+    this.state = {
       fontsLoaded: false,
       loading: true,
       username: '',
@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
 
   },
   topbar: {
-    // marginTop: 40,
     width: screenWidth,
     flexDirection: 'row',
     height: 60,
@@ -214,28 +213,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-
-// <View style={styles.set_password}>
-//   <TouchableOpacity><Text style={[styles.letter, {fontSize: 15, color: colors.blue }]}>Change Password?</Text></TouchableOpacity>
-//   <Text>     or     </Text>
-//   <TouchableOpacity><Text style={[styles.letter, {fontSize: 15, color: colors.blue}]}>Forgot Password?</Text></TouchableOpacity>
-// </View>
-
-
-
-{/* <View style={[styles.col]}>
-<View style={styles.password}>
-  <Text style={[styles.letter]}>
-    Password:
-  </Text>
-  {!show && <Text style={styles.letter}>      *********</Text>}
-  {show && <Text style={styles.letter}>      {user.password}</Text>}
-  <Switch
-    value={show}
-    style={{position: 'absolute', right: 10, top: 0,}}
-    onValueChange={() => this.setState({ show: !show })}
-    onChange={() => {}}
-  />
-</View>
-</View> */}

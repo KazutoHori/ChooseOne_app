@@ -78,35 +78,6 @@ export default class LoginForm extends React.Component {
     this.setState({ password });
   };
 
-  RegisterForPushNotificationAsync = async (user) => {
-
-    let token;
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    token = await Notifications.getExpoPushTokenAsync();
-
-    db.collection('users').doc(user.uid).update({
-      'expoToken': token
-    });
-
-    // if (Platform.OS === 'android') {
-    //   Notifications.setNotificationChannelAsync('default', {
-    //     name: 'default',
-    //     importance: Notifications.AndroidImportance.MAX,
-    //     vibrationPattern: [0, 250, 250, 250],
-    //     lightColor: '#FF231F7C',
-    //   });
-    // }
-  }
-
   validateEmail = (email) => {
     const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
@@ -357,9 +328,8 @@ centeredView: {
   flex: 1,
   justifyContent: "center",
   alignItems: "center",
-  // paddingTop: 100,
   marginTop: 22,
-  backgroundColor: 'hsla(180, 75%, 55%, 0.2)',       // 90
+  backgroundColor: 'hsla(180, 75%, 55%, 0.2)',
   backgroundColor: 'hsla(440, 55%, 1%, 0.2)'
 },
 modalView: {
@@ -392,15 +362,12 @@ input: {
   paddingRight: 0,
   textAlign: 'center',
   fontSize: 17,
-  // fontFamily: 'PlayfairDisplay-Medium',
 },
 title: {
   marginTop: 15,
   fontSize: 20,
-  // fontFamily: 'PlayfairDisplay-Medium',
 },
 semiTitle: {
   marginTop: 5,
-  // fontFamily: 'PlayfairDisplay-Medium',
 }
 });
