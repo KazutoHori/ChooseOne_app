@@ -3,37 +3,32 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList, KeyboardAvoidingView,
-  ActivityIndicator, SafeAreaView, TextInput, ScrollView,
-  Linking, TouchableOpacity, TouchableWithoutFeedback, Image
+  KeyboardAvoidingView,
+  ActivityIndicator,
+  SafeAreaView,
+  TextInput,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Image
 } from 'react-native';
 import * as Font from 'expo-font'
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
-import { Button, Checkbox,  } from 'galio-framework';
+import { Button } from 'galio-framework';
 import { Button as Button_c } from 'react-native-paper';
+import * as firebase from 'firebase';
 
 import colors from '../utils/colors';
 import tabColors from '../utils/tabColors';
-import Questions from '../utils/questions';
 import LoginForm from './LoginForm';
-
-import * as firebase from 'firebase';
-import questions from '../utils/questions';
 import slugify from '../utils/slugify.js';
+import { categories } from '../utils/variables';
 
 var db = firebase.firestore();
-
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
-
-let all_cat = [
-  'Top', 'Love', 'News', 'Sports', 'Entertainment', 'Health', 'Living', 'Career', 'Academics',
-  'IT', 'Quiz',
-];
 
 export default class QuestionCreate extends React.Component {
   static navigationOptions = () => ({
@@ -185,10 +180,10 @@ export default class QuestionCreate extends React.Component {
   onCategory = idx => {
     const { categories } = this.state;
     var copy=categories.slice();
-    if(copy.includes(all_cat[idx])){
-      copy=copy.filter(c => c !== all_cat[idx]);
+    if(copy.includes(categories[idx])){
+      copy=copy.filter(c => c !== categories[idx]);
     }else{
-      copy.push(all_cat[idx]);
+      copy.push(categories[idx]);
     }
     this.setState({ categories: copy });
   }
@@ -282,10 +277,10 @@ export default class QuestionCreate extends React.Component {
               <Text style={styles.title}>Category</Text>
               <View style={{ marginTop: 10, width: screenWidth*4/5, alignItems: 'center'}} >
                 <View style={[styles.block, {flexDirection: 'row'}]}>
-                  {all_cat.map((cate, idx) => {
+                  {categories.map((cate, idx) => {
                     if(idx < 1 || idx >=4) return null;
                     const { categories } = this.state;
-                    if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                    if(categories.includes(categories[idx])) { var m='contained'; var sselected={ color: 'white', }; }
                     else { var m='outlined'; var sselected=null; }
                     return (
                       <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]} mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
@@ -295,10 +290,10 @@ export default class QuestionCreate extends React.Component {
                   })}
                 </View>
                 <View style={[styles.block, {flexDirection: 'row'}]}>
-                  {all_cat.map((cate, idx) => {
+                  {categories.map((cate, idx) => {
                     if (idx <= 3 || idx>=7) return null;
                     const { categories } = this.state;
-                    if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                    if(categories.includes(categories[idx])) { var m='contained'; var sselected={ color: 'white', }; }
                     else { var m='outlined'; var sselected=null; }
                     return (
                       <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]} mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>
@@ -308,10 +303,10 @@ export default class QuestionCreate extends React.Component {
                   })}
                 </View>
                 <View style={[styles.block, {flexDirection: 'row'}]}>
-                  {all_cat.map((cate, idx) => {
+                  {categories.map((cate, idx) => {
                     if(idx < 7 ) return null;
                     const { categories } = this.state;
-                    if(categories.includes(all_cat[idx])) { var m='contained'; var sselected={ color: 'white', }; }
+                    if(categories.includes(categories[idx])) { var m='contained'; var sselected={ color: 'white', }; }
                     else { var m='outlined'; var sselected=null; }
                     return (
                       <Button_c color={tabColors[idx]} labelStyle={[styles.l_choice, sselected]}  mode={m} style={[styles.choice, { borderColor: tabColors[idx], marginRight: 3, marginLeft: 3}]} onPress={() => this.onCategory(idx) }>

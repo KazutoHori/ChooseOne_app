@@ -1,11 +1,11 @@
-import { FlatList, RefreshControl } from 'react-native';
-import PropTypes from 'prop-types';
+import {
+  FlatList,
+  RefreshControl
+} from 'react-native';
 import React from 'react';
 
-import { getImageFromId } from '../utils/api';
 import Question from './Question';
 
-// const keyExtractor = ({ id }) => id.toString();
 
 export default class QuestionList extends React.Component {
 

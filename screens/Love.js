@@ -14,7 +14,6 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import filter from 'lodash.filter'
 import { Button, Checkbox,  } from 'galio-framework';
 
-import {fetchQuestions} from '../utils/api';
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
 import Questions from '../utils/questions';

@@ -3,29 +3,24 @@ import {
   StyleSheet,
   Text,
   View, Modal,
-  FlatList,
-  ActivityIndicator,
-  Linking, ScrollView, SafeAreaView, TouchableOpacity
+  TouchableOpacity
 } from 'react-native';
-import { DrawerItems, DrawerNavigatorItems } from "react-navigation-drawer";
 import { Avatar } from 'react-native-elements';
 import * as Font from 'expo-font'
-import { MaterialIcons } from '@expo/vector-icons';
-import { Button, Checkbox,  } from 'galio-framework';
+import { Button } from 'galio-framework';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as firebase from 'firebase';
 import { showMessage } from 'react-native-flash-message';
 
 import LoginForm from './LoginForm';
-import { availables } from '../utils/characters';
+import { availables } from '../utils/variables';
 import colors from '../utils/colors';
-import SignupModal from '../components/SignupModal';
-// import { Button } from 'native-base';
 
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
+
 
 export default class About extends React.Component {
   state = {

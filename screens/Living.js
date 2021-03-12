@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import {fetchQuestions} from '../utils/api';
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
 import tabColors from '../utils/tabColors';

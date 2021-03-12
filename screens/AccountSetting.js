@@ -3,21 +3,23 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
-  ActivityIndicator, SafeAreaView, TextInput, ScrollView,
-  Linking, TouchableOpacity, TouchableWithoutFeedback, Image
+  ActivityIndicator,
+  SafeAreaView,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Image
 } from 'react-native';
 import * as Font from 'expo-font'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
-import { Button, Switch } from 'galio-framework';
 import { Avatar } from 'react-native-elements';
 import * as firebase from 'firebase';
 
 import colors from '../utils/colors';
-import { availables } from '../utils/characters';
+import { availables } from '../utils/availables';
 
+const screenWidth = Dimensions.get("window").width;
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),

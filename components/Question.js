@@ -1,5 +1,9 @@
-import { Image, StyleSheet, View, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity
+} from 'react-native';
 import React from 'react';
 import * as Font from 'expo-font'
 
@@ -38,7 +42,7 @@ export default class Question extends React.Component {
         <TouchableOpacity style={styles.container} onPress={this.onContent}>
           <View>
             <Text style={styles.title}>{title}</Text>
-            <Text style={styles.date}>Created: {created.slice(0, 10)}</Text>  
+            <Text style={styles.date}>Created: {created.slice(0, 10)}</Text>
             <View style={styles.choices}>
               {choices.map(choice => (
                 <Text style={styles.choice}>○　{choice.choice_text}</Text>

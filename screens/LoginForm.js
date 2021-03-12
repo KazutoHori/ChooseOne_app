@@ -1,31 +1,26 @@
-import { Image, StyleSheet, View, Text, ActivityIndicator, KeyboardAvoidingView,
-  TouchableOpacity, Alert, Modal, TextInput, }
-from 'react-native';
-import PropTypes from 'prop-types';
+import {
+  StyleSheet,
+  View,
+  Text,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+  Alert,
+  Modal,
+  TextInput,
+} from 'react-native';
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Font from 'expo-font';
-import { Button, Radio, Checkbox } from 'galio-framework';
-import { Button as Button_c } from 'react-native-paper';
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel}
-from 'react-native-simple-radio-button';
+import { Button, Checkbox } from 'galio-framework';
 import { Dimensions } from "react-native";
-import PasswordInputText from 'react-native-hide-show-password-input';
 import { Permissions, Notifications } from 'expo';
-
-import { availables } from '../utils/characters';
-
-import * as firebase from 'firebase';
-var db = firebase.firestore();
-
-const screenWidth = Dimensions.get("window").width;
-const screenHeight = Dimensions.get('window').height;
-
-
-import colors from '../utils/colors';
 import { showMessage } from 'react-native-flash-message';
+import * as firebase from 'firebase';
 
+import { availables } from '../utils/variables';
+import colors from '../utils/colors';
+
+var db = firebase.firestore();
+const screenWidth = Dimensions.get("window").width;
 let customFonts  = {
   'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
@@ -189,6 +184,8 @@ export default class LoginForm extends React.Component {
   onLogin = () => {
     const { email, password } = this.state;
 
+    firebase.auth().signInWithEmailAndPassword(email, password);
+
     firebase.auth().onAuthStateChanged(user => {
       showMessage({
         message: "You have now logged in!",
@@ -215,7 +212,6 @@ export default class LoginForm extends React.Component {
       } = this.state;
 
     if (!fontsLoaded) return null;
-
     return (
       <View>
         <Modal

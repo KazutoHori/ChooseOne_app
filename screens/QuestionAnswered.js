@@ -3,31 +3,30 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
-  ActivityIndicator, SafeAreaView, TextInput, ScrollView,
-  Linking, TouchableOpacity, TouchableWithoutFeedback, Image
+  ActivityIndicator,
+  SafeAreaView,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Image
 } from 'react-native';
 import * as Font from 'expo-font'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
-import { Button } from 'galio-framework';
 import ModalDropdown from 'react-native-modal-dropdown';
+import * as firebase from 'firebase';
 
 import colors from '../utils/colors';
 import QuestionList from '../components/QuestionList';
-import UserQuestionDetail from './UserQuestionDetail';
+import sleep from '../utils/sleep';
 
+var db = firebase.firestore();
+const you_did = ['QuestionAnswered', 'QuestionCreated', 'QuestionLiked'];
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
 
-import * as firebase from 'firebase';
-import { Tile } from 'react-native-elements';
-var db = firebase.firestore();
-
-const you_did = ['QuestionAnswered', 'QuestionCreated', 'QuestionLiked'];
 
 export default class QuestionAnswered extends React.Component {
   static navigationOptions = () => ({
@@ -53,6 +52,7 @@ export default class QuestionAnswered extends React.Component {
     questions: [],
     refreshing: false,
     screen: 'QuestionAnswered',
+    noContent: false,
   };
 
   handleLoad = () => {
@@ -86,9 +86,41 @@ export default class QuestionAnswered extends React.Component {
 
   doRefresh = () => {
     this.setState({ refreshing: true });
-    /// do refresh work here /////
-    //////////////////////////////
-    setTimeout( () => this.setState({refreshing: false}), 1500);
+    var user = firebase.auth().currentUser;
+
+    var ques = [];
+    const { screen } = this.state;
+    if(user.uid){
+      db.collection("users").doc(user.uid).onSnapshot((doc) => {
+        ques = [];
+        var questions_ = [];
+        if(screen === 'QuestionAnswered') questions_ = doc.data().question_answered;
+        else if(screen === 'QuestionCreated') questions_ = doc.data().question_created;
+        else questions_ = doc.data().question_liked;
+
+        this.setState({ questions: ques });
+        for(let i=0; i<questions_.length; i++){
+          if(screen === 'QuestionAnswered'){
+            db.collection('questions').doc(questions_[i].question).get().then((doc) => {
+              if(doc.exists){
+                ques.unshift(doc.data())
+                this.setState({ questions: ques });
+                this.setState({ noContent: false });
+              }
+            });
+          }else{
+            db.collection('questions').doc(questions_[i]).get().then((doc) => {
+              if(doc.exists){
+                ques.unshift(doc.data())
+                this.setState({ questions: ques });
+                this.setState({ noContent: false });
+              }
+            });
+          }
+        }
+      });
+    }
+    setTimeout( () => this.setState({refreshing: false}), 800);
   }
 
   async componentDidMount() {
@@ -98,7 +130,7 @@ export default class QuestionAnswered extends React.Component {
 
     var ques = [];
     const { screen } = this.state;
-    if(user){
+    if(user.uid){
       db.collection("users").doc(user.uid).onSnapshot((doc) => {
         ques = [];
         var questions_ = [];
@@ -109,8 +141,11 @@ export default class QuestionAnswered extends React.Component {
         this.setState({ questions: ques });
         for(let i=0; i<questions_.length; i++){
           db.collection('questions').doc(questions_[i].question).get().then((doc) => {
-            ques.unshift(doc.data())
-            this.setState({ questions: ques });
+            if(doc.exists){
+              ques.unshift(doc.data())
+              this.setState({ questions: ques });
+              this.setState({ noContent: false });
+            }
           });
         }
       });
@@ -122,7 +157,7 @@ export default class QuestionAnswered extends React.Component {
 
     var user = firebase.auth().currentUser;
     var ques = [];
-    if(user){
+    if(user.uid){
       db.collection("users").doc(user.uid).onSnapshot((doc) => {
         ques = [];
         var questions_ = [];
@@ -134,13 +169,19 @@ export default class QuestionAnswered extends React.Component {
         for(let i=0; i<questions_.length; i++){
           if(you_did[idx] === 'QuestionAnswered'){
             db.collection('questions').doc(questions_[i].question).get().then((doc) => {
-              ques.unshift(doc.data())
-              this.setState({ questions: ques });
+              if(doc.exists){
+                ques.unshift(doc.data())
+                this.setState({ questions: ques });
+                this.setState({ noContent: false });
+              }
             });
           }else{
             db.collection('questions').doc(questions_[i]).get().then((doc) => {
-              ques.unshift(doc.data())
-              this.setState({ questions: ques });
+              if(doc.exists){
+                ques.unshift(doc.data())
+                this.setState({ questions: ques });
+                this.setState({ noContent: false });
+              }
             });
           }
         }
@@ -159,7 +200,7 @@ export default class QuestionAnswered extends React.Component {
 
     var user = firebase.auth().currentUser;
 
-    if(user){
+    if(user.uid){
       await db.collection('users').doc(user.uid).get().then((doc) => {
         var goDetail = true;
         let i=0;
@@ -182,22 +223,31 @@ export default class QuestionAnswered extends React.Component {
   //   this.unsubscribe();
   // }
 
+  noData () {
+    const { screen, questions } = this.state;
+
+    if(questions.length !== 0) return null;
+    else{
+      sleep(1000).then(() => {
+        const { questions } = this.state;
+        if(questions.length === 0){
+          this.setState({ noContent: true });
+        }
+      })
+    }
+  }
+
   render() {
-    const { screen, refreshing, questions, loading, text, fontsLoaded } = this.state;
+    const { noContent, screen, refreshing, questions, loading, text, fontsLoaded } = this.state;
     const { navigation: { openDrawer, navigate }} = this.props;
 
     var title='';
-    var comment='';
-    if(screen === 'QuestionAnswered'){
-      title='Questions You Answered';
-      comment='answered';
-    }else if(screen === 'QuestionCreated'){
-      title='Questions You Created';
-      comment='created';
-    }else{
-      title='Questions You Liked';
-      comment='liked';
-    }
+    if(screen === 'QuestionAnswered') title='Questions You Answered';
+    else if(screen === 'QuestionCreated') title='Questions You Created';
+    else title='Questions You Liked';
+    var comment='You don\'t have any questions you like yet.';
+    if(screen === 'QuestionAnswered') comment='You have not yet answered any question.';
+    else if(screen === 'QuestionCreated') comment='You have not yet created any question.';
 
     if(!fontsLoaded) return null;
     return (
@@ -221,11 +271,13 @@ export default class QuestionAnswered extends React.Component {
         </View>
 
         <View style={{ flex: 1}}>
-          {questions.length === 0 && (
+          {this.noData()}
+          {noContent && (
             <View style={{ marginTop: 30 }}>
-              <Text style={{ fontSize: 15, textAlign: 'center', fontFamily: 'PlayfairDisplay-Medium', marginBottom: 20 }}>You have not yet {comment} any questions.</Text>
+              <Text style={{ fontSize: 15, textAlign: 'center', fontFamily: 'PlayfairDisplay-Medium', marginBottom: 20 }}>{comment}</Text>
             </View>
           )}
+
           <QuestionList
             onRefresh={this.doRefresh}
             refreshing={refreshing}

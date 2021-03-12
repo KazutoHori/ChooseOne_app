@@ -3,23 +3,23 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
   ActivityIndicator,
-  Linking, StatusBar, TextInput, InteractionManager,
-  SafeAreaView, TouchableWithoutFeedback, Image, TouchableOpacity
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Searchbar } from 'react-native-paper';
 import ModalDropdown from 'react-native-modal-dropdown';
-import filter from 'lodash.filter'
-import { Button, Checkbox,  } from 'galio-framework';
+import { Button } from 'galio-framework';
+import * as firebase from 'firebase';
 
-import {fetchQuestions} from '../utils/api';
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
-import Questions from '../utils/questions';
+import { categories } from '../utils/variables';
 
-import * as firebase from 'firebase';
+require("firebase/firestore");
 const firebaseConfig = {
   apiKey: "AIzaSyArjDv3hS4_rw1YyNz-JFXDX1ufF72bqr8",
   authDomain: "chooseone-105a9.firebaseapp.com",
@@ -30,13 +30,9 @@ const firebaseConfig = {
   appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
   measurementId: "G-YJ97DZH6V5"
 };
-
-const categories = ['Top', 'Love', 'News', 'Sports', 'Entertainment', 'Health', 'Living', 'Career', 'Academics', 'IT', 'Quiz'];
-
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
-require("firebase/firestore");
 var db = firebase.firestore();
 
 const options = {
@@ -73,13 +69,6 @@ export default class Top extends React.Component {
           ques.push(doc.data());
       });
       db.collection('questions').orderBy('all_votes').limit(20);
-      // ques.sort(function(a, b) {
-      //   if (a.created > b.created) {
-      //     return -1;
-      //   } else {
-      //     return 1;
-      //   }
-      // })
       this.setState({ questions: ques });
     });
   }
@@ -115,8 +104,14 @@ export default class Top extends React.Component {
 
   doRefresh = () => {
     this.setState({ refreshing: true });
-    /// do refresh work here /////
-    //////////////////////////////
+    this.unsubscribe = db.collection("questions").onSnapshot((querySnapshot) => {
+      var ques = [];
+      querySnapshot.forEach((doc) => {
+          ques.push(doc.data());
+      });
+      db.collection('questions').orderBy('all_votes').limit(20);
+      this.setState({ questions: ques });
+    });
     setTimeout( () => this.setState({refreshing: false}), 1500);
   }
 
@@ -179,16 +174,9 @@ export default class Top extends React.Component {
     this.setState({ search_results: data, query: text });
   };
 
-  onSearch = () => {
-    this.setState({ searching: true });
-  }
-
   render() {
-    // const { style, commentsForItem, onPressComments } = this.props;
     const { noResults, search_results, query, searching, loading, error, questions, refreshing } = this.state;
     const { navigation: { navigate } } = this.props;
-
-    // if(searching) this.setState({ questions: search_results });
 
     return (
       <SafeAreaView style={styles.container}>

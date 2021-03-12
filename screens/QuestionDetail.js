@@ -1,33 +1,29 @@
-import { Image, StyleSheet, View, Text, ActivityIndicator,
-    TouchableOpacity, Alert, Modal, }
-  from 'react-native';
-import PropTypes from 'prop-types';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Modal,
+} from 'react-native';
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Font from 'expo-font';
-import { Button, Radio } from 'galio-framework';
+import { Button } from 'galio-framework';
 import { Button as Button_c } from 'react-native-paper';
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel}
-  from 'react-native-simple-radio-button';
 import { Dimensions } from "react-native";
-
-
-import slugify from '../utils/slugify.js';
-import LoginForm from './LoginForm';
-
+import { showMessage } from 'react-native-flash-message';
 import * as firebase from 'firebase';
-var db = firebase.firestore();
 
-const screenWidth = Dimensions.get("window").width;
-const screenHeight = Dimensions.get('window').height;
-
+import LoginForm from './LoginForm';
 import colors from '../utils/colors';
-import { firestore } from 'firebase';
 
+var db = firebase.firestore();
+const screenHeight = Dimensions.get('window').height;
 let customFonts  = {
   'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
 };
+
 
 export default class QuestionDetail extends React.Component {
 
@@ -35,7 +31,9 @@ export default class QuestionDetail extends React.Component {
     super(props);
     this.state = {
       answered: true,
-      madeit: true,
+      madeit: false,
+      likedit: false,
+
       value: 0,
       value3Index: null,
       s_modalVisible: false,
@@ -51,14 +49,26 @@ export default class QuestionDetail extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { question: { slug } } = params;
+
+    var user = firebase.auth().currentUser;
+    if(user){
+      db.collection('users').doc(user.uid).get().then((doc) => {
+        if(doc.data().question_created.includes(slug)){
+          this.setState({ madeit: true  });
+        }
+      });
+      db.collection('users').doc(user.uid).get().then((doc) => {
+        if(doc.data().question_liked.includes(slug)){
+          this.setState({ likedit: true  });
+        }
+      });
+    }
   }
 
-  static navigationOptions = () => ({
-
-  });
-
   onVote = async () => {
-    const { error, value3Index } = this.state;
+    const { likedit, error, value3Index } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
     const { from_where, question, question: { id, slug, choices} , } = params;
     if(value3Index === null){
@@ -115,16 +125,56 @@ export default class QuestionDetail extends React.Component {
   //   this.unsubscribe();
   // }
 
+  onLikeit = () => {
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { from_where, question: { slug } } = params;
+
+    showMessage({
+      message: "You like this question!",
+      type: "info",
+      icon: 'success',
+    });
+
+    var user = firebase.auth().currentUser;
+    if(user && user.uid){
+      db.collection("users").doc(user.uid).update({
+        question_liked: firebase.firestore.FieldValue.arrayUnion(slug)
+      })
+    }
+  }
+
+  onDelete = () => {
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { from_where, question: { slug } } = params;
+    this.setState({ modalVisible: false });
+
+    showMessage({
+      message: "You have successfully deleted!",
+      type: "warning",
+      icon: 'success',
+    });
+
+    var user = firebase.auth().currentUser;
+    db.collection("questions").doc(slug).delete();
+    db.collection("users").doc(user.uid).update({
+      question_created: firebase.firestore.FieldValue.arrayRemove(slug)
+    })
+
+    navigate(from_where);
+  }
+
   render() {
     const { s_modalVisible, fontsLoaded, modalVisible } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
     const { from_where, question, question: {id, author, title, created, choices } } = params;
-    const { error, answered, madeit } = this.state;
+    const { likedit, error, answered, madeit } = this.state;
 
     for(let i=0; i<choices.length; i++){
       choices[i]['label']=choices[i]['choice_text'];
       choices[i]['value']=i;
     }
+
+    var user = firebase.auth().currentUser;
 
     if(!fontsLoaded) return null;
     return (
@@ -153,7 +203,7 @@ export default class QuestionDetail extends React.Component {
                 <Button style={{ width: 100 }} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
                   No
                 </Button>
-                <Button style={{ width: 100 }} color='theme' onPress={() => { this.setState({ modalVisible: false}); navigate(from_where); }}>
+                <Button style={{ width: 100 }} color='theme' onPress={this.onDelete}>
                   Delete
                 </Button>
               </View>
@@ -181,21 +231,35 @@ export default class QuestionDetail extends React.Component {
             </Button>
           )}
         </View>
-        {madeit && (
-          <View style={styles.buttons}>
+        <View style={styles.buttons}>
+          {user && user.uid && (
             <View>
-              <Button color={colors.blue} onPress={() => this.setState({ modalVisible: true})}>
-                <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
-                <Text style={{ color: 'white' }}>Interesting!</Text>
-              </Button>
+              {likedit && (
+                <View>
+                  <Button color={colors.blue} disabled onPress={this.onLikeit}>
+                    <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
+                    <Text style={{ color: 'white' }}>You Like this question!</Text>
+                  </Button>
+                </View>
+              )}
+              {!likedit && (
+                <View>
+                  <Button color={colors.blue} onPress={this.onLikeit}>
+                    <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
+                    <Text style={{ color: 'white' }}>Like it!</Text>
+                  </Button>
+                </View>
+              )}
             </View>
+          )}
+          {madeit && (
             <View>
               <Button color='theme' onPress={() => this.setState({modalVisible:true})}>
                 Delete
               </Button>
             </View>
-          </View>
-        )}
+          )}
+        </View>
       </View>
     );
   }

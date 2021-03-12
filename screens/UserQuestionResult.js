@@ -1,24 +1,32 @@
-import { Image, StyleSheet, FlatList, View, ActivityIndicator,
-    Text, TouchableOpacity, SafeAreaView, ScrollView, Modal, TouchableWithoutFeedback
-  } from 'react-native';
-import PropTypes from 'prop-types';
+import {
+  Image,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Modal,
+  TouchableWithoutFeedback
+} from 'react-native';
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { PieChart, BarChart } from 'react-native-chart-kit';
 import { Dimensions } from "react-native";
 import * as Font from 'expo-font';
-import { Button, Radio, theme, withGalio, GalioProvider } from 'galio-framework';
-import ModalDropdown from 'react-native-modal-dropdown';
-
-const screenWidth = Dimensions.get("window").width;
+import * as firebase from 'firebase';
+import { Button, } from 'galio-framework';
 
 import colors from '../utils/colors';
+import { showMessage } from 'react-native-flash-message';
 
+const screenWidth = Dimensions.get("window").width;
+var db = firebase.firestore();
 let customFonts  = {
   'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
+
 
 export default class QuestionDetail extends React.Component {
 
@@ -26,7 +34,8 @@ export default class QuestionDetail extends React.Component {
     super(props);
     this.state = {
       answered: true,
-      madeit: true,
+      madeit: false,
+      likedit: false,
       modalVisible: false,
       error: '',
     };
@@ -41,7 +50,7 @@ export default class QuestionDetail extends React.Component {
     this._loadFontsAsync();
 
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { your_vote, question, question: {id, author, title, created, choices } } = params;
+    const { your_vote, question, question: {id, slug, author, title, created, choices } } = params;
 
     var copy=choices;
     copy.sort(function(first, second){
@@ -57,12 +66,64 @@ export default class QuestionDetail extends React.Component {
     this.setState({ id, author, title, created, copy });
     this.setState({ error: 'You have voted for '+your_vote+'!' });
     // setTimeout(() => this.setState({ error: ''}),2500);
+
+    var user = firebase.auth().currentUser;
+    if(user){
+      db.collection('users').doc(user.uid).get().then((doc) => {
+        if(doc.data().question_created.includes(slug)){
+          this.setState({ madeit: true  });
+        }
+      });
+      db.collection('users').doc(user.uid).get().then((doc) => {
+        if(doc.data().question_liked.includes(slug)){
+          this.setState({ likedit: true  });
+        }
+      });
+    }
+  }
+
+  onLikeit = () => {
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { from_where, question: { slug } } = params;
+
+    showMessage({
+      message: "You like this question!",
+      type: "info",
+      icon: 'success',
+    });
+
+    var user = firebase.auth().currentUser;
+    if(user && user.uid){
+      db.collection("users").doc(user.uid).update({
+        question_liked: firebase.firestore.FieldValue.arrayUnion(slug)
+      })
+    }
+  }
+
+  onDelete = () => {
+    const { navigation: { state: { params }, navigate }} = this.props;
+    const { from_where, question: { slug } } = params;
+    this.setState({ modalVisible: false });
+
+    showMessage({
+      message: "You have successfully deleted!",
+      type: "warning",
+      icon: 'success',
+    });
+
+    var user = firebase.auth().currentUser;
+    db.collection("questions").doc(slug).delete();
+    db.collection("users").doc(user.uid).update({
+      question_created: firebase.firestore.FieldValue.arrayRemove(slug)
+    })
+
+    navigate('QuestionAnswered');
   }
 
   render() {
-    const { navigation: { state: { params }, navigate }} = this.props;
+    const { navigation: { state: { params }, openDrawer, navigate }} = this.props;
     const { from_where, your_vote, question: {id, author, title, created, choices } } = params;
-    const { error, fontsLoaded, modalVisible, answered, madeit } = this.state;
+    const { likedit, error, fontsLoaded, modalVisible, answered, madeit } = this.state;
 
     var pie_data = Array.from(choices);
     const aaa = created.slice(-2);
@@ -111,9 +172,6 @@ export default class QuestionDetail extends React.Component {
           <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswerd')}>
             <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
           </TouchableWithoutFeedback>
-          <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={this.onChange} dropdownStyle={{ height: 3*40+5 }} dropdownTextStyle={{ fontWeight: '500', color: 'black', height: 40, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions You Answerd', 'Questions You Created', 'Questions You Liked']} >
-            <Icon name={'archive'} size={30} style={{ color: colors.grey }} />
-          </ModalDropdown>
           <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>
             <Icon name={'cogs'} size={30} style={{ color: colors.grey }} />
           </TouchableOpacity>
@@ -145,7 +203,7 @@ export default class QuestionDetail extends React.Component {
 									<Button style={{width: 100,}} color={colors.blue} onPress={() => this.setState({ modalVisible: false })}>
 										No
 									</Button>
-									<Button style={{width: 100,}} color='theme' onPress={() => this.setState({ modalVisible: false})}>
+									<Button style={{width: 100,}} color='theme' onPress={this.onDelete}>
 										Delete
 									</Button>
 								</View>
@@ -233,21 +291,32 @@ export default class QuestionDetail extends React.Component {
 						}}
 					/>
 
-					{madeit && (
-						<View style={styles.buttons}>
-							<View>
-								<Button color={colors.blue} onPress={() => this.setState({ modalVisible: true})}>
-									<Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
-									<Text style={{ color: 'white' }}>Like it!</Text>
-								</Button>
-							</View>
-							<View>
-								<Button color='theme' onPress={() => this.setState({modalVisible:true})}>
-									Delete
-								</Button>
-							</View>
-						</View>
-					)}
+
+					<View style={styles.buttons}>
+            {likedit && (
+              <View>
+                <Button color={colors.blue} disabled onPress={this.onLikeit}>
+                  <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
+                  <Text style={{ color: 'white' }}>You Like this question!</Text>
+                </Button>
+              </View>
+            )}
+            {!likedit && (
+              <View>
+                <Button color={colors.blue} onPress={this.onLikeit}>
+                  <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
+                  <Text style={{ color: 'white' }}>Like it!</Text>
+                </Button>
+              </View>
+            )}
+            {madeit && (
+              <View>
+                <Button color='theme' onPress={() => this.setState({modalVisible:true})}>
+                  Delete
+                </Button>
+              </View>
+  					)}
+					</View>
 
 					<View style={{ marginTop: 40}} />
 					<TouchableOpacity style={styles.back } onPress={() => navigate('QuestionAnswered')}>
