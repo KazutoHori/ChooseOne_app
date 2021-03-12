@@ -14,6 +14,7 @@ import { Searchbar } from 'react-native-paper';
 import ModalDropdown from 'react-native-modal-dropdown';
 import { Button } from 'galio-framework';
 import * as firebase from 'firebase';
+import { app } from 'firebase';
 
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
@@ -30,16 +31,26 @@ const firebaseConfig = {
   appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
   measurementId: "G-YJ97DZH6V5"
 };
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(firebaseConfig);
-}
+if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
-const options = {
-  method: 'POST',
-}
 
 export default class Top extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      questions: [],
+      loading: true,
+      error: false,
+      refreshing: false,
+      searching: false,
+      query: '',
+      search_results: [],
+      noResults: false,
+    };
+    this.scrollRef = React.createRef();
+  }
 
   static navigationOptions = () => {
     return {
@@ -55,14 +66,7 @@ export default class Top extends React.Component {
     };
   };
 
-  async _loadFontsAsync() {
-    await Font.loadAsync(customFonts);
-    this.setState({ fontsLoaded: true });
-  }
-
   componentDidMount() {
-    this._loadFontsAsync();
-
     this.unsubscribe = db.collection("questions").onSnapshot((querySnapshot) => {
       var ques = [];
       querySnapshot.forEach((doc) => {
@@ -75,25 +79,6 @@ export default class Top extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribe();
-  }
-
-  static navigationOptions = () => ({
-
-  });
-
-  constructor(props){
-    super(props);
-    this.state = {
-      questions: [],
-      loading: true,
-      error: false,
-      refreshing: false,
-      searching: false,
-      query: '',
-      search_results: [],
-      noResults: false,
-    };
-    this.scrollRef = React.createRef();
   }
 
   handleLoad = () => {
@@ -117,14 +102,12 @@ export default class Top extends React.Component {
 
   onContent = async the_slug => {
     const { navigation: { navigate }} = this.props;
-
     var the_question={};
+    var user = firebase.auth().currentUser;
 
     await db.collection('questions').doc(the_slug).get().then((doc) => {
       the_question = doc.data()
     });
-
-    var user = firebase.auth().currentUser;
 
     if(user){
       await db.collection('users').doc(user.uid).get().then((doc) => {
@@ -175,7 +158,7 @@ export default class Top extends React.Component {
   };
 
   render() {
-    const { noResults, search_results, query, searching, loading, error, questions, refreshing } = this.state;
+    const { search_results, query, searching, loading, questions, refreshing } = this.state;
     const { navigation: { navigate } } = this.props;
 
     return (
@@ -209,7 +192,6 @@ export default class Top extends React.Component {
                   value={query}
                   placeholder={'Search'}
                   autoCorrect={false}
-                  // clearButtonMode='always'
                 />
               </View>
               <TouchableOpacity onPress={() => this.setState({ searching: false })} style={{ padding: 8, position: 'absolute', right: 20, top: 5}}>
@@ -249,14 +231,7 @@ export default class Top extends React.Component {
             style={{ zIndex: 2}}
           />
         )}
-
       </SafeAreaView>
-      // <View style={styles.test}>
-      //   <Text style={{ fontSize: 50}}>test</Text>
-      //   {loading && (
-      //     <ActivityIndicator size='large'/>
-      //   )}
-      // </View>
     );
   }
 }

@@ -4,8 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import AppContainer from './routes';
 import { Permissions, Notifications } from 'expo';
 import FlashMessage from "react-native-flash-message";
-
 import * as firebase from 'firebase';
+
 const firebaseConfig = {
   apiKey: "AIzaSyArjDv3hS4_rw1YyNz-JFXDX1ufF72bqr8",
   authDomain: "chooseone-105a9.firebaseapp.com",
@@ -16,13 +16,7 @@ const firebaseConfig = {
   appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
   measurementId: "G-YJ97DZH6V5"
 };
-
-// var database = firebase.database();
-
-if (firebase.apps.length === 0) {  
-  firebase.initializeApp(firebaseConfig);
-}
-
+if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
 
 export default class App extends React.Component {
 
@@ -48,7 +42,7 @@ export default class App extends React.Component {
     var updates = {};
     updates['/expoToken'] = token;
     firebase.database().ref('users').child(user.uid).update(updates);
-  
+
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
         name: 'default',
@@ -60,10 +54,10 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    
+
     // this.RegisterForPushNotificationAsync;
 
-    
+
   }
 
   render() {

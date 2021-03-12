@@ -17,37 +17,37 @@ import { Avatar } from 'react-native-elements';
 import * as firebase from 'firebase';
 
 import colors from '../utils/colors';
-import { availables } from '../utils/availables';
+import { availables } from '../utils/variables';
 
+const firebaseConfig = {
+  apiKey: "AIzaSyArjDv3hS4_rw1YyNz-JFXDX1ufF72bqr8",
+  authDomain: "chooseone-105a9.firebaseapp.com",
+  databaseURL: "https://chooseone-default-rtdb.firebaseio.com",
+  projectId: "chooseone",
+  storageBucket: "chooseone.appspot.com",
+  messagingSenderId: "722704825746",
+  appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
+  measurementId: "G-YJ97DZH6V5"
+};
+if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
 const screenWidth = Dimensions.get("window").width;
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
 
-export default class QuestionAnswered extends React.Component {
-  static navigationOptions = () => ({
-    // title: 'Let\'s Create A Question!',
-    // headerTintColor: colors.white,
-    // headerStyle: {
-    //   backgroundColor: colors.blue,
-    //   // marginTop: 40,
-    //   // height: 30,
-    // },
-    // headerTitleStyle: {
-    //   // fontFamily: 'BerkshireSwash-Regular',
-    // },
-    // headerTitleContainerStyle: {
-    //   // marginTop: 100,
-    // }
-  });
 
-  state = {
-    fontsLoaded: false,
-    loading: true,
-    username: '',
-    changing: false,
-  };
+export default class QuestionAnswered extends React.Component {
+
+  constructor(props){
+    super(props);
+    state = {
+      fontsLoaded: false,
+      loading: true,
+      username: '',
+      changing: false,
+    };
+  }
 
   handleLoad = () => {
     this.setState({

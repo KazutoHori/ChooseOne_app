@@ -17,7 +17,19 @@ import * as firebase from 'firebase';
 
 import colors from '../utils/colors';
 
+require("firebase/firestore");
 const screenWidth = Dimensions.get("window").width;
+const firebaseConfig = {
+  apiKey: "AIzaSyArjDv3hS4_rw1YyNz-JFXDX1ufF72bqr8",
+  authDomain: "chooseone-105a9.firebaseapp.com",
+  databaseURL: "https://chooseone-default-rtdb.firebaseio.com",
+  projectId: "chooseone",
+  storageBucket: "chooseone.appspot.com",
+  messagingSenderId: "722704825746",
+  appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
+  measurementId: "G-YJ97DZH6V5"
+};
+if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 let customFonts  = {
   'PlayfairDisplay-Medium': require('../assets/fonts/PlayfairDisplay-Medium.ttf'),
@@ -75,7 +87,6 @@ export default class QuestionDetail extends React.Component {
 
     this.setState({ id, author, title, created, copy });
     this.setState({ error: 'You have voted for '+your_vote+'!' });
-    // setTimeout(() => this.setState({ error: ''}),2500);
   }
 
   onLikeit = () => {
@@ -131,22 +142,17 @@ export default class QuestionDetail extends React.Component {
         {
           data: [],
           colors: [],
-          // backgroundColor: [],
         },
       ]
     };
 
     for(var i=0; i<choices.length; i++){
       pie_data[i]['name']=pie_data[i].choice_text;
-      // delete pie_data[i].choice_text;
-      // pie_data[i]['name']='basketball';
       pie_data[i]['legendFontSize']=12;
       pie_data[i]['color']='hsla('+((i+aaa)*70)+',75%,75%, 1)';
       pie_data[i]['legendFontColor']='hsla('+((i+aaa)*70)+', 75%, 75%, 1)';
-      // pie_data[i]['legend']=10;
       bar_data.labels.push(pie_data[i].choice_text);
       bar_data.datasets[0].data.push(pie_data[i].votes);
-      // bar_data.colors.push((opacity: 1) => 'hsla('+((i+aaa)*70)+', 75%, 75%, 1)');
     }
 
     const table = (index) => ({
@@ -219,7 +225,7 @@ export default class QuestionDetail extends React.Component {
             backgroundGradientTo: colors.white,
             backgroundGradientToOpacity: 0,
             color: (opacity = 1) => `rgba(${opacity*0}, 122, 205, 1)`,
-            useShadowColorFromDataset: false // optional
+            useShadowColorFromDataset: false
           }}
           accessor={"votes"}
           backgroundColor={colors.white}
@@ -247,8 +253,6 @@ export default class QuestionDetail extends React.Component {
             backgroundGradientFromOpacity: 0,
             backgroundGradientTo: colors.white,
             backgroundGradientToOpacity: 0,
-            // backgroundColor: 'red',
-            // fillShadowGradient: 'blue',
             fillShadowGradientOpacity: 100,
             color: (opacity = 1) => `rgba(${opacity*0}, 122, 205, 1)`,
             labelColor: (index) => colors.black,
@@ -258,12 +262,11 @@ export default class QuestionDetail extends React.Component {
               strokeDasharray: '0',
             },
             propsForLabels: {
-              // fontFamily: 'Bogle-Regular',
               fontSize: 11,
             },
             barPercentage: 0.9,
             decimalPlaces: 0,
-            useShadowColorFromDataset: false // optional
+            useShadowColorFromDataset: false
           }}
           style={{
             marginTop: 10,
@@ -271,11 +274,10 @@ export default class QuestionDetail extends React.Component {
           }}
         />
 
-
         <View style={styles.buttons}>
             {likedit && (
               <View>
-                <Button color={colors.blue} disabled onPress={this.onLikeit}>
+                <Button color={colors.blue} onPress={this.onLikeit}>
                   <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
                   <Text style={{ color: 'white' }}>You Like this question!</Text>
                 </Button>
@@ -347,14 +349,12 @@ const styles = StyleSheet.create({
     top: 10,
     fontSize: 18,
     paddingTop: 5,
-    // fontFamily: 'PlayfairDisplay-Regular',
   },
   vv: {
     position: 'absolute',
     left: screenWidth/3*2,
     top: 10,
     fontSize: 20,
-    // fontFamily: 'PlayfairDisplay-Regular',
   },
   index: {
     position: 'absolute',
@@ -418,21 +418,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.grey,
-    // justifyContent: 'center',
   },
   back: {
     padding: 10,
     alignItems: 'center',
-    // zIndex: 2,
-    // left: screenWidth/2-20,
-    // position: 'absolute',
   },
   center: {
     alignItems: 'center',
     marginBottom: 30,
   },
   title: {
-    // marginTop: 40,
     fontSize: 22,
     textAlign: 'center',
     fontFamily: 'PlayfairDisplay-Medium',
@@ -467,10 +462,3 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay-Medium',
   },
 });
-
-
-// <View>
-//   <Button color='success' onPress={() => this.setState({ modalVisible: true})}>
-//     Edit
-//   </Button>
-// </View>

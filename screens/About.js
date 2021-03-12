@@ -4,44 +4,33 @@ import {
   Text,
   View,
   FlatList,
-  ActivityIndicator, SafeAreaView, TextInput, ScrollView,
-  Linking, TouchableOpacity, TouchableWithoutFeedback, Image
+  ActivityIndicator,
+  SafeAreaView,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Image
 } from 'react-native';
 import * as Font from 'expo-font'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
-import { Button } from 'galio-framework';
 
 import colors from '../utils/colors';
 
+const screenWidth = Dimensions.get("window").width;
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
 }
 
 export default class QuestionAnswered extends React.Component {
-  static navigationOptions = () => ({
-    // title: 'Let\'s Create A Question!',
-    // headerTintColor: colors.white,
-    // headerStyle: {
-    //   backgroundColor: colors.blue,
-    //   // marginTop: 40,
-    //   // height: 30,
-    // },
-    // headerTitleStyle: {
-    //   // fontFamily: 'BerkshireSwash-Regular',
-    // },
-    // headerTitleContainerStyle: {
-    //   // marginTop: 100,
-    // }
-  });
-
-  state = {
-    fontsLoaded: false,
-    loading: true,
-    text: '',
-  };
+  constructor(props){
+    super(props);
+    state = {
+      fontsLoaded: false,
+      loading: true,
+      text: '',
+    };
+  }
 
   handleLoad = () => {
     this.setState({
@@ -146,7 +135,6 @@ const styles = StyleSheet.create({
 
   },
   topbar: {
-    // marginTop: 40,
     width: screenWidth,
     flexDirection: 'row',
     height: 60,

@@ -35,7 +35,7 @@ export default class Question extends React.Component {
   }
 
   render() {
-    const { author, id, title, created, choices, onPress } = this.props;
+    const { title, created, choices } = this.props;
 
     if(this.state.fontsLoaded){
       return (
@@ -77,10 +77,8 @@ const styles = StyleSheet.create({
     color: colors.blue,
   },
   choice: {
-    // fontFamily: 'PlayfairDisplay-Medium',
     fontSize: 15,
     paddingTop: 5,
     paddingLeft: 40,
-    // color: colors.blue,
   }
 });

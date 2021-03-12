@@ -9,7 +9,7 @@ import Question from './Question';
 
 export default class QuestionList extends React.Component {
 
-  renderItem = ({ item: { id, slug, author, title, created, updated, choices, comments }}) => {
+  renderItem = ({ item: { id, slug, author, title, created, choices, comments }}) => {
     const { onPress } = this.props;
     return (
       <Question
@@ -21,7 +21,6 @@ export default class QuestionList extends React.Component {
         choices={choices}
         comments={comments}
         onPress={onPress}
-        // onPressLinkText={() => onPressComments(id)}
       />
     );
   };
@@ -35,14 +34,12 @@ export default class QuestionList extends React.Component {
         ref={passRef}
         renderItem={this.renderItem}
         keyExtractor={({ slug }) => slug}
-        // keyExtractor={keyExtractor}
         refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
             />
         }
-        // extraData={commentsForItem}
       />
     );
   }

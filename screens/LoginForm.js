@@ -19,6 +19,18 @@ import * as firebase from 'firebase';
 import { availables } from '../utils/variables';
 import colors from '../utils/colors';
 
+const firebaseConfig = {
+  apiKey: "AIzaSyArjDv3hS4_rw1YyNz-JFXDX1ufF72bqr8",
+  authDomain: "chooseone-105a9.firebaseapp.com",
+  databaseURL: "https://chooseone-default-rtdb.firebaseio.com",
+  projectId: "chooseone",
+  storageBucket: "chooseone.appspot.com",
+  messagingSenderId: "722704825746",
+  appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
+  measurementId: "G-YJ97DZH6V5"
+};
+if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
+require("firebase/firestore");
 var db = firebase.firestore();
 const screenWidth = Dimensions.get("window").width;
 let customFonts  = {

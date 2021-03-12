@@ -3,15 +3,17 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
-  ActivityIndicator, SafeAreaView, TextInput, ScrollView,
-  Linking, TouchableOpacity, TouchableWithoutFeedback, Image
+  ActivityIndicator,
+  SafeAreaView,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Image
 } from 'react-native';
 import * as Font from 'expo-font'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
-import { Button } from 'galio-framework';
 
 import colors from '../utils/colors';
 

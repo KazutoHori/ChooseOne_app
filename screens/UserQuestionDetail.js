@@ -22,7 +22,19 @@ import * as firebase from 'firebase';
 
 import colors from '../utils/colors';
 
-var db = firebase.firestore();
+require("firebase/firestore");
+const firebaseConfig = {
+  apiKey: "AIzaSyArjDv3hS4_rw1YyNz-JFXDX1ufF72bqr8",
+  authDomain: "chooseone-105a9.firebaseapp.com",
+  databaseURL: "https://chooseone-default-rtdb.firebaseio.com",
+  projectId: "chooseone",
+  storageBucket: "chooseone.appspot.com",
+  messagingSenderId: "722704825746",
+  appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
+  measurementId: "G-YJ97DZH6V5"
+};
+if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
+var db = firestore();
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get('window').height;
 const you_did = ['QuestionAnswered', 'QuestionCreated', 'QuestionLiked'];
@@ -74,6 +86,10 @@ export default class QuestionDetail extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
   onVote = async () => {
     const { error, value3Index } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
@@ -105,32 +121,28 @@ export default class QuestionDetail extends React.Component {
       question.choices=copy;
 
       db.collection('questions').doc(slug).update({
-        choices: firebase.firestore.FieldValue.arrayRemove(remove_data)
+        choices: firestore.FieldValue.arrayRemove(remove_data)
       });
       db.collection('questions').doc(slug).update({
-        choices: firebase.firestore.FieldValue.arrayUnion(add_data)
+        choices: firestore.FieldValue.arrayUnion(add_data)
       });
       db.collection('questions').doc(slug).update({
-        all_votes: firebase.firestore.FieldValue.increment(1)
+        all_votes: firestore.FieldValue.increment(1)
       })
     })
 
     await db.collection('users').doc(userId).set({
-      question_answered: firebase.firestore.FieldValue.arrayUnion({ question: slug, answer: your_vote}) },
+      question_answered: firestore.FieldValue.arrayUnion({ question: slug, answer: your_vote}) },
       { merge: true}
     );
 
     await db.collection('questions').doc(slug).set({
-      users_answered: firebase.firestore.FieldValue.arrayUnion(userId) },
+      users_answered: firestore.FieldValue.arrayUnion(userId) },
       { merge: true }
     );
 
     navigate('UserQuestionResult', { from_where: 'QuestionAnswered', question: question, your_vote: your_vote })
   }
-
-  // componentWillUnmount() {
-  //   this.unsubscribe();
-  // }
 
   onChange = idx => {
     this.setState({ screen: you_did[idx] });
@@ -180,7 +192,7 @@ export default class QuestionDetail extends React.Component {
     var user = firebase.auth().currentUser;
     if(user && user.uid){
       db.collection("users").doc(user.uid).update({
-        question_liked: firebase.firestore.FieldValue.arrayUnion(slug)
+        question_liked: firestore.FieldValue.arrayUnion(slug)
       })
     }
   }
@@ -199,7 +211,7 @@ export default class QuestionDetail extends React.Component {
     var user = firebase.auth().currentUser;
     db.collection("questions").doc(slug).delete();
     db.collection("users").doc(user.uid).update({
-      question_created: firebase.firestore.FieldValue.arrayRemove(slug)
+      question_created: firestore.FieldValue.arrayRemove(slug)
     })
 
     navigate('QuestionAnswered');
@@ -288,7 +300,7 @@ export default class QuestionDetail extends React.Component {
         <View style={styles.buttons}>
           {likedit && (
             <View>
-              <Button color={colors.blue} disabled onPress={this.onLikeit}>
+              <Button color={colors.blue} onPress={this.onLikeit}>
                 <Icon name={'thumbs-up'} size={25} style={{ color: 'white' }} />
                 <Text style={{ color: 'white' }}>You Like this question!</Text>
               </Button>
@@ -353,7 +365,6 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   edit: {
-    // marginTop: 40,
     marginLeft: 90,
   },
   delete: {
@@ -385,33 +396,24 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: '#457AFB',
   },
-  l_choice: {
-    // fontFamily: 'PlayfairDisplay-Medium',
-  },
   choice: {
-    // alignItems: 'flex-start',
     fontFamily: 'PlayfairDisplay-Medium',
     fontSize: 15,
     marginBottom: 12,
     borderWidth: 0.7,
     borderColor: colors.blue,
     borderRadius: 15,
-    // buttonSize: 15,
   },
   vote: {
-    // alignItems: 'flex-start',
-    // marginLeft: 100,
     marginTop: 10,
   },
 	topbar: {
-    // marginTop: 40,
     width: screenWidth,
     flexDirection: 'row',
     height: 60,
     backgroundColor: 'red',
     borderTopWidth: 0.3,
     borderColor: 'white',
-    // marginBottom: 10,
   },
   text: {
     fontFamily: 'BerkshireSwash-Regular',
@@ -427,44 +429,3 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-// {madeit && (
-//   <View style={styles.delete}>
-//     <Button color='theme' onPress={() => this.setState({ modalVisible: true})}>
-//       Delete
-//     </Button>
-//   </View>
-// )}
-
-
-// <RadioForm>
-//   {choices.map((obj, i) => (
-//       <RadioButton　key={i}>
-//         <RadioButtonInput
-//           obj={obj}
-//           index={i}
-//           isSelected={this.state.value3Index === i}
-//           onPress={((value) => this.setState({ value3Index: value }))}
-//           borderWidth={2}
-//           // buttonOuterColor={this.state.value3Index === i ? '#2196f3' : '#000'}
-//           buttonSize={15}
-//           buttonWrapStyle={styles.choice}
-//         />
-//         <RadioButtonLabel
-//           obj={obj}
-//           index={i}
-//           labelHorizontal={true}
-//           onPress={((value) => this.setState({ value3Index: value }))}
-//           labelStyle={styles.choice}
-//           labelWrapStyle={{}}
-//         />
-//       </RadioButton>
-//     ))
-//   }
-// </RadioForm>
-
-  // <View style={styles.edit}>
-  //   <Button color='success' onPress={() => navigate('QuestionResult')}>
-  //     Edit
-  //   </Button>
-  // </View>

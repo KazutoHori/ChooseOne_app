@@ -18,6 +18,7 @@ import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
 import Questions from '../utils/questions';
 import tabColors from '../utils/tabColors';
+import { categories } from '../utils/variables';
 
 import * as firebase from 'firebase';
 const firebaseConfig = {
@@ -31,13 +32,12 @@ const firebaseConfig = {
   measurementId: "G-YJ97DZH6V5"
 };
 
-const categories = ['Top', 'Love', 'News', 'Sports', 'Entertainment', 'Health', 'Living', 'Career', 'Academics', 'IT', 'Quiz'];
-
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
 require("firebase/firestore");
 var db = firebase.firestore();
+
 
 const options = {
   method: 'POST',

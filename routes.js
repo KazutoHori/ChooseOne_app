@@ -4,38 +4,15 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createDrawerNavigator } from 'react-navigation-drawer';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { View, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { DrawerItems, DrawerNavigatorItems } from "react-navigation-drawer";
-import colors from './utils/colors';
-import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
-import CustomDrawerNavigator from './CustomDrawerNavigator';
 
-import Top from './screens/Top';
+import colors from './utils/colors';
 import QuestionCreate from './screens/QuestionCreate';
 import QuestionAnswered from './screens/QuestionAnswered';
-import Sports from './screens/Sports';
-import Study from './screens/Study';
-import IT from './screens/IT';
-import Entertainment from './screens/Entertainment';
-import Love from './screens/Love';
-import Living from './screens/Living';
-import Health from './screens/Health';
-import News from './screens/News';
-import Career from './screens/Career';
-import Quiz from './screens/Quiz';
-import Other from './screens/Other';
-import Academics from './screens/Academics';
-import QuestionDetail from './screens/QuestionDetail';
-import QuestionResult from './screens/QuestionResult';
 import ContactUs from './screens/ContactUs';
 import AccountSetting from './screens/AccountSetting';
 import About from './screens/About';
 import Drawer from './screens/Drawer';
-import CustomTabBar from './CustomTabBar';
 import { HomeScreens } from './HomeScreens';
-import QuestionCreated from './screens/QuestionCreated';
-import QuestionLiked from './screens/QuestionLiked';
 import UserQuestionDetail from './screens/UserQuestionDetail';
 import UserQuestionResult from './screens/UserQuestionResult';
 
@@ -55,20 +32,12 @@ const CreateScreens = createStackNavigator(
     initialRouteName: 'QuestionCreate',
     navigationOptions: {
       tabBarIcon: getTabBarIcon('create'),
-      // drawerIcon: getDrawerItemIcon('list'),
       headerStyle: {
-        // marginTop: 40,
         backgroundColor: colors.grey,
       },
     },
     headerMode: 'none',
     mode: 'modal',
-    headerStyle: {
-      // marginTop: 40,
-    },
-    style: {
-      // marginTop: 40,
-    }
   }
 );
 
