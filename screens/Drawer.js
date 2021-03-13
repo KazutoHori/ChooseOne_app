@@ -27,7 +27,8 @@ const firebaseConfig = {
   measurementId: "G-YJ97DZH6V5"
 };
 if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
-
+require("firebase/firestore");
+var db = firebase.firestore();
 let customFonts  = {
   'BerkshireSwash-Regular': require('../assets/fonts/BerkshireSwash-Regular.ttf'),
   'PlayfairDisplay-Regular': require('../assets/fonts/PlayfairDisplay-Regular.ttf'),
@@ -53,8 +54,8 @@ export default class About extends React.Component {
     var user = firebase.auth().currentUser;
 
     if(user){
-      this.setState({ loggedIn: true });
       this.setState({ username: user.displayName });
+      this.setState({ loggedIn: true });
     }
     this._loadFontsAsync();
   }
@@ -67,6 +68,7 @@ export default class About extends React.Component {
     });
     const { navigation: { closeDrawer, navigate }} = this.props;
     closeDrawer();
+    navigate('QuestionAnswered');
     await showMessage({
       message: 'You have now logged out!',
       type: 'warning',

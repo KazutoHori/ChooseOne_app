@@ -7,12 +7,13 @@ import {
   Alert,
   Modal,
   TextInput,
+  Constants,
 } from 'react-native';
 import React from 'react';
 import * as Font from 'expo-font';
 import { Button, Checkbox } from 'galio-framework';
 import { Dimensions } from "react-native";
-import { Permissions, Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import { showMessage } from 'react-native-flash-message';
 import * as firebase from 'firebase';
 
@@ -63,7 +64,6 @@ export default class LoginForm extends React.Component {
 
   componentDidMount(){
     this._loadFontsAsync();
-
   }
 
   usernameChangeText = username => {
@@ -76,6 +76,31 @@ export default class LoginForm extends React.Component {
 
   passwordChangeText = password => {
     this.setState({ password });
+  };
+
+  registerForPushNotificationsAsync = async (user) => {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      return;
+    }
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    db.collection('users').doc(user.uid).update({
+      'expoToken': token
+    })
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
   };
 
   validateEmail = (email) => {
@@ -127,67 +152,101 @@ export default class LoginForm extends React.Component {
       return null;
     }
 
-    await firebase.auth().createUserWithEmailAndPassword(email, password);
-
-    const { signedIn } = this.props;
-    let current=new Date();
-    current=current.toJSON();
-    firebase.auth().onAuthStateChanged(user => {
-      showMessage({
-        message: "You have now logged in!",
-        type: "success",
-        icon: 'success',
-      });
-      user.updateProfile({
-        displayName: username,
-      });
-      signedIn();
-      db.collection('users').doc(user.uid).set({
-        email: user.email,
-        uid: user.uid,
-        created: current.slice(0, 10)+current.slice(11, 19),
-        question_answered: [],
-        question_created: [],
-        question_liked: [],
-        username: username,
+    await firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
+      const { signedIn } = this.props;
+      let current=new Date();
+      current=current.toJSON();
+      firebase.auth().onAuthStateChanged(user => {
+        if(user){
+          showMessage({
+            message: "You have now logged in!",
+            type: "success",
+            icon: 'success',
+          });
+          user.updateProfile({
+            displayName: username,
+          });
+          signedIn();
+          db.collection('users').doc(user.uid).set({
+            email: user.email,
+            uid: user.uid,
+            created: current.slice(0, 10)+current.slice(11, 19),
+            question_answered: [],
+            question_created: [],
+            question_liked: [],
+            username: username,
+          }).then(() => {
+            this.registerForPushNotificationsAsync(user);
+          })
+        }
       })
-    })
 
-    if(error === ''){
-      this.setState({ s_modalVisible: false });
-      if('closeDrawer' in this.props ){
-        const { closeDrawer } = this.props;
-        closeDrawer();
+      if(error === ''){
+        this.setState({ s_modalVisible: false });
+        if('closeDrawer' in this.props ){
+          const { closeDrawer } = this.props;
+          closeDrawer();
+        }
+      }else{
+        return null;
       }
-    }else{
+    }).catch((e) => {
+      var errorMessage = e.message;
+      this.setState({ error: errorMessage });
+      setTimeout(() => this.setState({ error: ''}),2500);
       return null;
-    }
+    });
   }
 
   onLogin = () => {
     const { email, password } = this.state;
 
-    firebase.auth().signInWithEmailAndPassword(email, password);
-
-    firebase.auth().onAuthStateChanged(user => {
-      showMessage({
-        message: "You have now logged in!",
-        type: "success",
-        icon: 'success',
-      });
-      user.updateProfile({
-        displayName: username
-      });
-      const { signedIn } = this.props;
-      signedIn();
-    })
-
-    this.setState({ l_modalVisible: false });
-
-    if('closeDrawer' in this.props){
-      const { closeDrawer } = this.props;
-      closeDrawer();
+    if( email.length<5 || !this.validateEmail(email)){
+      this.setState({ error: 'The email is not valid'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
     }
+    var p_valid=true;
+    for(let i=0; i<password.length; i++){
+      if(!availables.includes(password[i])) p_valid=false;
+    }
+    if(!p_valid){
+      this.setState({ error: 'Your password must consist of only alphabets, numbers, ".", _ and -'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+    if(password.length < 6) {
+      this.setState({ error: 'Password must be at least 6 characters'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+
+    firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
+      firebase.auth().onAuthStateChanged(user => {
+        if(user){
+          showMessage({
+            message: "You have now logged in!",
+            type: "success",
+            icon: 'success',
+          });
+          this.registerForPushNotificationsAsync(user);
+          const { signedIn } = this.props;
+          signedIn();
+        }
+      })
+
+      this.setState({ l_modalVisible: false });
+
+      if('closeDrawer' in this.props){
+        const { closeDrawer } = this.props;
+        closeDrawer();
+      }
+    }).catch((e) => {
+      var errorMessage = e.message;
+      this.setState({ error: errorMessage });
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    });
   }
 
   render() {
