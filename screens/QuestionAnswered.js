@@ -292,14 +292,12 @@ const styles = StyleSheet.create({
 
   },
   topbar: {
-    // marginTop: 40,
     width: screenWidth,
     flexDirection: 'row',
     height: 60,
     backgroundColor: 'red',
     borderTopWidth: 0.3,
     borderColor: 'white',
-    // marginBottom: 10,
   },
   text: {
     fontFamily: 'BerkshireSwash-Regular',
