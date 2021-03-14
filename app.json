@@ -23,15 +23,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "app.chooseone",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "app.chooseone",
+      "versionCode": 1
     }
-  },
-  "ios": {
-    "bundleIdentifier": "com.chooseone",
-    "buildNumber": "1.0.0"
-  },
-  "android": {
-    "package": "com.chooseone",
-    "versionCode": 1
   }
 }
