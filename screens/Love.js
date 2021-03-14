@@ -3,24 +3,24 @@ import {
   StyleSheet,
   Text,
   View,
-  FlatList,
   ActivityIndicator,
-  Linking, StatusBar, TextInput, InteractionManager,
-  SafeAreaView, TouchableWithoutFeedback, Image, TouchableOpacity
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Searchbar } from 'react-native-paper';
 import ModalDropdown from 'react-native-modal-dropdown';
-import filter from 'lodash.filter'
-import { Button, Checkbox,  } from 'galio-framework';
+import { Button } from 'galio-framework';
+import * as firebase from 'firebase';
 
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
-import Questions from '../utils/questions';
-import tabColors from '../utils/tabColors';
 import { categories } from '../utils/variables';
+import tabColors from '../utils/tabColors';
 
-import * as firebase from 'firebase';
+require("firebase/firestore");
 const firebaseConfig = {
   apiKey: "AIzaSyArjDv3hS4_rw1YyNz-JFXDX1ufF72bqr8",
   authDomain: "chooseone-105a9.firebaseapp.com",
@@ -31,58 +31,11 @@ const firebaseConfig = {
   appId: "1:722704825746:web:73f11551b9e59f4bc2d54b",
   measurementId: "G-YJ97DZH6V5"
 };
-
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(firebaseConfig);
-}
-require("firebase/firestore");
+if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
 
-const options = {
-  method: 'POST',
-}
-
 export default class Love extends React.Component {
-
-  static navigationOptions = () => {
-    return {
-      headerStyle: {
-        backgroundColor: colors.red,
-      },
-      tabBarOptions: {
-        tabStyle: {
-          width: 100,
-          backgroundColor: colors.red,
-        },
-      },
-    };
-  };
-
-  async _loadFontsAsync() {
-    await Font.loadAsync(customFonts);
-    this.setState({ fontsLoaded: true });
-  }
-
-  componentDidMount() {
-    this._loadFontsAsync();
-
-    db.collection("questions").onSnapshot((querySnapshot) => {
-      var ques = [];
-      querySnapshot.forEach((doc) => {
-          ques.push(doc.data());
-      });
-      db.collection('questions').orderBy('all_votes').limit(20);
-      // ques.sort(function(a, b) {
-      //   if (a.created > b.created) {
-      //     return -1;
-      //   } else {
-      //     return 1;
-      //   }
-      // })
-      this.setState({ questions: ques });
-    });
-  }
 
   constructor(props){
     super(props);
@@ -99,6 +52,39 @@ export default class Love extends React.Component {
     this.scrollRef = React.createRef();
   }
 
+  static navigationOptions = () => {
+    return {
+      headerStyle: {
+        backgroundColor: colors.red,
+      },
+      tabBarOptions: {
+        tabStyle: {
+          width: 100,
+          backgroundColor: colors.red,
+        },
+      },
+    };
+  };
+
+  componentDidMount() {
+    db.collection("questions").where('category', 'array-contains', 'Love').onSnapshot((querySnapshot) => {
+      var ques = [];
+      querySnapshot.forEach((doc) => {
+          ques.push(doc.data());
+      });
+      ques.sort(function(first, second){
+        if (first.created > second.created){
+          return -1;
+        }else if (first.created < second.created){
+          return 1;
+        }else{
+          return 0;
+        }
+      });
+      this.setState({ questions: ques });
+    });
+  }
+
   handleLoad = () => {
     this.setState({
       loading: false,
@@ -107,21 +93,33 @@ export default class Love extends React.Component {
 
   doRefresh = () => {
     this.setState({ refreshing: true });
-    /// do refresh work here /////
-    //////////////////////////////
-    setTimeout( () => this.setState({refreshing: false}), 1500);
+    db.collection("questions").where('category', 'array-contains', 'Love').get().then((queries) => {
+      var ques = [];
+      queries.forEach((doc) => {
+          ques.push(doc.data());
+      });
+      ques.sort(function(first, second){
+        if (first.created > second.created){
+          return -1;
+        }else if (first.created < second.created){
+          return 1;
+        }else{
+          return 0;
+        }
+      });
+      this.setState({ questions: ques });
+    });
+    setTimeout( () => this.setState({refreshing: false}), 800);
   }
 
   onContent = async the_slug => {
     const { navigation: { navigate }} = this.props;
-
     var the_question={};
+    var user = firebase.auth().currentUser;
 
     await db.collection('questions').doc(the_slug).get().then((doc) => {
       the_question = doc.data()
     });
-
-    var user = firebase.auth().currentUser;
 
     if(user){
       await db.collection('users').doc(user.uid).get().then((doc) => {
@@ -171,16 +169,9 @@ export default class Love extends React.Component {
     this.setState({ search_results: data, query: text });
   };
 
-  onSearch = () => {
-    this.setState({ searching: true });
-  }
-
   render() {
-    // const { style, commentsForItem, onPressComments } = this.props;
-    const { noResults, search_results, query, searching, loading, error, questions, refreshing } = this.state;
+    const { search_results, query, searching, loading, questions, refreshing } = this.state;
     const { navigation: { navigate } } = this.props;
-
-    // if(searching) this.setState({ questions: search_results });
 
     return (
       <SafeAreaView style={styles.container}>
@@ -213,7 +204,6 @@ export default class Love extends React.Component {
                   value={query}
                   placeholder={'Search'}
                   autoCorrect={false}
-                  // clearButtonMode='always'
                 />
               </View>
               <TouchableOpacity onPress={() => this.setState({ searching: false })} style={{ padding: 8, position: 'absolute', right: 20, top: 5}}>
@@ -253,14 +243,7 @@ export default class Love extends React.Component {
             style={{ zIndex: 2}}
           />
         )}
-
       </SafeAreaView>
-      // <View style={styles.test}>
-      //   <Text style={{ fontSize: 50}}>test</Text>
-      //   {loading && (
-      //     <ActivityIndicator size='large'/>
-      //   )}
-      // </View>
     );
   }
 }

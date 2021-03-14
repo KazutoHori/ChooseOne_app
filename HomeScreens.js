@@ -1,21 +1,10 @@
-import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
-import { createDrawerNavigator } from 'react-navigation-drawer';
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { View, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { DrawerItems, DrawerNavigatorItems } from "react-navigation-drawer";
-import colors from './utils/colors';
 import { createMaterialTopTabNavigator } from 'react-navigation-tabs';
-import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
-import CustomDrawerNavigator from './CustomDrawerNavigator';
 
 import Top from './screens/Top';
-import QuestionCreate from './screens/QuestionCreate';
-import QuestionAnswered from './screens/QuestionAnswered';
 import Sports from './screens/Sports';
-import Study from './screens/Study';
 import IT from './screens/IT';
 import Entertainment from './screens/Entertainment';
 import Love from './screens/Love';
@@ -24,14 +13,9 @@ import Health from './screens/Health';
 import News from './screens/News';
 import Career from './screens/Career';
 import Quiz from './screens/Quiz';
-import Other from './screens/Other';
 import Academics from './screens/Academics';
 import QuestionDetail from './screens/QuestionDetail';
 import QuestionResult from './screens/QuestionResult';
-import ContactUs from './screens/ContactUs';
-import AccountSetting from './screens/AccountSetting';
-import About from './screens/About';
-import Drawer from './screens/Drawer';
 import CustomTabBar from './CustomTabBar';
 
 const getTabBarIcon = icon => ({ tintColor }) => (
@@ -181,19 +165,6 @@ const QuizScreen = createStackNavigator (
   }
 );
 
-const OtherScreen = createStackNavigator (
-  {
-    Other,
-    QuestionDetail,
-    QuestionResult,
-  },
-  {
-    initialRouteName: 'Other',
-    headerMode: 'none',
-    mode: 'modal',
-  }
-);
-
 export const HomeScreens = createMaterialTopTabNavigator(
   {
     Top: {
@@ -262,12 +233,6 @@ export const HomeScreens = createMaterialTopTabNavigator(
         tabBarLabel: 'Quiz',
       }
     },
-    Other: {
-      screen: OtherScreen,
-      navigationOptions: {
-        tabBarLabel: 'Other',
-      }
-    },
   },
   {
     initialRouteName: 'Top',
@@ -275,12 +240,10 @@ export const HomeScreens = createMaterialTopTabNavigator(
       tabBarIcon: getTabBarIcon('home'),
       paddingTop: 40,
     },
-    // tabBarComponent: AppTabNavigation
     style: {
       paddingTop: 40,
     },
     tabBarComponent: CustomTabBar,
-    // pagerComponent: ViewPagerAdapter,             // 要らないはず
     tabBarOptions: {
       paddingTop: 40,
       labelStyle: {
@@ -288,13 +251,8 @@ export const HomeScreens = createMaterialTopTabNavigator(
       },
       tabStyle: {
         width: 100,
-        // backgroundColor: colors.grey,
-      },
-      style: {
-        // backgroundColor: colors.red,
       },
       scrollEnabled: true,
-
     },
   }
 );

@@ -14,7 +14,6 @@ import { Searchbar } from 'react-native-paper';
 import ModalDropdown from 'react-native-modal-dropdown';
 import { Button } from 'galio-framework';
 import * as firebase from 'firebase';
-import { app } from 'firebase';
 
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
@@ -73,7 +72,7 @@ export default class Top extends React.Component {
       querySnapshot.forEach((doc) => {
           ques.push(doc.data());
       });
-      db.collection('questions').orderBy('all_votes').limit(20);
+      db.collection('questions').orderBy('all_votes');
       this.setState({ questions: ques });
     });
   }
@@ -86,15 +85,15 @@ export default class Top extends React.Component {
 
   doRefresh = () => {
     this.setState({ refreshing: true });
-    db.collection("questions").onSnapshot((querySnapshot) => {
+    db.collection("questions").get().then((queries) => {
       var ques = [];
-      querySnapshot.forEach((doc) => {
+      queries.forEach((doc) => {
           ques.push(doc.data());
       });
-      db.collection('questions').orderBy('all_votes').limit(20);
+      db.collection('questions').orderBy('all_votes');
       this.setState({ questions: ques });
     });
-    setTimeout( () => this.setState({refreshing: false}), 1500);
+    setTimeout( () => this.setState({refreshing: false}), 800);
   }
 
   onContent = async the_slug => {
