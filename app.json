@@ -12,7 +12,7 @@
     "orientation": "portrait",
     "icon": "./assets/ChooseOneLogo.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/ChooseOneLogo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
