@@ -19,6 +19,7 @@ import { app } from 'firebase';
 import QuestionList from '../components/QuestionList';
 import colors from '../utils/colors';
 import { categories } from '../utils/variables';
+import tabColors from '../utils/tabColors';
 
 require("firebase/firestore");
 const firebaseConfig = {
@@ -236,7 +237,7 @@ const styles = StyleSheet.create({
   topbar: {
     flexDirection: 'row',
     height: 50,
-    backgroundColor: 'red',
+    backgroundColor: tabColors[0],
     borderTopWidth: 0,
     borderColor: 'white',
   },
