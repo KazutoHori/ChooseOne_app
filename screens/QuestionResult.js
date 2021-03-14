@@ -57,8 +57,8 @@ export default class QuestionDetail extends React.Component {
   componentDidMount() {
     this._loadFontsAsync();
 
-    const { navigation: { state: { params }, navigate }} = this.props;
-    const { your_vote, question, question: {id, slug, author, title, created, choices } } = params;
+    const { navigation: { state: { params } }} = this.props;
+    const { your_vote, question: {id, slug, author, title, created, choices } } = params;
 
     var copy=choices;
     copy.sort(function(first, second){
@@ -90,8 +90,8 @@ export default class QuestionDetail extends React.Component {
   }
 
   onLikeit = () => {
-    const { navigation: { state: { params }, navigate }} = this.props;
-    const { from_where, question: { slug } } = params;
+    const { navigation: { state: { params } }} = this.props;
+    const { question: { slug } } = params;
 
     showMessage({
       message: "You like this question!",
@@ -129,8 +129,8 @@ export default class QuestionDetail extends React.Component {
 
   render() {
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { from_where, your_vote, question: {id, author, title, created, choices } } = params;
-    const { likedit, error, fontsLoaded, modalVisible, answered, madeit } = this.state;
+    const { from_where, question: { title, created, choices } } = params;
+    const { likedit, error, fontsLoaded, modalVisible, madeit } = this.state;
 
     var pie_data = Array.from(choices);
     const aaa = created.slice(-2);

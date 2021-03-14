@@ -61,7 +61,7 @@ export default class QuestionDetail extends React.Component {
 
   componentDidMount() {
     this._loadFontsAsync();
-    const { navigation: { state: { params }, navigate }} = this.props;
+    const { navigation: { state: { params } }} = this.props;
     const { question: { slug } } = params;
 
     var user = firebase.auth().currentUser;
@@ -80,9 +80,9 @@ export default class QuestionDetail extends React.Component {
   }
 
   onVote = async () => {
-    const { likedit, error, value3Index } = this.state;
+    const { value3Index } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { from_where, question, question: { id, slug, choices} , } = params;
+    const { from_where, question, question: { slug, choices} , } = params;
     if(value3Index === null){
       this.setState({ error: 'You have not chosen yet'});
       setTimeout(() => this.setState({ error: ''}),2500);
@@ -134,8 +134,8 @@ export default class QuestionDetail extends React.Component {
   }
 
   onLikeit = () => {
-    const { navigation: { state: { params }, navigate }} = this.props;
-    const { from_where, question: { slug } } = params;
+    const { navigation: { state: { params } }} = this.props;
+    const { question: { slug } } = params;
 
     showMessage({
       message: "You like this question!",
@@ -174,7 +174,7 @@ export default class QuestionDetail extends React.Component {
   render() {
     const { s_modalVisible, fontsLoaded, modalVisible } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { from_where, question, question: {id, author, title, created, choices } } = params;
+    const { from_where, question: { title, created, choices } } = params;
     const { likedit, error, answered, madeit } = this.state;
 
     for(let i=0; i<choices.length; i++){

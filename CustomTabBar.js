@@ -1,23 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   Text,
-  View, TouchableOpacity, ScrollView,
+  View,
+  TouchableOpacity,
+  ScrollView,
 } from 'react-native';
-import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
 
 import colors from './utils/colors';
 import tabColors from './utils/tabColors';
 
+
 export default class AppTabNavigation extends React.Component {
   constructor(props){
     super(props);
-
     this.scrollRef=React.createRef();
   }
 
   componentDidUpdate() {
-    const { routes, index } = this.props.navigation.state
+    const { index } = this.props.navigation.state
     if (1<index && index<10){
       this.scrollRef.current.scrollTo({ animated: false, x: 95*(index-2)+40, y:0})
     }else if(index>=10){
@@ -42,8 +42,6 @@ export default class AppTabNavigation extends React.Component {
       borderBottomWidth: 3,
       borderBottomColor: tabColors[index],
       flexDirection: 'row',
-      // justifyContent: 'space-between',
-      // backgroundColor: colors.grey,
     });
 
     return (
@@ -93,7 +91,6 @@ const styles = {
     backgroundColor: '#ffffff',
   },
   selectedTabStyle: {
-    // height:
     marginTop: 0,
     height: 38,
   },
@@ -103,8 +100,5 @@ const styles = {
     paddingTop: 10,
     fontSize: 13,
     color: colors.white,
-  },
-  selectedTextStyle: {
-    // color: '#ffffff',
   },
 }

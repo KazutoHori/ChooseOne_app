@@ -1,5 +1,9 @@
 import React from "react";
-import { View, StyleSheet, SafeAreaView, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  SafeAreaView,
+  ScrollView
+} from "react-native";
 import { DrawerItems } from "react-navigation-drawer";
 
 const CustomDrawerContentComponent = (props) => (

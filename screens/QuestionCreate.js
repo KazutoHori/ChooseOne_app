@@ -86,8 +86,7 @@ export default class QuestionCreate extends React.Component {
   };
 
   onSubmit = async () => {
-    const { fontsLoaded, loading, error, add_choice, title, choices, categories,
-      } = this.state;
+    const { add_choice, title, choices, categories } = this.state;
     const { navigation: { navigate }} = this.props;
     var user = firebase.auth().currentUser;
     if(user === null){
@@ -188,11 +187,9 @@ export default class QuestionCreate extends React.Component {
   }
 
   render() {
-    const { fontsLoaded, loading, categories, error, s_modalVisible,
+    const { fontsLoaded, loading, error, s_modalVisible,
       add_choice, title, choices, } = this.state;
     const { navigation: { navigate }} = this.props;
-
-    var user = firebase.auth().currentUser;
 
     var added=[];
     for (let i=0; i<add_choice; i++){
@@ -238,7 +235,6 @@ export default class QuestionCreate extends React.Component {
                 value={title}
                 underlineColorAndroid="transparent"
                 onChangeText={this.titleChangeText}
-                // onSubmitEditing={this.handleSubmitEditing}
                 placeholder={'Title'}
               />
 
@@ -250,7 +246,6 @@ export default class QuestionCreate extends React.Component {
                 autoCorrect={false}
                 underlineColorAndroid="transparent"
                 onChangeText={(text) => this.choiceChangeText(text, 0)}
-                // onSubmitEditing={this.choiceSubmitEditing}
                 placeholder={'Choice 1'}
               />
               <View style={styles.semiTitle} />
@@ -260,7 +255,6 @@ export default class QuestionCreate extends React.Component {
                 value={choices[1]}
                 underlineColorAndroid="transparent"
                 onChangeText={(text) => this.choiceChangeText(text, 1)}
-                // onSubmitEditing={this.choice}
                 placeholder={'Choice 2'}
               />
               {add_choice !== 0 && (

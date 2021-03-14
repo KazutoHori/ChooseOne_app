@@ -20,10 +20,6 @@ const getTabBarIcon = icon => ({ tintColor }) => (
   <MaterialIcons name={icon} size={32} style={{ color: tintColor }} />
 );
 
-const getDrawerItemIcon = icon => ({ tintColor }) => (
-  <MaterialIcons name={icon} size={22} style={{ color: tintColor }} />
-);
-
 const CreateScreens = createStackNavigator(
   {
     QuestionCreate,

@@ -102,7 +102,7 @@ export default class About extends React.Component {
   }
 
   render() {
-    const {l_modalVisible, s_modalVisible, username, fontsLoaded, modalVisible, loggedIn } = this.state;
+    const { s_modalVisible, username, fontsLoaded, modalVisible, loggedIn } = this.state;
     const { navigation: { closeDrawer, navigate }} = this.props;
 
     const initials=username.toUpperCase().slice(0,2);

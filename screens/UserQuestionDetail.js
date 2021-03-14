@@ -87,9 +87,9 @@ export default class QuestionDetail extends React.Component {
   }
 
   onVote = async () => {
-    const { error, value3Index } = this.state;
+    const { value3Index } = this.state;
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { question, question: { id, slug, choices} , } = params;
+    const { question, question: { slug, choices} , } = params;
     if(value3Index === null){
       this.setState({ error: 'You have not chosen yet'});
       setTimeout(() => this.setState({ error: ''}),2500);
@@ -176,8 +176,8 @@ export default class QuestionDetail extends React.Component {
   }
 
   onLikeit = () => {
-    const { navigation: { state: { params }, navigate }} = this.props;
-    const { from_where, question: { slug } } = params;
+    const { navigation: { state: { params } }} = this.props;
+    const { question: { slug } } = params;
 
     showMessage({
       message: "You like this question!",
@@ -195,7 +195,7 @@ export default class QuestionDetail extends React.Component {
 
   onDelete = () => {
     const { navigation: { state: { params }, navigate }} = this.props;
-    const { from_where, question: { slug } } = params;
+    const { question: { slug } } = params;
     this.setState({ modalVisible: false });
 
     showMessage({
@@ -216,7 +216,7 @@ export default class QuestionDetail extends React.Component {
   render() {
     const { fontsLoaded, modalVisible } = this.state;
     const { navigation: { state: { params }, openDrawer, navigate }} = this.props;
-    const { from_where, question, question: {id, author, title, created, choices } } = params;
+    const { from_where, question: { title, created, choices } } = params;
     const { likedit, error, answered, madeit } = this.state;
 
     for(let i=0; i<choices.length; i++){
