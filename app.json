@@ -1,17 +1,16 @@
 {
   "expo": {
-    "name": "ChooseOne_app",
-    "slug": "ChooseOne_app",
+    "name": "ChooseOne",
+    "slug": "chooseone",
     "privacy": "public",
     "sdkVersion": "40.0.0",
     "platforms": [
       "ios",
-      "android",
-      "web"
+      "android"
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ChooseOneLogo.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -26,5 +25,13 @@
     "ios": {
       "supportsTablet": true
     }
+  },
+  "ios": {
+    "bundleIdentifier": "com.chooseone",
+    "buildNumber": "1.0.0"
+  },
+  "android": {
+    "package": "com.chooseone",
+    "versionCode": 1
   }
 }
