@@ -51,7 +51,7 @@ export default class QuestionCreate extends React.Component {
       add_choice: 0,
 
       title: '',
-      choices: Array(10),
+      choices: [],
       error: '',
       s_modalVisible: false,
     };
@@ -96,19 +96,19 @@ export default class QuestionCreate extends React.Component {
     var userId = user.uid;
 
     if(title === ''){
-      this.setState({ error: 'Title cannot be empty'});
+      this.setState({ error: 'Title cannot be empty.'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
 
     var S = new Set(choices);
-    if(choices.length !== S.length) {
-      this.setState({ error: 'There are same choices'});
+    if(choices.length !== S.size) {
+      this.setState({ error: 'There are same choices.'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
 
-    const new_choices = [];
+    let new_choices = [];
     for(var i=0; i<add_choice+2; i++){
       if(choices[i] !== undefined && choices[i] !== ''){
         new_choices.push({
@@ -119,13 +119,13 @@ export default class QuestionCreate extends React.Component {
     }
 
     if(new_choices.length<2) {
-      this.setState({ error: 'Choices must be more than two'});
+      this.setState({ error: 'Choices must be more than two.'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
 
     if(categories.length === 0){
-      this.setState({ error: 'Category cannot be empty'});
+      this.setState({ error: 'Category cannot be empty.'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
@@ -137,6 +137,8 @@ export default class QuestionCreate extends React.Component {
 
     var rep=0;
     var new_slug=slugify(title);
+    if(new_slug === '') new_slug=title;
+
     await db.collection('questions').where('slug', '==', new_slug).get().then(snap => {
       rep=snap.size
     });
@@ -260,7 +262,7 @@ export default class QuestionCreate extends React.Component {
               {add_choice !== 0 && (
                 [added]
               )}
-              {add_choice < 8 && (
+              {add_choice < 5 && (
                 <Button style={{ width: screenWidth*4/9, marginTop: 10,}} onPress={() => this.setState({ add_choice: add_choice+1 })} color={colors.blue}>Add New Choice</Button>
               )}
               {add_choice !==0 && (
