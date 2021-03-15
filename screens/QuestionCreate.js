@@ -102,6 +102,8 @@ export default class QuestionCreate extends React.Component {
     }
 
     var S = new Set(choices);
+    console.error(S.size);
+    console.error(choices.length);
     if(choices.length !== S.size) {
       this.setState({ error: 'There are same choices.'});
       setTimeout(() => this.setState({ error: ''}),2500);
@@ -170,7 +172,7 @@ export default class QuestionCreate extends React.Component {
     this.setState({
       add_choice: 0,
       title: '',
-      choices: Array(10),
+      choices: [],
       error: '',
       categories: [],
     });
