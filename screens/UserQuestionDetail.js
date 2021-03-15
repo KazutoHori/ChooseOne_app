@@ -279,7 +279,7 @@ export default class QuestionDetail extends React.Component {
                 if(value3Index === i) var m='contained';
                 else var m='outlined';
                 return (
-                  <Button_c labelStyle={styles.l_choice} color={colors.blue} mode={m} style={styles.choice} onPress={() => this.setState({ value3Index: i }) }>
+                  <Button_c uppercase={false} labelStyle={styles.l_choice} color={colors.blue} mode={m} style={styles.choice} onPress={() => this.setState({ value3Index: i }) }>
                     {obj.choice_text}
                   </Button_c>
                 );

@@ -95,6 +95,19 @@ export default class QuestionCreate extends React.Component {
     }
     var userId = user.uid;
 
+    if(title === ''){
+      this.setState({ error: 'Title cannot be empty'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+
+    var S = new Set(choices);
+    if(choices.length !== S.length) {
+      this.setState({ error: 'There are same choices'});
+      setTimeout(() => this.setState({ error: ''}),2500);
+      return null;
+    }
+
     const new_choices = [];
     for(var i=0; i<add_choice+2; i++){
       if(choices[i] !== undefined && choices[i] !== ''){
@@ -105,21 +118,8 @@ export default class QuestionCreate extends React.Component {
       }
     }
 
-    if(title === ''){
-      this.setState({ error: 'Title cannot be empty'});
-      setTimeout(() => this.setState({ error: ''}),2500);
-      return null;
-    }
-
     if(new_choices.length<2) {
       this.setState({ error: 'Choices must be more than two'});
-      setTimeout(() => this.setState({ error: ''}),2500);
-      return null;
-    }
-
-    var S = new Set(new_choices);
-    if(new_choices.length !== S.size) {
-      this.setState({ error: 'There are same choices'});
       setTimeout(() => this.setState({ error: ''}),2500);
       return null;
     }
