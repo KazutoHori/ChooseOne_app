@@ -229,7 +229,7 @@ export default class QuestionDetail extends React.Component {
           }}
           accessor={"votes"}
           backgroundColor={colors.white}
-          paddingLeft={20}
+          paddingLeft={10}
           center={[10, 0]}
           bgColor={'transparent'}
           avoidFalseZero
@@ -426,6 +426,8 @@ const styles = StyleSheet.create({
   center: {
     alignItems: 'center',
     marginBottom: 30,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   title: {
     fontSize: 22,

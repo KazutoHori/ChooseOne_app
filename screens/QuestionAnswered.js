@@ -239,7 +239,7 @@ export default class QuestionAnswered extends React.Component {
 
     var title='';
     if(screen === 'QuestionAnswered') title='Questions You Answered';
-    else if(screen === 'QuestionCreated') title='Questions You Created';
+    else if(screen === 'QuestionCreated') title='Questions You Asked';
     else title='Questions You Liked';
     var comment='You don\'t have any questions you like yet.';
     if(screen === 'QuestionAnswered') comment='You have not yet answered any question.';
@@ -255,7 +255,7 @@ export default class QuestionAnswered extends React.Component {
           <TouchableWithoutFeedback onPress={() => navigate('QuestionAnswered')}>
             <Image source={require('../assets/ChooseOne1.png')} onLoad={this.handleLoad} style={{ top: 16, left: 20}}/>
           </TouchableWithoutFeedback>
-          <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={this.onChange} dropdownStyle={{ height: 3*40+5 }} dropdownTextStyle={{ fontWeight: '500', color: 'black', height: 40, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions You Answerd', 'Questions You Created', 'Questions You Liked']} >
+          <ModalDropdown style={{ position: 'absolute', right: 75, top: 15 }} onSelect={this.onChange} dropdownStyle={{ height: 3*40+5 }} dropdownTextStyle={{ fontWeight: '500', color: 'black', height: 40, width: 200, fontSize: 15, textAlign: 'center' }} showsVerticalScrollIndicator={false} options={['Questions You Answerd', 'Questions You Asked', 'Questions You Liked']} >
             <Icon name={'archive'} size={30} style={{ color: colors.grey }} />
           </ModalDropdown>
           <TouchableOpacity onPress={() => openDrawer()} style={{ position: 'absolute', right: 25, top: 15}}>

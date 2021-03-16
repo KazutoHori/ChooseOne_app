@@ -235,6 +235,7 @@ export default class QuestionCreate extends React.Component {
                 style={[styles.input, { fontFamily: 'PlayfairDisplay-Regular', }]}
                 autoCorrect={false}
                 value={title}
+                clearButtonMode='while-editing'
                 underlineColorAndroid="transparent"
                 onChangeText={this.titleChangeText}
                 placeholder={'Title'}
@@ -246,6 +247,7 @@ export default class QuestionCreate extends React.Component {
                 style={[styles.input, ]}
                 value={choices[0]}
                 autoCorrect={false}
+                clearButtonMode='while-editing'
                 underlineColorAndroid="transparent"
                 onChangeText={(text) => this.choiceChangeText(text, 0)}
                 placeholder={'Choice 1'}
@@ -255,6 +257,7 @@ export default class QuestionCreate extends React.Component {
                 autoCorrect={false}
                 style={[styles.input, ]}
                 value={choices[1]}
+                clearButtonMode='while-editing'
                 underlineColorAndroid="transparent"
                 onChangeText={(text) => this.choiceChangeText(text, 1)}
                 placeholder={'Choice 2'}

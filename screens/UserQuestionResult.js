@@ -142,7 +142,7 @@ export default class QuestionDetail extends React.Component {
     const aaa = created.slice(-2);
 		var top;
 		if(from_where === 'QuestionAnswered') top='Questions You Answered';
-		else if(from_where === 'QuestionCreated') top='Questions You Created';
+		else if(from_where === 'QuestionCreated') top='Questions You Asked';
 		else top='Questions You Liked';
 
     let bar_data = {
@@ -252,7 +252,7 @@ export default class QuestionDetail extends React.Component {
 						}}
 						accessor={"votes"}
 						backgroundColor={colors.white}
-						paddingLeft={20}
+						paddingLeft={10}
 						center={[10, 0]}
 						bgColor={'transparent'}
 						avoidFalseZero
@@ -454,6 +454,8 @@ const styles = StyleSheet.create({
   center: {
     alignItems: 'center',
     marginBottom: 30,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   title: {
     fontSize: 22,

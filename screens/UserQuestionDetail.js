@@ -225,7 +225,7 @@ export default class QuestionDetail extends React.Component {
     }
 		var top;
 		if(from_where === 'QuestionAnswered') top='Questions You Answered';
-		else if(from_where === 'QuestionCreated') top='Questions You Created';
+		else if(from_where === 'QuestionCreated') top='Questions You Asked';
 		else top='Questions You Liked';
 
     if(!fontsLoaded) return null;
