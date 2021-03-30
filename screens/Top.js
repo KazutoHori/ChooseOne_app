@@ -82,6 +82,7 @@ export default class Top extends React.Component {
       loading: false,
     });
   };
+  
 
   doRefresh = () => {
     this.setState({ refreshing: true });
